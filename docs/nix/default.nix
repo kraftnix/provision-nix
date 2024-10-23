@@ -37,7 +37,7 @@
     };
     packages.docs-site = pkgs.stdenvNoCC.mkDerivation {
       name = "docs-site";
-      nativeBuildInputs = [pkgs.mdbook pkgs.mdbook-linkcheck];
+      nativeBuildInputs = [config.packages.mdbook-linkfix pkgs.mdbook-linkcheck];
       src = config.packages.docs-site-options;
       buildPhase = ''
         runHook preBuild
