@@ -21,9 +21,9 @@ jobs:
       - name: build packages
         id: build-packages
         run: |
-          nix run github:Mic92/nix-fast-build -- -f .#packages
+          nix run github:Mic92/nix-fast-build -- -f .#packages --no-nom
 
       - name: build checks
         id: build-checks
         run: |
-          nix run github:Mic92/nix-fast-build -- -f .#checks
+          nix run github:Mic92/nix-fast-build -- -f .#checks --no-nom
