@@ -1,0 +1,54 @@
+api:
+  dashboard: true
+
+accessLog: {}
+
+log:
+  level: DEBUG
+
+entryPoints:
+  http:
+    address: ":80"
+    proxyProtocol:
+      trustedIPs:
+        - "172.26.2.26/16"
+        #- "172.17.1.0/16"
+        - "10.97.99.1/24"
+        - "10.89.0.0/24"
+        - "172.19.0.0/24"
+  https:
+    address: ":443"
+    proxyProtocol:
+      trustedIPs:
+        - "172.26.2.26/16"
+        #- "172.17.1.0/16"
+        - "10.97.99.1/24"
+        - "10.89.0.0/24"
+        - "172.19.0.0/24"
+    forwardedHeaders:
+      trustedIPs:
+        - "172.21.0.1/16"
+  ssh:
+    address: ":22"
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+    network: proxy
+  file:
+    filename: /config.yml
+    watch: true
+
+serversTransport:
+  insecureSkipVerify: true
+    #rootCAs:
+    #- /certs/my-self-signed-ca.pem
+
+certificateResolvers:
+  localcert:
+    acme:
+      email: testing@test.lan
+      storage: acme.json
+      httpChallenge:
+        entryPoint: http

@@ -1,0 +1,45 @@
+http:
+  middlewares:
+    redirect:
+      redirectScheme:
+        scheme: https
+        permanent: true
+    default-headers:
+      headers:
+        frameDeny: false
+        customFrameOptionsValue: SAMEORIGIN
+        sslRedirect: true
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+    admin-auth:
+      basicAuth:
+        users:
+          - admin:$apr1$E1lUm9Ea$gKQHdvo/Vf5NkSpeqJv4o0
+    #default-whitelist:
+      #ipWhiteList:
+        #sourceRange:
+          #- "10.0.0.0/24"
+          #- "192.168.0.0/16"
+          #- "172.0.0.0/8"
+    secured:
+      chain:
+        middlewares:
+          - default-headers
+    admin-secured:
+      chain:
+        middlewares:
+          - secured
+          - admin-auth
+
+  routers:
+    dashboard:
+      entrypoints:
+        - https
+      rule: Host(`traefik.dev-vm.testing`)
+      middlewares:
+        - admin-secured
+      tls: {}
+      service: api@internal

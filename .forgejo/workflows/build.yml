@@ -1,0 +1,29 @@
+---
+name: build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: nix
+    steps:
+      - name: checkout
+        id: checkout
+        uses: actions/checkout@v3
+
+      - name: build devshell
+        id: build-devshell
+        run: |
+          nix build .#devShells.x86_64-linux.default
+
+      - name: build packages
+        id: build-packages
+        run: |
+          nix run github:Mic92/nix-fast-build -- -f .#packages
+
+      - name: build checks
+        id: build-checks
+        run: |
+          nix run github:Mic92/nix-fast-build -- -f .#checks

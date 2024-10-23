@@ -1,0 +1,68 @@
+{ self, lib, pkgs, config, ... }:
+{
+
+  microvm.vms.firecracker-test8 = {
+    flake = self;
+    vmPath = "nixosConfigurations.${config.networking.hostName}.config.microvm.vms.firecracker-test8.runner";
+    vm = self.inputs.microvm.lib.makeMicrovm {
+      inherit (pkgs) system;
+      name = "firecracker-test8";
+      hypervisor = "firecracker";
+      nixosConfig = { config, ... }: {
+        # imports = with profiles; [ users.operator users.deploy networking.ssh.simple ];
+        users.users.root.hashedPassword = lib.mkDefault "$y$j9T$vMHW6Xt2v3axdGdkltO8e.$Lgr2IcIPoGasOSv8PE3RVIPFqSzQU.duhw8/xPI2uzD"; # empty
+        networking.interfaces.eth0.useDHCP = true;
+        networking.firewall.enable = false;
+        services.openssh.settings.PermitRootLogin = "yes";
+        users.users.deploy.description = lib.mkForce "hello";
+        environment.etc."conf-test-${config.networking.hostName}".text = lib.concatStringsSep "\n" (builtins.attrNames config.users.users);
+        networking.hostName = lib.mkForce "firecracker-test8";
+      };
+      extraModules = [
+        ../../../modules/services/caddy.nix
+      ];
+      volumes = [{
+        mountpoint = "/var";
+        image = "var.img";
+        size = 277;
+      }];
+      socket = "control.socket";
+      interfaces = [{
+        type = "tap";
+        id = "fire8-eth0";
+        mac = "00:02:00:01:01:08";
+      }];
+    };
+  };
+
+  # allow DHCP
+  networking.firewall.allowedUDPPorts = [ 67 ];
+
+  systemd.network = {
+    enable = true;
+    netdevs.mvmbr0.netdevConfig = {
+      Kind = "bridge";
+      Name = "mvmbr0";
+    };
+    networks.mvmbr0 = {
+      matchConfig.Name = "mvmbr0";
+      # Hand IP addresses to MicroVMs
+      networkConfig = {
+        DHCPServer = true;
+        IPv6SendRA = true;
+      };
+      addresses = [
+        { addressConfig.Address = "10.239.0.1/24"; }
+        { addressConfig.Address = "fd12:3456:789a::1/64"; }
+      ];
+      ipv6Prefixes = [
+        { ipv6PrefixConfig.Prefix = "fd12:3456:789a::/64"; }
+      ];
+    };
+    networks.microvm-eth0 = {
+      matchConfig.Name = "*-eth0";
+      networkConfig.Bridge = "mvmbr0";
+    };
+  };
+
+}

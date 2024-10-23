@@ -1,0 +1,4 @@
+.std
+.direnv
+result*
+.pre-commit-config.yaml

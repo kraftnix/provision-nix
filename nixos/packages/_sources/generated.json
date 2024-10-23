@@ -1,0 +1,62 @@
+{
+    "btrfs-list": {
+        "cargoLocks": null,
+        "date": null,
+        "extract": null,
+        "name": "btrfs-list",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "speed47",
+            "repo": "btrfs-list",
+            "rev": "v2.2",
+            "sha256": "sha256-JtTqhf0fsbPYeUkRAvgdH6CgoRUJXKAZv32i+pyf6AY=",
+            "type": "github"
+        },
+        "version": "v2.2"
+    },
+    "nushell-latest": {
+        "cargoLocks": null,
+        "date": null,
+        "extract": null,
+        "name": "nushell-latest",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "nushell",
+            "repo": "nushell",
+            "rev": "0.90.1",
+            "sha256": "sha256-MODd2BT2g6g5H6/1EG5OjIoYm18yBSvYTR83RuYDMec=",
+            "type": "github"
+        },
+        "version": "0.90.1"
+    },
+    "nushell-master": {
+        "cargoLocks": null,
+        "date": "2024-02-18",
+        "extract": null,
+        "name": "nushell-master",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "nushell",
+            "repo": "nushell",
+            "rev": "68fcd71898f97cf635956ede83ed33be25eebfd7",
+            "sha256": "sha256-ZDtK0Xjwql1HlrEA7x5lwtLnbl8I10E0bpg2/2sPOLw=",
+            "type": "github"
+        },
+        "version": "68fcd71898f97cf635956ede83ed33be25eebfd7"
+    }
+}
