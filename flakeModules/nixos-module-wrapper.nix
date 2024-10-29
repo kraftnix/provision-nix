@@ -79,7 +79,7 @@ in {
           dir = mkOption {
             type = with types; nullOr path;
             default = null;
-            example = ../../nixos/modules;
+            example = ../nixosModules;
             description = "If set, modules are raked and imported into `nixosModules`";
           };
           flakeArgs = mkOption {

@@ -85,7 +85,7 @@ in
     }:
       modules
       ++ [
-        ../../nixos/nixosModules/networking/firewall/rule.nix
+        ../nixosModules/networking/firewall/rule.nix
         {
           config._module.args = {
             inherit pkgs lib firewallLib defaults mapsets ruleReplaceMap;

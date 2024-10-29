@@ -22,7 +22,7 @@
     '';
     my-test-script-env-has.inputs = [pkgs.afetch];
     my-test-script-env-has.text = ''
-      source ${../../nixos/scripts/nu/from.nu}
+      source ${../scripts/nu/from.nu}
 
       def main [ var ] {
         print $"Env ($var) present: (envHas $var)"

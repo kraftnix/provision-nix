@@ -229,7 +229,7 @@ in {
             hostsDir = mkOption {
               type = types.nullOr types.path;
               default = null;
-              example = ../../../nixos/hosts;
+              example = ../../hosts;
               description = ''
                 If set, then a `rakeLeaves` is performed on the path, and entries are used
                 to seed `flake.hosts.configs`.

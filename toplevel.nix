@@ -15,7 +15,7 @@ localFlake @ {
     profiles = ./flakeModules/profiles.nix;
     home = ./flakeModules/home-module.nix;
     nixosModulesExtended = ./flakeModules/nixos-module-wrapper.nix;
-    scripts = importApply ../nixos/scripts/flakeModule.nix localFlake;
+    scripts = importApply ./scripts/flakeModule.nix localFlake;
   };
   provision = import ./lib {
     inherit lib;
@@ -32,6 +32,22 @@ in {
   flake = {
     inherit flakeModules flakeModulesAll;
     lib = provision;
+    __provision.nixosModules.flakeArgs = localFlake;
+    __provision.nixosModules.dir = ./nixosModules;
+    __provision.nixosModules.filterByPath = [
+      ["virt" "microvm" "vm"]
+      # [ "provision" "scripts" ]
+    ];
+
+    profiles = lib.recursiveUpdate (self.lib.nix.rakeLeaves ./profiles) {
+      users = {
+        #test-deploy = import ./profiles/users/test-deploy.nix args;
+        # test-deploy = import ./profiles/users/test-deploy.nix;
+        # test-operator = import ./profiles/users/test-operator.nix;
+        test-deploy = ./profiles/users/test-deploy.nix;
+        test-operator = ./profiles/users/test-operator.nix;
+      };
+    };
   };
 
   # for CI / nix-fast-build
@@ -67,5 +83,22 @@ in {
         buildInputs = self.buildInputs ++ [prev.tzdata];
       });
     };
+  };
+
+  perSystem = { config, ... }: {
+    channels.nixpkgs.overlays = self.hosts.defaults.overlays;
+    channels.stable.input = inputs.nixpkgs-stable;
+    channels.stable.overlays = [
+      (final: prev: {
+        # import packages from other channels via overlays
+        inherit
+          (config.channels.nixpkgs.pkgs)
+          yazi
+          dnscrypt-proxy
+          matrix-synapse-unwrapped
+          ;
+      })
+    ];
+    channels.another-stable.inputName = "nixpkgs-stable";
   };
 }

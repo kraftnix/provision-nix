@@ -91,35 +91,16 @@
     flake-parts.lib.mkFlake {inherit inputs;} {
       debug = true;
       imports = [
-        # ./site-module.nix
+        ./disko
         ./docs/nix
-        ./nixos
-        ./nix
-        ./nix/shells
+        ./hosts
+        ./install
+        ./packages
+        ./scripts
+        ./shells
+        ./toplevel.nix
       ];
       systems = ["x86_64-linux" "aarch64-linux"];
-
-      perSystem = {
-        config,
-        pkgs,
-        system,
-        ...
-      }: {
-        channels.nixpkgs.overlays = self.hosts.defaults.overlays;
-        channels.stable.input = inputs.nixpkgs-stable;
-        channels.stable.overlays = [
-          (final: prev: {
-            # import packages from other channels via overlays
-            inherit
-              (config.channels.nixpkgs.pkgs)
-              yazi
-              dnscrypt-proxy
-              matrix-synapse-unwrapped
-              ;
-          })
-        ];
-        channels.another-stable.inputName = "nixpkgs-stable";
-      };
     };
 
   nixConfig = {

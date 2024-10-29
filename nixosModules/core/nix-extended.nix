@@ -78,7 +78,6 @@ in {
         connect-timeout = mkDefault 5; # timeout for substituters
       };
       environment.systemPackages = with pkgs; [
-        nix-diff # Explain why two Nix derivations differ
         nix-du # A tool to determine which gc-roots take space in your nix store
         nix-output-monitor # nom, pretty build printing
         nix-tree # Interactively browse a Nix store paths dependencies
@@ -93,6 +92,7 @@ in {
       };
       environment.systemPackages = with pkgs; [
         nix-doc # An interactive Nix documentation tool
+        nix-diff # Explain why two Nix derivations differ
         nix-init # Command line tool to generate Nix packages from URLs
         nix-ld # Run unpatched dynamic binaries on NixOS
         nix-melt # A ranger-like flake.lock viewer

@@ -33,7 +33,7 @@ in {
       provision.nvfetcher.enable = true;
       provision.nvfetcher.sources.nixos.baseDir = "./nixos/packages";
       # na-install.enable = true;
-      packages = [pkgs.just] ++ config.pre-commit.settings.enabledPackages;
+      packages = config.pre-commit.settings.enabledPackages;
     };
     pre-commit = {
       settings.hooks = {
