@@ -57,7 +57,7 @@
       removeNixStorePath = "s/${escapedNixStorePath}\\///";
       substituteSiteRoot = "s/file:\\/\\/${escapedNixStorePath}\\//${escapedSiteRootPath}/";
     in
-      pkgs.runCommand "filter-hconn-common-mark" {} ''
+      pkgs.runCommand "filter-opts-common-mark" {} ''
         ${pkgs.gnused}/bin/sed '${removeNixStorePath}' ${file} > path-filtered.md
         ${pkgs.gnused}/bin/sed '${substituteSiteRoot}' path-filtered.md > link-filtered.md
         cp link-filtered.md $out
