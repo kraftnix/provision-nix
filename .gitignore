@@ -2,3 +2,6 @@
 .direnv
 result*
 .pre-commit-config.yaml
+docs/book
+docs/options
+docs/intro.md

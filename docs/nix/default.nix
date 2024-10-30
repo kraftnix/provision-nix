@@ -17,6 +17,7 @@
 
         cp -r . $out
         {
+          <!-- THIS FILE IS GENERATED, NO CHANGES IN GIT WILL BE APPLIED -->
           while read ln; do
             case "$ln" in
               *end_of_intro*)
@@ -49,5 +50,26 @@
       '';
       dontInstall = true;
     };
+    devshells.default.packages = [
+      pkgs.mdbook
+      pkgs.mdbook-linkcheck
+    ];
+    devshells.default.commands = [
+      {
+        help = "run caddy file-server for docs site (dev)";
+        name = "build-and-serve-docs";
+        command = "caddy file-server --root `nix build $PRJ_ROOT#docs-site --no-link --print-out-paths` --listen :8937";
+      }
+      {
+        help = "run caddy file-server for docs site (dev)";
+        name = "serve-docs";
+        command = "caddy file-server --root $PRJ_ROOT/result --listen :8937";
+      }
+      {
+        help = "run mdbook serve for docs site";
+        name = "watch-docs-md-only";
+        command = "mdbook serve --port 8937 $PRJ_ROOT/docs";
+      }
+    ];
   };
 }

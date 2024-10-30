@@ -11,6 +11,7 @@
   - [Wireguard](./networking/wireguard.md)
 - [Filesystems](./filesystems/intro.md)
   - [Disko](./filesystems/disko.md)
+  - [Initrd / Stage-1 boot integration](./filesystems/initrd.md)
 - [Scripts](./scripts/intro.md)
 - [Virtualisation](./virtualisation/intro.md)
   - [MicroVM.nix](./virtualisation/microvm.md)
