@@ -10,15 +10,7 @@
     mkIf
     mkOption
     optionalString
-    ;
-  inherit
-    (lib.types)
-    bool
-    enum
-    listOf
-    nullOr
-    str
-    submodule
+    types
     ;
   cfg = config;
 
@@ -55,21 +47,21 @@
       l = mkOption {
         default = null;
         description = "<lhs> of map element, required";
-        type = nullOr str;
+        type = with types; nullOr str;
       };
       r = mkOption {
         default = null;
         description = "<rhs> of map element";
-        type = nullOr str;
+        type = with types; nullOr str;
       };
       v = mkOption {
         default = null;
         description = "<verdict> of map element";
-        type = nullOr str;
+        type = with types; nullOr str;
       };
       __final = mkOption {
         description = "end element str";
-        type = str;
+        type = types.str;
         default = "";
       };
     };
@@ -97,12 +89,12 @@ in {
   options = {
     enable = mkOption {
       description = "Whether to include rule in final rendered chain.";
-      type = bool;
+      type = types.bool;
       default = true;
     };
     name = mkOption {
       default = name;
-      type = str;
+      type = types.str;
       description = "name of map/set/vmap";
     };
     lhs = mkOption {
@@ -110,13 +102,13 @@ in {
         if (config.lhsType != null) && (builtins.hasAttr config.lhsType typeMap)
         then typeMap.${config.lhsType}
         else "ipv4_addr";
-      type = str;
+      type = types.str;
       description = "`lhs` in the map `<lhs> . <rhs>";
     };
     lhsType = mkOption {
       default = null;
       example = "iifname";
-      type = nullOr str;
+      type = with types; nullOr str;
       description = "type to be used for generating `__map` verdict";
     };
     rhs = mkOption {
@@ -126,22 +118,22 @@ in {
         else null;
       example = "ifname";
       description = "`rhs` in the map `<lhs> . <rhs>";
-      type = nullOr str;
+      type = with types; nullOr str;
     };
     rhsType = mkOption {
       default = null;
       example = "oifname";
-      type = nullOr str;
+      type = with types; nullOr str;
       description = "type to be used for generating `__map` verdict";
     };
     verdict = mkOption {
       default = null;
       description = "optional `verdict` in the map `<lhs> : <verdict>` or `<lhs> . <rhs> : <verdict>`";
-      type = nullOr str;
+      type = with types; nullOr str;
     };
     flags = mkOption {
       default = [];
-      type = listOf (enum ["constant" "interval" "timeout"]);
+      type = with types; listOf (enum ["constant" "interval" "timeout"]);
       description = ''
         Available options:
           + constant - set content may not change while bound
@@ -167,7 +159,7 @@ in {
               -[vmapr]  match : match . match    ( lhs : rhs . verdict )
             example usage of vmapr [Nfatbles examples](https://wiki.nftables.org/wiki-nftables/index.php/Multiple_NATs_using_nftables_maps)
       '';
-      type = enum ["set" "map" "vmap" "vmapr"];
+      type = types.enum ["set" "map" "vmap" "vmapr"];
     };
     typeDef = mkOption {
       default = makeMapType {
@@ -175,50 +167,51 @@ in {
       };
       # default = "type ${makeMapType config.lhs config.rhs config.verdict}";
       description = "final type of set/map/vmap";
-      type = str;
+      type = types.str;
     };
     typeName = mkOption {
       default =
         if config.type == "vmap" || config.type == "vmapr"
         then "map"
         else config.type;
-      type = str;
+      type = types.str;
       description = "type name to set when defining named map/set/vamp";
     };
     elements = mkOption {
       default = [];
       description = "element for map, can be a verdict ";
-      type = listOf (submodule mapType);
+      type = with types; listOf (submodule mapType);
     };
     extraConfig = mkOption {
       description = "extra config to add";
-      type = str;
+      type = types.lines;
       default = "";
     };
     __map = mkOption {
       description = "end element str";
-      type = str;
+      type = types.str;
       default = "";
     };
     __final = mkOption {
       description = "End chain type string.";
-      type = str;
+      type = types.str;
       default = "";
     };
   };
   config = mkIf config.enable {
     __map = makeMapMap config.lhsType config.rhsType config.verdict;
+    # NOTE: weird spacing is so the toplevel nftables ruleset is aligned and easier to debug/preview
     __final = lib.mkDefault ''
       ${config.typeName} ${config.name} {
-        type ${config.typeDef}
-        ${optionalString (config.flags != []) "flags ${(concatStringsSep ", " config.flags)}"}
-        ${config.extraConfig}
-        ${optionalString (config.elements != []) ''
-        elements = {
-          ${concatStringsSep ",\n" (map (e: e.__final) config.elements)}
-        }
+          type ${config.typeDef}
+          ${optionalString (config.flags != []) "flags ${(concatStringsSep ", " config.flags)}"}
+          ${config.extraConfig}
+          ${optionalString (config.elements != []) ''
+              elements = {
+                    ${concatStringsSep ",\n      " (map (e: e.__final) config.elements)}
+                  }
       ''}
-      }
+        }
     '';
   };
 }

@@ -9,7 +9,7 @@
       name = "docs-site-options";
       nativeBuildInputs = [pkgs.nushell];
       src = pkgs.lib.cleanSourceWith {
-        src = ./..;
+        src = ./../..;
         filter = path: type: baseNameOf (toString path) != "nix";
       };
       buildPhase = ''
@@ -17,7 +17,7 @@
 
         cp -r . $out
         {
-          <!-- THIS FILE IS GENERATED, NO CHANGES IN GIT WILL BE APPLIED -->
+          echo '<!-- THIS FILE IS GENERATED, NO CHANGES IN GIT WILL BE APPLIED -->'
           while read ln; do
             case "$ln" in
               *end_of_intro*)
@@ -28,11 +28,11 @@
                 ;;
             esac
           done
-          cat intro-continued.md
-        } <${self.outPath + "/README.md"} >./intro.md
-        cp ./intro.md $out/
-        mkdir -p $out/options
-        cp ${config.packages.options-filtered} $out/options/nixos-options.md
+          cat ./docs/intro-continued.md
+        } <${self.outPath + "/README.md"} >./docs/intro.md
+        cp ./docs/intro.md $out/docs
+        mkdir -p $out/docs/options
+        cp ${config.packages.options-filtered} $out/docs/options/nixos-options.md
         runHook postBuild
       '';
     };
@@ -40,11 +40,13 @@
       name = "docs-site";
       nativeBuildInputs = [config.packages.mdbook-linkfix pkgs.mdbook-linkcheck];
       src = config.packages.docs-site-options;
+      # MDBOOK_OUTPUT__HTML__SITE_URL = "/projects/provision-nix/";
       buildPhase = ''
         runHook preBuild
 
-        mdbook build --dest-dir $TMPDIR/out
-        cp -r $TMPDIR/out/html $out
+        cd docs
+        mdbook build --dest-dir $TMPDIR/out/docs
+        cp -r $TMPDIR/out/docs/html $out
 
         runHook postBuild
       '';
@@ -53,6 +55,7 @@
     devshells.default.packages = [
       pkgs.mdbook
       pkgs.mdbook-linkcheck
+      pkgs.caddy
     ];
     devshells.default.commands = [
       {

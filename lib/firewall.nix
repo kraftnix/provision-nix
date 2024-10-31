@@ -51,6 +51,7 @@ with lib; let
 
     ruleDefaults = {
       n = 100;
+      pre = "";
       main = "";
       enable = true;
       counter = false;

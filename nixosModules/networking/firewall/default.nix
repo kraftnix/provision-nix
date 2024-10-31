@@ -8,14 +8,9 @@ localFlake: {
     (lib)
     mapAttrsToList
     mkEnableOption
+    mkIf
     mkOption
-    ;
-  inherit
-    (lib.types)
-    attrsOf
-    enum
-    str
-    submoduleWith
+    types
     ;
 
   inherit (localFlake.self.lib.firewall) mkRuleModules;
@@ -34,7 +29,7 @@ localFlake: {
       }: {config.rule = name;})
     ];
 
-  tableModule = submoduleWith {
+  tableModule = types.submoduleWith {
     modules = [
       ./table.nix
       {config._module.args = {inherit pkgs lib localFlake;};}
@@ -58,23 +53,23 @@ in {
     enable = mkEnableOption "whether to enable these nftables rules";
     rules = mkOption {
       description = "shared/reusable rules";
-      type = attrsOf (submoduleWith {modules = rulesModule;});
+      type = with types; attrsOf (submoduleWith {modules = rulesModule;});
       default = {};
     };
     tables = mkOption {
       description = "tables to generate";
-      type = attrsOf tableModule;
+      type = types.attrsOf tableModule;
       default = {};
     };
     profiles = mkOption {
       description = "profiles to enable";
-      type = enum ["default"];
-      default = "default";
+      type = with types; listOf (enum ["default"]);
+      default = ["default"];
     };
     ignoreRegexSanityCheck = mkEnableOption "enable this to skip the sanity check which looks for re-replaced firewall rules like `<-dmz-internal.rockpro->`";
     __rendered = mkOption {
       description = "Final nftables file string";
-      type = str;
+      type = types.str;
       default = lib.concatStringsSep "\n" (mapAttrsToList (_: t: t.__rendered) cfg.tables);
     };
   };
@@ -95,55 +90,8 @@ in {
       }
     ];
 
-    networking.nftables.gen.rules = {
-      accept-to-local = {
-        n = 1;
-        main = "iifname lo";
-        comment = "accept all to host";
-        counter = false;
-        verdict = "accept";
-      };
-      icmp-default = {
-        n = 10;
-        main = "meta l4proto { icmp, ipv6-icmp }";
-        comment = "accept ICMPv4 + ICMPv6 (ARP / ping)";
-        counter = true;
-        verdict = "accept";
-      };
-      ct-related-accept = {
-        n = 20;
-        main = "ct state { established, related }";
-        comment = "accept established/related packets";
-        counter = true;
-        verdict = "accept";
-      };
-      ct-dnat-trace = {
-        n = 25;
-        main = "ct status dnat";
-        comment = "accept incoming DNAT";
-        # trace = true;
-        verdict = "counter accept";
-      };
-      ct-drop-invalid = {
-        n = 30;
-        main = "ct state invalid";
-        comment = "drop invalid packets";
-        counter = true;
-        verdict = "drop";
-      };
-      arp-reply = {
-        n = 33;
-        main = "arp operation reply";
-        comment = "accept ARP reply";
-        verdict = "accept";
-      };
-      ipv6-accept-link-local-dhcp = {
-        n = 40;
-        main = "ip6 daddr fe80::/64 udp dport dhcpv6-client";
-        counter = true;
-        verdict = "accept";
-        comment = "accept all DHCPv6 packets received at a link-local address";
-      };
-    };
+    networking.nftables.enable = mkIf cfg.enable true;
+    networking.nftables.ruleset = mkIf cfg.enable cfg.__rendered;
+    networking.nftables.gen.rules = (import ./default-rules.nix);
   };
 }

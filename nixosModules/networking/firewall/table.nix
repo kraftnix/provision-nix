@@ -13,20 +13,12 @@
     filterAttrs
     mapAttrsToList
     mkOption
-    ;
-  inherit
-    (lib.types)
-    attrsOf
-    enum
-    oneOf
-    str
-    submodule
-    submoduleWith
+    types
     ;
   inherit (localFlake.self.lib.firewall) filterUnderscores;
 
   chainModule = mapsets:
-    submoduleWith {
+    types.submoduleWith {
       modules = [
         ./chain.nix
         {config._module.args = {inherit pkgs lib localFlake;};}
@@ -35,15 +27,15 @@
       ];
     };
 in {
-  freeformType = attrsOf (oneOf [str (chainModule config.mapsets)]);
+  freeformType = with types; attrsOf (oneOf [str (chainModule config.mapsets)]);
   options.mapsets = mkOption {
     description = "define custom set/map/vmap";
-    type = attrsOf (submodule (import ./mapset.nix));
+    type = with types; attrsOf (submodule (import ./mapset.nix));
     default = {};
   };
   options.__type = mkOption {
     description = "Table Module.";
-    type = enum ["inet" "ip" "ip6" "bridge" "netdev" "arp"];
+    type = types.enum ["inet" "ip" "ip6" "bridge" "netdev" "arp"];
     default = "inet";
   };
   options.__chains = mkOption {
@@ -55,29 +47,31 @@ in {
   };
   options.__chainsStr = mkOption {
     description = "Chains rendered into a string";
-    default = lib.concatStringsSep "\n" (mapAttrsToList
+    type = types.lines;
+    default = lib.concatStringsSep "\n  " (mapAttrsToList
       (name: chain: ''
         chain ${name} {
-          ${
-          if builtins.typeOf chain == "string"
-          then chain
-          else chain.__rendered
-        }
-        }
+            ${
+            if builtins.typeOf chain == "string"
+            then chain
+            else chain.__rendered
+          }
+          }
       '')
       config.__chains);
   };
   options.__rendered = mkOption {
     description = "Table Module.";
-    type = str;
+    type = types.lines;
+    # NOTE: weird spacing is so the toplevel nftables ruleset is aligned and easier to debug/preview
     default = ''
       ## Table ${name}
       table ${config.__type} ${name} {
-        ${concatStringsSep "\n" (mapAttrsToList (_: c: c.__final) config.mapsets)}
-        ${concatStringsSep "\n" (mapAttrsToList (chain: chainCfg: ''
-        counter chain_final_${chain} {
-          comment "${chain} default policy"
-        }
+        ${concatStringsSep "\n  " (mapAttrsToList (_: c: c.__final) config.mapsets)}
+        ${concatStringsSep "\n  " (mapAttrsToList (chain: chainCfg: ''
+            counter chain_final_${chain} {
+                comment "${chain} default policy"
+              }
       '') (filterAttrs (_: c: (builtins.typeOf c != "string") && c.finalCounter) config.__chains))}
         ${config.__chainsStr}
       }

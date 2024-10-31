@@ -8,7 +8,9 @@
     (lib)
     flatten
     mkDefault
+    mkForce
     mkIf
+    mkOverride
     pipe
     unique
     ;
@@ -25,12 +27,12 @@ in {
   config = mkIf cfg.enable {
     networking = {
       firewall.enable = mkDefault true;
-      networkmanager.enable = lib.mkForce false;
+      networkmanager.enable = mkForce false;
       useNetworkd = true;
       useDHCP = false;
     };
     services = {
-      timesyncd.enable = lib.mkOverride 99 true;
+      timesyncd.enable = mkOverride 99 true;
       resolved.enable = true;
     };
     systemd = {
@@ -42,7 +44,6 @@ in {
           (map (i: ["-i" i]))
           flatten
         ];
-        # extraArgs = flatten (map (i: [ "-i" i ]) cfg.waitInterfaces);
       };
       network.networks = mkIf cfg.ethernetUseDhcp {
         "90-ethernet-default" = {

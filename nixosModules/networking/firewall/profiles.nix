@@ -3,13 +3,13 @@
   lib,
   ...
 }: let
-  inherit (lib) mkIf;
+  inherit (lib) mkDefault mkIf;
 
   cfg = config.networking.nftables.gen;
   fCfg = config.networking.firewall;
 in {
   config = mkIf cfg.enable {
-    networking.nftables.gen.tables = mkIf (cfg.profiles == "default") {
+    networking.nftables.gen.tables = mkIf (builtins.elem "default" cfg.profiles) {
       filter = {
         __type = "inet";
         all-input-handle.rules = {
@@ -17,20 +17,20 @@ in {
             comment = "nixos `allowedUDPPorts` handling";
             enable = fCfg.allowedUDPPorts != [];
             udpDport = fCfg.allowedUDPPorts;
-            counter = true;
+            counter = mkDefault true;
             verdict = "accept";
           };
           nixos-allowed-tcp = {
             comment = "nixos `allowedTCPPorts` handling";
             enable = fCfg.allowedTCPPorts != [];
             tcpDport = fCfg.allowedTCPPorts;
-            counter = true;
+            counter = mkDefault true;
             verdict = "accept";
           };
         };
         input = {
           __type.hook = "input";
-          __type.policy = "drop";
+          __type.policy = mkDefault "drop";
           defaults.counter = true;
           defaults.verdict = "accept";
           rules = {
@@ -46,11 +46,11 @@ in {
               verdict = "jump all-input-handle";
             };
           };
-          finalCounter = true;
+          finalCounter = mkDefault true;
         };
         forward = {
           __type.hook = "forward";
-          __type.policy = "drop";
+          __type.policy = mkDefault "drop";
           defaults.counter = true;
           defaults.verdict = "accept";
           rules = {
@@ -65,7 +65,7 @@ in {
               verdict = "jump all-input-handle";
             };
           };
-          finalCounter = true;
+          finalCounter = mkDefault true;
         };
       };
     };

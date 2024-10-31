@@ -157,6 +157,15 @@ in {
       '';
       type = str;
       default = name;
+      example = "icmp-default";
+    };
+    pre = mkOption {
+      description = ''
+        extra string snipet to add before auto-generated matchers
+      '';
+      type = str;
+      default = defaults.pre;
+      example = "meta protocol ip";
     };
     udpDport = mkOption {
       description = "Filter by `udp dport`";
@@ -299,15 +308,15 @@ in {
     __final =
       lib.pipe [
         (maybeList config "iif")
-        (maybeList config "oif")
         (maybeList config "iifname")
-        (maybeList config "oifname")
-        (maybeIpList config "daddr")
-        (maybeIpList config "saddr")
-        (maybePortList config "tcpDport")
-        (maybePortList config "udpDport")
         (maybePortList config "tcpSport")
         (maybePortList config "udpSport")
+        (maybeIpList config "saddr")
+        (maybeList config "oif")
+        (maybeList config "oifname")
+        (maybePortList config "tcpDport")
+        (maybePortList config "udpDport")
+        (maybeIpList config "daddr")
         config.main
         (optional config.log "log")
         (optional config.counter "counter")
@@ -321,7 +330,5 @@ in {
         (builtins.replaceStrings config.rewriteLists.match config.rewriteLists.replace)
         lib.mkDefault
       ];
-    # __final = lib.mkDefault (concatStringsSep " " (flatten [
-    # ]));
   };
 }
