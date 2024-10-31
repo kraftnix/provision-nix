@@ -15,8 +15,8 @@ no-section-label = false
 git-repository-url = "https://github.com/kraftnix/provision-nix"
 git-repository-icon = "fa-github"
 edit-url-template = "https://github.com/kraftnix/provision-nix/_edit/main/docs/{path}"
-# site-url = "/projects/provision-nix/"
-use-site-url-as-root = true
+site-url = "/projects/provision-nix/"
+# use-site-url-as-root = true
 # additional-js = [ "no-edit-options.js" ]
 # additional-css = [ "highlight-dark.css" ]
 
