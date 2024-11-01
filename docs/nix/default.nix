@@ -39,16 +39,31 @@
     packages.docs-site = pkgs.stdenvNoCC.mkDerivation {
       name = "docs-site";
       nativeBuildInputs = [
+        pkgs.ripgrep
         pkgs.mdbook-linkcheck
+        pkgs.mdbook-cmdrun
+        pkgs.nushell
         config.packages.mdbook-linkfix
+        config.packages.yapp
+        config.packages.simple-replace
         # config.packages.mdbook-theme
       ];
       src = config.packages.docs-site-options;
+      # HOMEPAGE_URL = "https://nixos.org";
+      HOMEPAGE_BODY = "Home";
       # MDBOOK_OUTPUT__HTML__SITE_URL = "/projects/provision-nix/";
       buildPhase = ''
         runHook preBuild
 
         cd docs
+
+        # hacky way to inject a link back to a homepage, styled in the same way as the Summary items
+        if [[ -n "$HOMEPAGE_URL" ]]; then
+          local search='<!--HACKY_HOMEPAGE_REPLACE-->'
+          local replace="<ol class=\"chapter\"><li class=\"chapter-item expanded\"><a href=\"$HOMEPAGE_URL\">$HOMEPAGE_BODY</a></li></ol>"
+          simple-replace $search "$replace" .
+        fi
+
         mdbook build --dest-dir $TMPDIR/out/docs
         cp -r $TMPDIR/out/docs/html $out
 
@@ -58,7 +73,10 @@
     };
     devshells.default.packages = [
       pkgs.caddy
+      pkgs.ripgrep
       pkgs.mdbook-linkcheck
+      pkgs.mdbook-cmdrun
+      config.packages.yapp
       config.packages.mdbook-linkfix
       # config.packages.mdbook-theme
     ];

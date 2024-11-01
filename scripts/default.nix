@@ -29,6 +29,7 @@ localFlake @ {flake-parts-lib, ...}: {
       mynft.nuModule = ../scripts/nu/mynft.nu;
       myarion.nuModule = ../scripts/nu/myarion.nu;
       sanu.nuModule = ../scripts/nu/sanu.nu;
+      simple-replace.file = ../scripts/nu/simple-replace.nu;
       symlink-farm.nuModule = ../scripts/nu/symlink-farm.nu;
       remote-test.file = ../scripts/nu/remote-test.nu;
       mynix-diff.nuModule = ../scripts/nu/mynix-diff.nu;

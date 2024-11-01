@@ -15,7 +15,6 @@ no-section-label = false
 git-repository-url = "https://github.com/kraftnix/provision-nix"
 git-repository-icon = "fa-github"
 edit-url-template = "https://github.com/kraftnix/provision-nix/_edit/main/docs/{path}"
-site-url = "/projects/provision-nix/"
 use-site-url-as-root = true
 additional-css = ["theme/pagetoc.css"]
 additional-js  = ["theme/pagetoc.js"]
@@ -34,6 +33,8 @@ heading-split-level = 2
 
 [output.linkcheck]
 follow-web-links = false # no Internet during the build
+
+[preprocessor.cmdrun]
 
 # [preprocessor.repo_url]
 # command = "echo 'https://github.com/kraftnix/provision-nix'"

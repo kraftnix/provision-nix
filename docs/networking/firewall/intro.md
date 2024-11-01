@@ -1,7 +1,5 @@
 # Firewall integration (nftables)
 
-<!-- toc -->
-
 A custom NixOS modules for generating [nftables](https://wiki.nftables.org) rules.
 
 The aim of these options is to allow fully declarative configuration of nftables rules

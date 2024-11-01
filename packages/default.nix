@@ -36,6 +36,7 @@ in {
         };
       });
       mdbook-theme = pkgs.callPackage (import ./mdbook-theme.nix) {};
+      yapp = pkgs.callPackage (import ./yapp.nix) {};
     };
     # packages.nushell-latest = pkgs.callPackage (import ./nushell.nix sources.nushell-latest "sha256-G22bfkdfAPyMslEm52x0LTb62xC05Ih9UOFP7pg3MEY=") {
     #   inherit additionalFeatures;

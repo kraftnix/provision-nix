@@ -3,6 +3,8 @@
 - [Introduction](./intro.md)
 - [Installation](./summary/installation.md)
 
+---
+
 # Submodules
 
 - [Core](./core/intro.md)
@@ -23,7 +25,11 @@
   - [MicroVM.nix](./virtualisation/microvm.md)
 - [Roles](./roles/intro.md)
 
+---
+
 # Flake Modules
+
+---
 
 # Options
 
