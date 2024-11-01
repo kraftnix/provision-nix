@@ -97,7 +97,9 @@ if (elements.length > 1) {
     forEach(elements, function (el) {
       var link = document.createElement("a");
       link.appendChild(document.createTextNode(el.text));
-      link.href = location.href + el.hash;
+      // link.href = location.href + el.hash;
+      // link.hash = el.hash;
+      link.href = el.hash;
       link.classList.add("pagetoc-" + el.parentElement.tagName);
       pagetoc.appendChild(link);
       link.onclick = function () {
