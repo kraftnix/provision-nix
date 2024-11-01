@@ -57,10 +57,12 @@
 
         cd docs
 
+        # Could also be solved if mdBooks supported custom handlebars templates
+        # Injecting an env var can probably be done by mdbook-cmdrum inside .md files
         # hacky way to inject a link back to a homepage, styled in the same way as the Summary items
         if [[ -n "$HOMEPAGE_URL" ]]; then
           local search='<!--HACKY_HOMEPAGE_REPLACE-->'
-          local replace="<ol class=\"chapter\"><li class=\"chapter-item expanded\"><a href=\"$HOMEPAGE_URL\">$HOMEPAGE_BODY</a></li></ol>"
+          local replace="<ol class=\"chapter\"><li class=\"part-title\"><a href=\"$HOMEPAGE_URL\">$HOMEPAGE_BODY</a></li></ol>"
           simple-replace $search "$replace" .
         fi
 
