@@ -38,7 +38,11 @@
     };
     packages.docs-site = pkgs.stdenvNoCC.mkDerivation {
       name = "docs-site";
-      nativeBuildInputs = [config.packages.mdbook-linkfix pkgs.mdbook-linkcheck];
+      nativeBuildInputs = [
+        pkgs.mdbook-linkcheck
+        config.packages.mdbook-linkfix
+        # config.packages.mdbook-theme
+      ];
       src = config.packages.docs-site-options;
       # MDBOOK_OUTPUT__HTML__SITE_URL = "/projects/provision-nix/";
       buildPhase = ''
@@ -53,9 +57,10 @@
       dontInstall = true;
     };
     devshells.default.packages = [
-      pkgs.mdbook
-      pkgs.mdbook-linkcheck
       pkgs.caddy
+      pkgs.mdbook-linkcheck
+      config.packages.mdbook-linkfix
+      # config.packages.mdbook-theme
     ];
     devshells.default.commands = [
       {
