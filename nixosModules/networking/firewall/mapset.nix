@@ -207,9 +207,9 @@ in {
           ${optionalString (config.flags != []) "flags ${(concatStringsSep ", " config.flags)}"}
           ${config.extraConfig}
           ${optionalString (config.elements != []) ''
-              elements = {
-                    ${concatStringsSep ",\n      " (map (e: e.__final) config.elements)}
-                  }
+        elements = {
+              ${concatStringsSep ",\n      " (map (e: e.__final) config.elements)}
+            }
       ''}
         }
     '';

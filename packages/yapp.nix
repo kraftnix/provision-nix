@@ -5,7 +5,6 @@
   stdenv,
   darwin,
 }:
-
 rustPlatform.buildRustPackage rec {
   pname = "yapp";
   version = "1.0.2";
@@ -28,7 +27,7 @@ rustPlatform.buildRustPackage rec {
     description = "Yet another preprocessor for mdBook";
     homepage = "https://github.com/EngosSoftware/yapp";
     license = lib.licenses.mit;
-    maintainers = with lib.maintainers; [ ];
+    maintainers = with lib.maintainers; [];
     mainProgram = "yapp";
   };
 }

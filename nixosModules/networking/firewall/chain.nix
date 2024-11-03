@@ -190,8 +190,7 @@ in {
             ${concatStringsSep "\n    " (map (x: x.__final) config.__rulesOrdered)}
             ${optionalString config.finalCounter "counter name chain_final_${name} # Final counter for ${name}"}
             ${optionalString (config.finalRule != "") "${config.finalRule}"}
-      ''
-      ;
+      '';
     };
   };
 }

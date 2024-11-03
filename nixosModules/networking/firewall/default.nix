@@ -92,6 +92,6 @@ in {
 
     networking.nftables.enable = mkIf cfg.enable true;
     networking.nftables.ruleset = mkIf cfg.enable cfg.__rendered;
-    networking.nftables.gen.rules = (import ./default-rules.nix);
+    networking.nftables.gen.rules = import ./default-rules.nix;
   };
 }
