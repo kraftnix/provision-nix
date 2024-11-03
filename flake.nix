@@ -1,6 +1,8 @@
 {
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
   inputs.nixpkgs-stable.url = "github:nixos/nixpkgs/release-24.05";
+  # FIX(zfs): incompatible kernels
+  inputs.nixpkgs-zfs.url = "github:nixos/nixpkgs/079633d28cd3001b817209eb9cea5bfcea12b478";
   inputs.nixlib.url = "github:nix-community/nixpkgs.lib";
 
   inputs.extra-lib.url = "github:kraftnix/extra-lib";

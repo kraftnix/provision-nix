@@ -1,6 +1,7 @@
 {
   lib,
   profiles,
+  pkgs,
   ...
 }: let
   genMapset = verdict: {
@@ -8,8 +9,16 @@
     lhsType = "iifname";
     rhsType = "oifname";
     elements = [
-      { l = "dmz"; r = "vpn-egress"; v = verdict; }
-      { l = "libvirtbr0"; r = "enp1s0"; v = verdict; }
+      {
+        l = "dmz";
+        r = "vpn-egress";
+        v = verdict;
+      }
+      {
+        l = "libvirtbr0";
+        r = "enp1s0";
+        v = verdict;
+      }
     ];
   };
 in {
@@ -38,8 +47,14 @@ in {
       verdict = "verdict";
       lhsType = "udp dport";
       elements = [
-        { l = toString 51820; v = "accept"; }
-        { l = toString 51821; v = "jump log-and-accept"; }
+        {
+          l = toString 51820;
+          v = "accept";
+        }
+        {
+          l = toString 51821;
+          v = "jump log-and-accept";
+        }
       ];
     };
     tables.filter.log-and-accept.rules.default = {
@@ -54,8 +69,8 @@ in {
 
     ## basic Set example
     tables.filter.mapsets.https_inbound = {
-      lhsType = "daddr";
-      elements = map (iface: {l = iface;}) ["10.11.1.1" "10.11.22.33"];
+      lhsType = "ip daddr";
+      elements = map (ip: {l = ip;}) ["10.11.1.1" "10.11.22.33"];
     };
     tables.filter.input.rules.testing = {
       log = true;

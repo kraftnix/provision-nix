@@ -85,7 +85,7 @@ in {
     };
   };
 
-  perSystem = { config, ... }: {
+  perSystem = {config, ...}: {
     channels.nixpkgs.overlays = self.hosts.defaults.overlays;
     channels.stable.input = inputs.nixpkgs-stable;
     channels.stable.overlays = [
@@ -99,6 +99,7 @@ in {
           ;
       })
     ];
-    channels.another-stable.inputName = "nixpkgs-stable";
+    # FIX(zfs): 6_10 removed from stable and unstable
+    channels.nixpkgs-zfs.inputName = "nixpkgs-zfs";
   };
 }

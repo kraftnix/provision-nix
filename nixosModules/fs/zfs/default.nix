@@ -19,7 +19,8 @@ in {
     kernel = {
       enable = opts.enable "sets the kernel to the latest compatible with ZFS";
       latest = mkOption {
-        default = pkgs.linuxKernel.packages.linux_6_10;
+        # FIX(zfs): move back to regular channel when 6_11 supported by ZFS, 6_10 deprecated from unstable
+        default = self.channels.${pkgs.system}.nixpkgs-zfs.pkgs.linuxKernel.packages.linux_6_10;
         description = "latest linux kernel version that works with zfs";
       };
     };
