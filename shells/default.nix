@@ -8,6 +8,8 @@ args @ {
 in {
   imports = [inputs.devshell.flakeModule inputs.git-hooks-nix.flakeModule];
 
+  flake.nixd.options.nixos = self.nixosConfigurations.testAllProfiles.options;
+
   flake.devshellModules.provision = importApply ./provision.nix {inherit self inputs;};
   flake.devshellModules.na-install = importApply ./na-install.nix {inherit self inputs;};
 
