@@ -68,7 +68,8 @@
       inherit pkgs;
       file = config.packages.options;
       outPath = self.outPath;
-      siteRootPath = "https://github.com/kraftnix/provision-nix/src/branch/master/";
+      siteRootPath = "https://github.com/kraftnix/provision-nix/tree/master/";
+      # siteRootPath = "https://<gitea-url>/kraftnix/provision-nix/src/branch/master/";
     };
   };
 }
