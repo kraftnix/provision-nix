@@ -34,7 +34,7 @@ in {
           iputils # CLI: ping, traceroute etc
           macchanger # CLI: change + view MAC addresses
           mtr # CLI: traceroute/ping combo
-          mubeng # CLI: proxt rotator tool
+          mubeng # CLI: proxy rotator tool
           netproc # TUI: monitor traffic per process
           rustscan # CLI: better nmap
           speedtest-rs # CLI: quick speedtester
@@ -42,6 +42,7 @@ in {
           tcpdump # CLI: dump TCP traffic
           tshark # TUI: terminal wireshark
           wireguard-tools # CLI: wireguard standard tools
+          wuzz # TUI: inteactive http curl
         ];
       all.packages = with pkgs;
         mkDefault [
