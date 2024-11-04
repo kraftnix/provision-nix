@@ -158,6 +158,7 @@
 
   provision.networking = {
     wifi.enable = true;
+    tools.basic.enable = true;
     networkd.enable = true;
     # disable automatic DHCPv4 on all ethernet devices
     networkd.ethernetUseDhcp = false;

@@ -51,7 +51,7 @@ in {
 
     environment.systemPackages =
       []
-      ++ (optionals cfg.basic.enable cfg.basic.package)
-      ++ (optionals cfg.all.enable cfg.all.package);
+      ++ (optionals cfg.basic.enable cfg.basic.packages)
+      ++ (optionals cfg.all.enable cfg.all.packages);
   };
 }
