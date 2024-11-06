@@ -16,6 +16,7 @@ localFlake @ {
     home = ./flakeModules/home-module.nix;
     nixosModulesExtended = ./flakeModules/nixos-module-wrapper.nix;
     scripts = importApply ./scripts/flakeModule.nix localFlake;
+    docs = importApply ./flakeModules/docs localFlake;
   };
   provision = import ./lib {
     inherit lib;
@@ -38,6 +39,29 @@ in {
       ["virt" "microvm" "vm"]
       # [ "provision" "scripts" ]
     ];
+
+    docs = {
+      enable = true;
+      mdbook.src = ./.;
+      defaults = {
+        hostOptions = self.nixosConfigurations.basic.options;
+        substitution.outPath = self.outPath;
+        substitution.gitRepoFilePath = "https://github.com/kraftnix/provision-nix/tree/master/";
+      };
+      homepage = {
+        url = "http://localhost:1111";
+        body = "Homepage";
+        siteBase = "/";
+      };
+      options.nixos-all.enable = true;
+      options.nixos-all.filter = option:
+        builtins.elemAt option.loc 0
+        == "provision"
+        # NOTE: tofix
+        && option.loc != ["provision" "scripts" "scripts" "<name>" "file"]
+        && option.loc != ["provision" "nix" "flakes" "inputs"]
+        && option.loc != ["provision" "fs" "zfs" "kernel" "latest"];
+    };
 
     profiles = lib.recursiveUpdate (self.lib.nix.rakeLeaves ./profiles) {
       users = {

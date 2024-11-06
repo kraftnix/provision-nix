@@ -33,4 +33,4 @@
 
 # Options
 
-- [NixOS Options Reference](./options/nixos-options.md)
+- [NixOS Options Reference](./options/nixos-all-options.md)

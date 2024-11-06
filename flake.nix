@@ -94,7 +94,6 @@
       debug = true;
       imports = [
         ./disko
-        ./docs/nix
         ./hosts
         ./install
         ./packages
