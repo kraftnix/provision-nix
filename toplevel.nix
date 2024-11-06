@@ -42,25 +42,27 @@ in {
 
     docs = {
       enable = true;
-      mdbook.src = ./.;
-      defaults = {
-        hostOptions = self.nixosConfigurations.basic.options;
-        substitution.outPath = self.outPath;
-        substitution.gitRepoFilePath = "https://github.com/kraftnix/provision-nix/tree/master/";
+      sites.local-docs = {
+        mdbook.src = ./.;
+        defaults = {
+          hostOptions = self.nixosConfigurations.basic.options;
+          substitution.outPath = self.outPath;
+          substitution.gitRepoFilePath = "https://github.com/kraftnix/provision-nix/tree/master/";
+        };
+        homepage = {
+          url = "http://localhost:1111";
+          body = "Homepage";
+          siteBase = "/";
+        };
+        docgen.nixos-all.enable = true;
+        docgen.nixos-all.filter = option:
+          builtins.elemAt option.loc 0
+          == "provision"
+          # NOTE: tofix
+          && option.loc != ["provision" "scripts" "scripts" "<name>" "file"]
+          && option.loc != ["provision" "nix" "flakes" "inputs"]
+          && option.loc != ["provision" "fs" "zfs" "kernel" "latest"];
       };
-      homepage = {
-        url = "http://localhost:1111";
-        body = "Homepage";
-        siteBase = "/";
-      };
-      options.nixos-all.enable = true;
-      options.nixos-all.filter = option:
-        builtins.elemAt option.loc 0
-        == "provision"
-        # NOTE: tofix
-        && option.loc != ["provision" "scripts" "scripts" "<name>" "file"]
-        && option.loc != ["provision" "nix" "flakes" "inputs"]
-        && option.loc != ["provision" "fs" "zfs" "kernel" "latest"];
     };
 
     profiles = lib.recursiveUpdate (self.lib.nix.rakeLeaves ./profiles) {
