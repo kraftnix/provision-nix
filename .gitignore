@@ -1,6 +1,7 @@
 .std
 .direnv
-result*
+result
+result-*
 .pre-commit-config.yaml
 docs/book
 docs/options
