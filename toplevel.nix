@@ -54,14 +54,27 @@ in {
           body = "Homepage";
           siteBase = "/";
         };
-        docgen.nixos-all.enable = true;
         docgen.nixos-all.filter = option:
+          (
+            builtins.elemAt option.loc 0
+            == "provision"
+            # NOTE: tofix
+            && option.loc != ["provision" "scripts" "scripts" "<name>" "file"]
+            && option.loc != ["provision" "nix" "flakes" "inputs"]
+            && option.loc != ["provision" "fs" "zfs" "kernel" "latest"]
+          )
+          || (
+            builtins.elemAt option.loc 0
+            == "networking"
+            && builtins.elemAt option.loc 1 == "nftables"
+            && builtins.elemAt option.loc 2 == "gen"
+          );
+        docgen.nixos-nftables.filter = option: (
           builtins.elemAt option.loc 0
-          == "provision"
-          # NOTE: tofix
-          && option.loc != ["provision" "scripts" "scripts" "<name>" "file"]
-          && option.loc != ["provision" "nix" "flakes" "inputs"]
-          && option.loc != ["provision" "fs" "zfs" "kernel" "latest"];
+          == "networking"
+          && builtins.elemAt option.loc 1 == "nftables"
+          && builtins.elemAt option.loc 2 == "gen"
+        );
       };
     };
 

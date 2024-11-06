@@ -14,6 +14,7 @@
   - [Firewall (nftables)](./networking/firewall/intro.md)
     - [Rules](./networking/firewall/rules.md)
     - [Mapsets](./networking/firewall/mapsets.md)
+    - [Options Reference](./options/nixos-nftables-options.md)
     <!-- - [Examples](./networking/firewall/examples/intro.md) -->
     <!--   - [Desktop](./networking/firewall/examples/desktop.md) -->
     <!--   - [Home Firewall](./networking/firewall/examples/home-firewall.md) -->
@@ -33,4 +34,4 @@
 
 # Options
 
-- [NixOS Options Reference](./options/nixos-all-options.md)
+- [Full NixOS Options Reference](./options/nixos-all-options.md)

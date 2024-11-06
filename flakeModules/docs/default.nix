@@ -54,19 +54,16 @@ in {
           (mapAttrsToList (
             _: site:
               mapAttrsToList (name: opt: {
-                "options-${site.name}-${name}-base" = let
-                  optionsDoc = pkgs.nixosOptionsDoc {
+                "options-${site.name}-${name}-base" =
+                  (pkgs.nixosOptionsDoc {
                     options = removeAttrs opt.hostOptions ["_module"];
                     transformOptions = option:
                       option
                       // {
                         visible = option.visible && (opt.filter option);
                       };
-                  };
-                in
-                  pkgs.runCommand "options-${name}-base.md" {} ''
-                    cat ${optionsDoc.optionsCommonMark} >> $out
-                  '';
+                  })
+                  .optionsCommonMark;
               }) (filterEnable site.docgen)
           ))
           flatten
