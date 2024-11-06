@@ -17,6 +17,7 @@ localFlake @ {
     nixosModulesExtended = ./flakeModules/nixos-module-wrapper.nix;
     scripts = importApply ./scripts/flakeModule.nix localFlake;
     docs = importApply ./flakeModules/docs localFlake;
+    site = importApply ./site.nix localFlake;
   };
   provision = import ./lib {
     inherit lib;
@@ -75,6 +76,7 @@ in {
     lib = final: prev: {
       lib = prev.lib.extend (_: _: {
         inherit provision;
+        # siteBase = "/projects/provision-nix/";
       });
     };
     lnav = final: prev: {
@@ -83,43 +85,6 @@ in {
         nativeBuildInputs = self.nativeBuildInputs ++ [prev.tzdata];
         buildInputs = self.buildInputs ++ [prev.tzdata];
       });
-    };
-  };
-  flake.docs = {
-    enable = true;
-    sites.local-docs = {
-      mdbook.src = ./.;
-      defaults = {
-        hostOptions = localFlake.self.nixosConfigurations.basic.options;
-        substitution.outPath = localFlake.self.outPath;
-        substitution.gitRepoFilePath = "https://github.com/kraftnix/provision-nix/tree/master/";
-      };
-      homepage = {
-        url = "http://localhost:1111";
-        body = "Homepage";
-        # siteBase = "/projects/provision-nix/";
-      };
-      docgen.nixos-all.filter = option:
-        (
-          builtins.elemAt option.loc 0
-          == "provision"
-          # NOTE: tofix
-          && option.loc != ["provision" "scripts" "scripts" "<name>" "file"]
-          && option.loc != ["provision" "nix" "flakes" "inputs"]
-          && option.loc != ["provision" "fs" "zfs" "kernel" "latest"]
-        )
-        || (
-          builtins.elemAt option.loc 0
-          == "networking"
-          && builtins.elemAt option.loc 1 == "nftables"
-          && builtins.elemAt option.loc 2 == "gen"
-        );
-      docgen.nixos-nftables.filter = option: (
-        builtins.elemAt option.loc 0
-        == "networking"
-        && builtins.elemAt option.loc 1 == "nftables"
-        && builtins.elemAt option.loc 2 == "gen"
-      );
     };
   };
 

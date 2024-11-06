@@ -8,7 +8,7 @@
       pkgs.caddy
       pkgs.ripgrep
       pkgs.mdbook-linkcheck
-      pkgs.mdbook-cmdrun
+      # pkgs.mdbook-cmdrun
       config.packages.yapp
       config.packages.mdbook-linkfix
       # config.packages.mdbook-theme
@@ -17,7 +17,7 @@
       {
         help = "run caddy file-server for docs site (dev)";
         name = "build-and-serve-docs";
-        command = "caddy file-server --root `nix build $PRJ_ROOT#docs-mdbook-local-docs --no-link --print-out-paths` --listen :8937";
+        command = "caddy file-server --root `nix build $PRJ_ROOT#docs-mdbook-provision-nix-docs-local --no-link --print-out-paths` --listen :8937";
       }
       {
         help = "run caddy file-server for docs site (dev)";

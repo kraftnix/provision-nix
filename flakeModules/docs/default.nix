@@ -42,14 +42,14 @@ in {
     ...
   }: {
     packages = lib.mkMerge (flatten [
-      # populate `options-{name}-base`
+      # populate `docs-options-{name}-base`
       # initial options doc generation with filtering of options
       (lib.pipe cfg.sites [
         filterEnable
         (mapAttrsToList (
           _: site:
             mapAttrsToList (name: opt: {
-              "options-${site.name}-${name}-base" =
+              "docs-options-${site.name}-${name}-base" =
                 (pkgs.nixosOptionsDoc {
                   options = removeAttrs opt.hostOptions ["_module"];
                   transformOptions = option:
@@ -64,7 +64,7 @@ in {
         flatten
       ])
 
-      # populate `options-{name}-filtered`
+      # populate `docs-options-{name}-filtered`
       # substitute `/nix/store/XXXX` with `/`
       # substitute source url with specified `gitRepoFilePath`
       (lib.pipe cfg.sites [
@@ -72,7 +72,7 @@ in {
         (mapAttrsToList (
           _: site:
             mapAttrsToList (name: opt: {
-              "options-${site.name}-${name}-filtered" = let
+              "docs-options-${site.name}-${name}-filtered" = let
                 ## Very Hacky sed replacements for internal modules
                 # escape args for usage with `sed`
                 escapedNixStorePath = replaceStrings ["/"] ["\\/"] opt.substitution.outPath;
@@ -85,13 +85,13 @@ in {
                 pkgs.stdenvNoCC.mkDerivation {
                   name = "docs-mdbook-${site.name}";
                   buildInputs = [pkgs.gnused];
-                  src = config.packages."options-${site.name}-${name}-base";
+                  src = config.packages."docs-options-${site.name}-${name}-base";
                   unpackPhase = ''
                     cp $src .
                   '';
                   buildPhase = ''
                     runHook preBuild
-                    sed '${removeNixStorePath}' ${config.packages."options-${site.name}-${name}-base"} > path-filtered.md
+                    sed '${removeNixStorePath}' ${config.packages."docs-options-${site.name}-${name}-base"} > path-filtered.md
                     sed '${substituteSiteRoot}' path-filtered.md > link-filtered.md
                     cp link-filtered.md $out
                     runHook postBuild
@@ -136,7 +136,7 @@ in {
             cp ./$DOCS_PATH/intro.md $out/$DOCS_PATH
             mkdir -p "$out/$DOCS_PATH/options"
             ${concatStringsSep "\n" (mapAttrsToList (
-              name: opt: ''cp ${config.packages."options-${site.name}-${name}-filtered"} "$out/$DOCS_PATH/options/${opt.out.name}"''
+              name: opt: ''cp ${config.packages."docs-options-${site.name}-${name}-filtered"} "$out/$DOCS_PATH/options/${opt.out.name}"''
             ) (filterEnable site.docgen))}
             runHook postBuild
           '';
