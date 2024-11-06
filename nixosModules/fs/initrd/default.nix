@@ -49,9 +49,20 @@ in {
       '';
     };
     netModules =
-      opts.stringList [] "extra network modules to add to `boot.initrd.availableKernelModules`"
+      opts.stringList [] ''
+        extra network modules to add to `boot.initrd.availableKernelModules`
+
+        for network unlock you will likely need to add the kernel modules for
+        your network cards you want to use in stage-1
+
+        you can find out the kernel driver in use with `ethtool`:
+        ```sh
+        DRIVER=enp1s0
+        ethtool -i $DRIVER | grep driver
+        ```
+      ''
       // {
-        example = ["e1000e" "i40e" "igc" "8021q"];
+        example = ["e1000e" "i40e" "igc" "8021q" "r8169"];
       };
 
     legacy = {

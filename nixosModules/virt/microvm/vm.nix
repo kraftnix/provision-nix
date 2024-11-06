@@ -47,12 +47,19 @@
 in {
   options.provision.virt.microvm.vm = {
     enable = opts.enable ''
-      Enables microvm vm extensions
+      Enables microvm vm extensions.
+
+      You must still enable `microvm.guest.enable`, cannot set in this module due to infinite recursion.
     '';
     machineid = opts.stringNull "if set, sets a machine id in the microvm (useful for persistent logs)";
-    vcpu = opts.intNull "number of vCPUs";
-    mem = opts.intNull "amount of RAM for server in MB";
-    socket = opts.string "control.socket" "name control socket of VM";
+    vcpu = opts.intNull "number of vCPUs (`microvm.vcpu`)";
+    mem = opts.intNull "amount of RAM for server in MB (`microvm.mem`)";
+    socket = opts.string "control.socket" "name control socket of VM (`microvm.socket`)";
+    hypervisor = lib.mkOption {
+      default = "cloud-hypervisor";
+      description = "sets `microvm.hypervisor`";
+      type = types.enum ["cloud-hypervisor" "qemu" "firecracker" "crosvm"];
+    };
 
     network = {
       base = {
@@ -100,7 +107,7 @@ in {
             proto = lib.mkOption {
               default = "virtiofs";
               description = "mount / share protocol";
-              type = types.enum ["virtiofs" "9p "];
+              type = types.enum ["virtiofs" "9p"];
             };
           };
         };
@@ -158,9 +165,11 @@ in {
         };
       };
 
-      environment.etc."machine-id" = mkIf (cfg.machineid != null) {
-        mode = "0644";
-        text = cfg.machineid;
+      environment.etc = mkIf (cfg.machineid != null) {
+        machine-id = {
+          mode = "0644";
+          text = cfg.machineid;
+        };
       };
     })
     # (mkIf cfg.enable {
@@ -168,6 +177,7 @@ in {
     (mkIf ((hasAttr "microvm" options) && (hasAttr "guest" options.microvm) && (cfg.enable)) {
       microvm = {
         # guest.enable = true; # causes infinite recursion but should be true
+        hypervisor = cfg.hypervisor;
         writableStoreOverlay = mkIf cfg.store.readwrite.enable "/nix/.rw-store";
         vcpu = mkIf (cfg.vcpu != null) cfg.vcpu;
         mem = mkIf (cfg.mem != null) cfg.mem;

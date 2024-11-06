@@ -29,17 +29,9 @@ in
     systemd.network.networks."15-${bridgeName}" = {
       matchConfig.Name = bridgeName;
       networkConfig = {
-        # MulticastDNS = "yes";
         DHCP = "ipv4";
         DHCPServer = "yes";
         Address = "${subnet}.2/24";
-        # Gateway = "${subnet}.1";
-        # IPv6SendRA = "yes";
-        # LinkLocalAddressing = mkDefault "ipv6";
-        #DHCPServer = yesNo dhcp;
-        #LLDP = "yes";
-        #EmitLLDP = "customer-bridge";
-        # IPv6AcceptRA = "no";
       };
       dhcpServerConfig = {
         EmitDNS = true;

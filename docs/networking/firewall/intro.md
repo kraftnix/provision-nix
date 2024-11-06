@@ -71,7 +71,7 @@ networking.nftabes.gen.tables.filter = {
 
 These two snippets put together; generates a config looking something like:
 
-```nft
+```bash
 table inet filter {
   counter chain_final_forward {
     comment "forward default policy"
@@ -87,7 +87,7 @@ table inet filter {
     ct state invalid counter drop comment "drop invalid packets"
     ip6 daddr fe80::/64 udp dport dhcpv6-client counter accept comment "accept all DHCPv6 packets received at a link-local address"
     counter jump all-input-handle comment "all-input-handle"
-    tcp dport 22  log counter accept comment "testing"
+    tcp dport 22 log counter accept comment "testing"
   }
 
   chain forward {

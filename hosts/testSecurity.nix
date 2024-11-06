@@ -28,6 +28,7 @@
     };
     fs = {
       boot.enable = true;
+      boot.systemd.initrd.enable = true;
       initrd.enable = true;
       initrd.ssh.usersImportKeyFiles = ["test-operator"];
       btrfs.enable = true; # enable extra tools etc.

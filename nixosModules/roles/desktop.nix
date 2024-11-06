@@ -13,12 +13,12 @@ in {
 
       Sets up:
         - base shell + env
-        -
         - systemd-networkd networking
         - boot integrated, systemd-boot by default but can be changed
         - initrd + SSH encrypted root unlock
     '';
     nixTrustedUsers = opts.stringList [] "trusted nix users (needed for deploy user at least)";
+    initrdUnlockUsers = opts.stringList [] "list of users to import SSH keyFiles from";
   };
 
   config = mkIf cfg.desktop.enable {

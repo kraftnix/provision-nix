@@ -3,8 +3,8 @@
   diskName ? "root",
   bootEnd ? "350M",
   luksEnd ? "100%",
-  iter-time ? "3",
-  key-size ? "512",
+  iter-time ? 3000, # in ms
+  key-size ? 512,
   cipher ? "aes-xts-plain64",
   ...
 }: let
@@ -23,10 +23,10 @@
     # settings.keyFile = "/tmp/root-luks.key";
     settings.allowDiscards = true;
     extraFormatArgs = [
-      "--iter-time ${iter-time}"
+      "--iter-time ${toString iter-time}"
       "--hash sha256"
       "--cipher ${cipher}"
-      "--key-size ${key-size}"
+      "--key-size ${toString key-size}"
     ];
     # required using na-install script during nixos-anywhere installation
     # when using luks

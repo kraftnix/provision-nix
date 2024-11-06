@@ -116,7 +116,7 @@ tables.filter = {
 
 This generates the following config in nftables.
 
-```nftables
+```bash
 table inet filter {
   map egress_allow_map {
     type ifname . ifname : verdict

@@ -19,6 +19,7 @@ in {
     systemd = {
       enable = opts.enable' (!cfg.grub.enable) "enable systemd-boot as bootloader (boot.loader.systemd-boot)";
       initrd.enable = opts.enable "enable systemd as initrd (boot.initrd.systemd)";
+      initrd.emergencyAccess = opts.enable "enable emergency access in initrd, useful for debugging";
     };
   };
 
@@ -46,6 +47,7 @@ in {
     };
     boot.initrd.systemd = mkIf cfg.systemd.initrd.enable {
       enable = true;
+      inherit (cfg.systemd.initrd) emergencyAccess;
     };
   };
 }

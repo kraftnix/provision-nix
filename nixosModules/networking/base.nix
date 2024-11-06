@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  inherit (lib) mkIf mapAttrsToList;
+  inherit (lib) mkIf mkOption types;
   opts = self.lib.options;
   cfg = config.provision.networking;
 in {
@@ -22,9 +22,15 @@ in {
         enable = opts.enable "enable iptables";
       };
     };
+    # services = mkOption {
+    #   default = {};
+    #   type = with types; attrsOf int;
+    #   description = "maps to `networking.services";
+    # };
   };
 
   config = lib.mkMerge [
+    # {networking = {inherit (cfg) services;};}
     (mkIf cfg.wifi.enable {
       networking = {
         wireless.iwd.enable = true;

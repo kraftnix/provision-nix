@@ -20,6 +20,7 @@ in {
     '';
     bigMachine = opts.enable ''
       When enabled, increases some base system limits.
+      Can be required when running many containers or VMs.
     '';
     initrdUnlockUsers = opts.stringList [] "users to add SSH keys into initrd ssh network root disk unlock";
     initrdNetModules = opts.stringList [] "extra network modules to add to `boot.initrd.availableKernelModules`";

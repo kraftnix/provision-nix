@@ -126,7 +126,8 @@
       # grub.enable = true;
       systemd = {
         enable = true;
-        initrd.enable = false;
+        initrd.enable = true;
+        initrd.emergencyAccess = true;
       };
     };
     initrd = {

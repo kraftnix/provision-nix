@@ -5,7 +5,7 @@
   passwordFile ? "/tmp/secret.key",
   # LUKS extra format arguments
   extraFormatArgs ? [
-    "--iter-time 10"
+    "--iter-time 10000"
     "--hash sha512"
     "--cipher aes-xts-plain64"
     "--key-size 512"

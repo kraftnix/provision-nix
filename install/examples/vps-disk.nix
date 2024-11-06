@@ -18,7 +18,7 @@
     # settings.keyFile = "/tmp/root-luks.key";
     settings.allowDiscards = true;
     extraFormatArgs = [
-      "--iter-time 3"
+      "--iter-time 3000"
       "--hash sha256"
       "--cipher aes-xts-plain64"
       "--key-size 512"
