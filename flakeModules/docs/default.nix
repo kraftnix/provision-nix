@@ -5,15 +5,11 @@ localFlake: {self, ...}: let
     filterAttrs
     flatten
     mapAttrsToList
-    mkEnableOption
-    mkIf
-    mkOption
     replaceStrings
-    types
     ;
   cfg = self.docs;
 in {
-  imports = [./options.nix];
+  imports = [./options.nix ./shell.nix];
 
   config = {
     perSystem = {
@@ -21,10 +17,10 @@ in {
       pkgs,
       lib,
       ...
-    }: let
-    in {
+    }: {
       packages = lib.mkMerge (flatten [
         # populate `options-{name}-base`
+        # initial options doc generation with filtering of options
         (lib.pipe cfg.options [
           (mapAttrsToList (name: opt: {
             "options-${name}-base" = let
@@ -45,6 +41,8 @@ in {
         ])
 
         # populate `options-{name}-filtered`
+        # substitute `/nix/store/XXXX` with `/`
+        # substitute source url with specified `gitRepoFilePath`
         (lib.pipe cfg.options [
           (mapAttrsToList (name: opt: {
             "options-${name}-filtered" = let
@@ -67,6 +65,9 @@ in {
         ])
 
         # populate `docs-mdbook-{name}-preprocessed`
+        # pre mdbook generation
+        #  - put generated options docs in `{mdbook.path}/options`
+        #  - replace `intro.md` with toplevel `README.md` and cat `intro-continued.md` to it
         (let
           site.name = "site";
         in {
@@ -107,6 +108,9 @@ in {
         })
 
         # populate `docs-mdbook-{name}`
+        # mdbook build site
+        #  - use hacky homepage link injection
+        #  - apply overrides for correct self linking
         (let
           site.name = "site";
         in {
