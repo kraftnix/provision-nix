@@ -17,6 +17,8 @@ Designed for desktop use, sets up:
   - boot integrated, systemd-boot by default but can be changed
   - initrd + SSH encrypted root unlock
 
+Module Options Reference for [`provision.roles.desktop`](../options/nixos-all-options.md#provisionrolesdesktopenable)
+
 Example Usage:
 ```nix
 provision.roles.desktop = {
@@ -41,6 +43,8 @@ Designed for server use, sets up:
  - systemd-networkd networking
  - boot integrated, systemd-boot by default but can be changed
  - initrd + SSH encrypted root unlock
+
+Module Options Reference for [`provision.roles.edge`](../options/nixos-all-options.md#provisionrolesedgeenable)
 
 Example Usage:
 ```nix

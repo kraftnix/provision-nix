@@ -25,7 +25,6 @@
   - [MicroVM.nix](./virtualisation/microvm.md)
 - [Roles](./roles/intro.md)
 - [Full NixOS Options Reference](./options/nixos-all-options.md)
-- [README](../disko/README.md)
 
 ---
 

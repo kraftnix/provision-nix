@@ -198,6 +198,7 @@ in {
           src = config.packages."docs-mdbook-${site.name}-preprocessed";
           HOMEPAGE_URL = site.homepage.url;
           HOMEPAGE_BODY = site.homepage.body;
+          DOCSITE_BASE = "${site.homepage.url}${site.homepage.siteBase}";
           MDBOOK_OUTPUT__HTML__SITE_URL = site.homepage.siteBase;
           DOCS_PATH = toString site.mdbook.path;
           buildPhase = ''
@@ -213,6 +214,8 @@ in {
               local replace="<ol class=\"chapter\"><li class=\"part-title\"><a href=\"$HOMEPAGE_URL\">$HOMEPAGE_BODY</a></li></ol>"
               simple-replace $search "$replace" .
             fi
+
+            simple-replace '__DOCSITE_BASE__' "$DOCSITE_BASE" .
 
             mdbook build --dest-dir "$TMPDIR/out/$DOCS_PATH"
             cp -r "$TMPDIR/out/$DOCS_PATH/html" $out

@@ -8,7 +8,7 @@ localFlake: let
       substitution.gitRepoFilePath = "https://github.com/kraftnix/provision-nix/tree/master/";
     };
     homepage = {
-      url = "http://localhost:1111";
+      url = "http://localhost:8937";
       body = "Homepage";
     };
     docgen.flake-all = {

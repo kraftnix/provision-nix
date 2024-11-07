@@ -1,10 +1,12 @@
+# Disko Integration
+
 [Disko](https://github.com/nix-community/disko) provides a declarative way to partition
 and format disks with nix.
 
 This module provides some pre-tested disko examples, which can be imported and re-used
 across hosts.
 
-The disko profiles only define root disk setups:
+Most of the disko profiles only define root disk setups.
 
 ## Usage
 

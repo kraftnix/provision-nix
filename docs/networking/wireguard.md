@@ -9,3 +9,5 @@ architectures, currently supported:
 > Currently there are two wireguard integrations in this repo, I am in
 > the process of merging these together. The current prefered integration
 > is `provision.networking.wireguard.p2p`
+
+Module Options Reference for [`provision.networking.wireguard.p2p`](../options/nixos-all-options.md#provisionnetworkingwireguardp2penable)

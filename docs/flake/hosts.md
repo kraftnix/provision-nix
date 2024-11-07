@@ -5,6 +5,8 @@ A flake-parts module that generates `nixosConfigurations` with defaults:
   - define default `modules`, `overlays`, `specialArgs` for hosts
   - define extra options for colmena, deploy-rs integration
 
+Module Options Reference for [`flake.hosts`](../options/flake-all-options.md#flakehosts)
+
 ## Auto Import
 
 Host configurations are imported from `hosts.hostsDir`.

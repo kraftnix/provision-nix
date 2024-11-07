@@ -21,6 +21,8 @@ Shared rules can be defined at `rules.<myrule>`, and then used by:
   - naming your rule in `tables.<table>.<chain>.rules.<myrule>` the same as a shared rule
   - set the shared rule used in `tables.<table>.<chain>.rules.<custom-rule>.rule = "myrule"`
 
+Module Options Reference for [`networking.nftables.gen`options/nixos-nftables-options)
+
 ### Introspection
 
 You can view the final configuration and snippets generated in the repl:

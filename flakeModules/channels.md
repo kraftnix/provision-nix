@@ -5,6 +5,8 @@ A flake-parts perSystem module that generates instances of `nixpkgs` from flake 
   - `overlays` can be appled per channel
   - an overlay is provided at `overlays.channels` which adds each `channels` to `pkgs` (`pkgs.channels.stable.lnav`)
 
+Module Options Reference for [`perSystem.channels`](../options/flake-all-options.md#persystemchannels)
+
 ## Usage
 
 With the following flake inputs:

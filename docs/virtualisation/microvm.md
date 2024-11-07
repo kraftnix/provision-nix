@@ -11,6 +11,8 @@ running the VMs; particularly for networking.
 The following host configuration adds a bridge called `microvm` which attachs
 `vm*` tap devices to the bridge.
 
+Module Options Reference for [`provision.virt.microvm.host`](../options/nixos-all-options.md#provisionvirtmicrovmhostenable)
+
 ```nix
 provision.virt.microvm.host = {
   enable = true;
@@ -30,6 +32,8 @@ provision.virt.microvm.host = {
 
 There are more options provided for configuring the guest side of the microvms.
 Many options are mirrored from `microvm`'s options and are passed through to microvm, if set.
+
+Module Options Reference for [`provision.virt.microvm.guest`](../options/nixos-all-options.md#provisionvirtmicrovmguestenable)
 
 ### Basic
 

@@ -9,3 +9,5 @@ You can find the options at `provision.fs`, these can help with configuring:
   - [initrd / stage-1 boot](./initrd.md)
     - unlock LUKS/native encrypted disks over SSH
     - `grub`, `systemd-boot`, `systemd initrd` supported
+
+Module Options Reference for [`provision.fs`](../options/nixos-all-options.md#provisionfsautomount)

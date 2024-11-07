@@ -5,6 +5,8 @@ This integration provides basic systemd-networkd setup:
   - shorthand for adding interfaces to wait for with `systemd-networkd-wait-online`
   - shorthand for setting ethernet devices to use DHCPv4
 
+Module Options Reference for [`provision.networking.networkd`](../options/nixos-all-options.md#provisionnetworkingnetworkdenable)
+
 ## Basic
 
 ```nix

@@ -2,6 +2,8 @@
 
 NixOS options are located at `provision.networking`.
 
+Module Options Reference for [`provision.networking`](../options/nixos-all-options.md#provisionnetworkingfail2banenable)
+
 The modules can be found at [nixosModules/networking](https://github.com/kraftnix/provision-nix/tree/master/nixosModules/networking).
 
 ## Features
