@@ -42,7 +42,7 @@ in {
       homeModulesFlakeArgs = mkOption {
         type = types.nullOr types.unspecified;
         default = null;
-        example = args;
+        # example = args;
         description = "If set, first argument for imported modules is this arg set";
       };
       homeModulesAll = mkOption {

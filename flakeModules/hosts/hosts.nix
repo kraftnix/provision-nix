@@ -51,21 +51,18 @@
         options.enable = mkOption {
           default = true;
           type = types.bool;
-          description = "whether to generate `nixosConfigurations`, `colmena` and `deploy` nodes";
+          description = "whether to generate flake config for `nixosConfigurations`, `colmena` and `deploy`";
         };
         options.hostname = mkOption {
           default = config._module.args.name;
           type = types.str;
-          description = "hostname to set for `networking.hostName`";
+          description = "hostname to set for `networking.hostName` in hosts nixosConfiguration";
         };
         options.rendered = mkOption {
           type = types.lazyAttrsOf types.raw;
           default = {};
           description = ''
-            Flake `host` modules.
-
-            You may use this for reusable host configurations which will then be mapped
-            with corresponsing flake outputs for `nixosConfigurations` and `colmena`.
+            Post eval nixosConfiguration field, added to `nixosConfigurations`.
           '';
         };
         config.rendered = genNixos config;
@@ -156,19 +153,13 @@
 in {
   options = {
     flake = mkSubmoduleOptions {
-      # modules = mkOption {
-      #   type = types.attrsOf types.raw;
-      #   default = {};
-      #   apply = lib.recursiveUpdate (self.nixosModules // { default = lib.attrValues self.nixosModules; });
-      #   description = ''
-      #     NixOS modules set, less strict that `flake.nixosModules` since it can be anything.
-      #     Used to allow arbitrary nixosModule attrsets for exporting, to allow for grouping.
-      #
-      #     Always adds a `default` entry which contains all modules in `flake.nixosModules` in a list.
-      #     Always adds the rest of the modules in `nixosModules`.
-      #   '';
-      # };
       hosts = mkOption {
+        description = ''
+          Auto-define hosts.
+            - auto-import host configurations from a directory
+            - define default modules, overlays, specialArgs for hosts
+            - define extra options for colmena, deploy-rs integration
+        '';
         default = {};
         type = types.submodule {
           config.defaults = mapDefault {
@@ -191,7 +182,13 @@ in {
               default = {};
               # apply = mapAttrs (overrideHosts hostDefaults);
               description = ''
-                Configure hosts.
+                Define hosts inline, host configurations are auto-imported from {hostsDir} and added to `modules``;
+                  - modules: extra modules, auto-adds modules from `defaults.modules`
+                  - overlays: extra overlays, auto-adds overlays from `overlays`
+                  - nixpkgs: pkgs set, auto-adds from `channels.{system}.nixpkgs.pkgs`
+                  - system
+                  - specialArgs
+                  - deploy options (colmena, deploy-rs)
               '';
             };
             rendered = mkOption {
@@ -199,10 +196,7 @@ in {
               type = types.lazyAttrsOf types.raw;
               default = mapAttrs (_: cfg: cfg.rendered.config) hosts;
               description = ''
-                Flake `host` modules.
-
-                You may use this for reusable host configurations which will then be mapped
-                with corresponsing flake outputs for `nixosConfigurations` and `colmena`.
+                Post eval nixosConfiguration's `config` field, useful for introspection.
               '';
             };
             overlays = mkOption {
@@ -216,7 +210,7 @@ in {
               type = types.raw;
               default = {};
               description = ''
-                `deployment` options for colmena to add to each host.
+                Colmena options to add to each host.
               '';
             };
             deploy-rs = mkOption {

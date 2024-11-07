@@ -7,6 +7,7 @@
 }: let
   inherit
     (lib)
+    literalExpression
     mkEnableOption
     mkOption
     types
@@ -30,12 +31,18 @@ in {
             modules = [];
           })
           .options;
+        example = literalExpression ''
+          self.nixosConfigurations.myhost.options
+        '';
       };
       substitution = {
         outPath = mkOption {
           description = "outPath of the flake, used for rewriting /nix/store/ hardlinks in generated output from mkOptionsDoc";
           type = types.path;
           default = self.outPath;
+          example = literalExpression ''
+            self.outPath # self from current flake
+          '';
         };
         gitRepoFilePath = mkOption {
           description = ''
@@ -48,7 +55,12 @@ in {
       };
     };
     docgen = mkOption {
-      description = "nixos option sets to generate";
+      description = ''
+        Tranforms modules options into markdown files.
+
+        Options from a host, or `evalModules` can be provided, and custom
+        filters can be applied to generate only specific options.
+      '';
       type = types.attrsOf (types.submoduleWith {
         specialArgs = {
           inherit (config) defaults;
@@ -56,11 +68,21 @@ in {
         modules = [./options.nix];
       });
       default = {};
+      example = lib.literalExpression ''
+        {
+          filter = option:
+            builtins.elemAt option.loc 0 == "networking"
+            &&
+            builtins.elemAt option.loc 1 == "nftables"
+            ;
+        }
+      '';
     };
     mdbook.src = mkOption {
       description = "source directory of mdBook documentation";
       type = types.path;
       default = ../../docs;
+      example = "./.";
     };
     mdbook.path = mkOption {
       description = "path in `src` where mdbook docs are located";
@@ -72,6 +94,7 @@ in {
         description = "Homepage of the website (for when siteBase is not at root)";
         type = types.str;
         default = "http://localhost:1111";
+        example = "https://mydocswebsite.com";
       };
       body = mkOption {
         description = "HTML Snippet inside <a> link used in documentation to point to home page.";

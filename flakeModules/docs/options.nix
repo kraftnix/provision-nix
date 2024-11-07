@@ -6,6 +6,7 @@
 }: let
   inherit
     (lib)
+    literalExpression
     mkEnableOption
     mkOption
     types
@@ -14,34 +15,53 @@ in {
   options = {
     enable = mkEnableOption "enable options docs generation" // {default = true;};
     hostOptions = mkOption {
-      default = defaults.hostOptions;
-      type = types.lazyAttrsOf types.raw;
       description = "host to use for options evaluation";
+      type = types.lazyAttrsOf types.raw;
+      default = defaults.hostOptions;
+      example = literalExpression ''
+        # gather `flake-parts` options from current flake
+        flake-parts-lib.evalFlakeModule
+          { inputs.self = self; }
+          {
+            imports = [ ./flakeModules/my-flake-parts-module.nix ];
+            systems = [ (throw "The `systems` option value is not available when generating documentation. This is generally caused by a missing `defaultText` on one or more options in the trace. Please run this evaluation with `--show-trace`, look for `while evaluating the default value of option` and add a `defaultText` to the one or more of the options involved.") ];
+          }).options
+      '';
     };
     filter = mkOption {
-      default = _: true;
-      type = types.functionTo types.bool;
       description = "filter to apply to options";
+      type = types.functionTo types.bool;
+      default = _: true;
+      example = literalExpression ''
+        # filter only `networking.nftables` options
+        option:
+          builtins.elemAt option.loc 0 == "networking"
+          &&
+          builtins.elemAt option.loc 1 == "nftables"
+      '';
     };
     substitution = {
       outPath = mkOption {
-        default = defaults.substitution.outPath;
         description = "outPath of the flake, used for rewriting /nix/store/ hardlinks in generated output from mkOptionsDoc";
         type = types.path;
+        default = defaults.substitution.outPath;
+        example = literalExpression ''
+          self.outPath # self from current flake
+        '';
       };
       gitRepoFilePath = mkOption {
-        default = defaults.substitution.gitRepoFilePath;
         description = ''
           Base URL of git repo file browser, used for rewriting urls to source to the correct URL
         '';
-        example = "https://github.com/kraftnix/provision-nix/tree/master/";
         type = types.str;
+        default = defaults.substitution.gitRepoFilePath;
+        example = "https://github.com/kraftnix/provision-nix/tree/master/";
       };
     };
     out.name = mkOption {
       description = "name of markdown file containing options";
-      default = "${name}-options.md";
       type = types.str;
+      default = "${name}-options.md";
     };
   };
 }

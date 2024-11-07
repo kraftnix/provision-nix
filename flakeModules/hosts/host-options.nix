@@ -14,13 +14,13 @@ in {
     system = mkOption {
       type = types.enum lib.platforms.all;
       default = "x86_64-linux";
-      description = "system for host";
+      description = "system for host.";
     };
     system-config = mkOption {
       # not working
       type = types.raw;
       default = {};
-      description = "configuration for host";
+      description = "extra nixosConfiguration to add to host.";
     };
     self = mkOption {
       type = types.lazyAttrsOf types.unspecified;
@@ -44,11 +44,11 @@ in {
     modules = mkOption {
       type = types.listOf types.raw;
       default = [];
-      description = "modules to add to host";
+      description = "extra nixos modules to eval for host.";
     };
     overlays = mkOption {
       default = [];
-      description = "overlays to add to host";
+      description = "extra overlays to add for host";
     };
     moduleArgs = mkOption {
       type = types.lazyAttrsOf types.raw;
@@ -67,7 +67,7 @@ in {
         // {
           targetHost = config._module.args.name;
         });
-      description = "Maps to `deployment` options for colmena.";
+      description = "extra arguments to add in flake `colmena.<host>.deployment`";
     };
     deploy = mkOption {
       type = types.raw;
@@ -75,7 +75,7 @@ in {
       apply = lib.recursiveUpdate {
         hostname = config.colmena.targetHost;
       };
-      description = "Maps to `deployment` options for colmena.";
+      description = "extra arguments to add in flake `deploy.nodes.<host>`";
     };
   };
 }

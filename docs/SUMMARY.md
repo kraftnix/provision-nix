@@ -5,7 +5,7 @@
 
 ---
 
-# Submodules
+# NixOS Modules
 
 - [Core](./core/intro.md)
 - [Networking](./networking/intro.md)
@@ -21,17 +21,18 @@
 - [Filesystems](./filesystems/intro.md)
   - [Disko](./filesystems/disko.md)
   - [Stage 1 Boot / initrd](./filesystems/initrd.md)
-- [Scripts](./scripts/intro.md)
 - [Virtualisation](./virtualisation/intro.md)
   - [MicroVM.nix](./virtualisation/microvm.md)
 - [Roles](./roles/intro.md)
+- [Full NixOS Options Reference](./options/nixos-all-options.md)
 
 ---
 
 # Flake Modules
 
----
+- [Intro](./flake/intro.md)
+- [Full Flake Options Reference](./options/flake-all-options.md)
 
-# Options
+# Scripts
 
-- [Full NixOS Options Reference](./options/nixos-all-options.md)
+- [Intro](./scripts/intro.md)
