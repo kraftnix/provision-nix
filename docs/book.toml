@@ -7,7 +7,7 @@ title = "provision-nix Documentation"
 
 [output.html]
 # theme = "my-theme"
-default-theme = "dark"
+default-theme = "ayu"
 preferred-dark-theme = "ayu"
 smart-punctuation = true
 copy-fonts = true
