@@ -25,6 +25,7 @@
   - [MicroVM.nix](./virtualisation/microvm.md)
 - [Roles](./roles/intro.md)
 - [Full NixOS Options Reference](./options/nixos-all-options.md)
+- [README](../disko/README.md)
 
 ---
 
@@ -32,7 +33,10 @@
 
 - [Intro](./flake/intro.md)
 - [Hosts](./flake/hosts.md)
+- [Channels](./flake/channels.md)
 - [Full Flake Options Reference](./options/flake-all-options.md)
+
+---
 
 # Scripts
 
