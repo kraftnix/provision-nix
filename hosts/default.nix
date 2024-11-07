@@ -37,17 +37,15 @@
           })
         ];
       };
-      testOverlays.modules = [./basic.nix];
-      testOverlays.system-config = {
-        config,
-        pkgs,
-        ...
-      }: {
-        networking.firewall.enable = true;
-        environment.systemPackages = [
-          pkgs.btrfs-list
-        ];
-      };
+      testOverlays.modules = [
+        ./basic.nix
+        ({pkgs, ...}: {
+          networking.firewall.enable = true;
+          environment.systemPackages = [
+            pkgs.btrfs-list
+          ];
+        })
+      ];
       bcachefs-iso.modules =
         [
           ({

@@ -16,16 +16,10 @@ in {
       default = "x86_64-linux";
       description = "system for host.";
     };
-    system-config = mkOption {
-      # not working
-      type = types.raw;
-      default = {};
-      description = "extra nixosConfiguration to add to host.";
-    };
     self = mkOption {
       type = types.lazyAttrsOf types.unspecified;
       default = config._module.args.self;
-      description = "pointer to current flake-parts self";
+      description = "reference to current flake-parts self";
     };
     nixpkgs = mkOption {
       description = ''

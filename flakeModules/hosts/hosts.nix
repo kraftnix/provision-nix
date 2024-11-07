@@ -80,7 +80,6 @@
   genNixos = {
     hostname,
     system,
-    system-config,
     self,
     modules,
     overlays,
@@ -102,7 +101,6 @@
           pkgs = nixpkgs;
           specialArgs = hostDefaults.specialArgs // specialArgs;
           modules = lib.unique (lib.flatten [
-            args.system-config
             {
               # config.nixpkgs.pkgs = nixpkgs;
               config.nixpkgs.overlays = hostDefaults.overlays ++ overlays;
@@ -155,9 +153,9 @@ in {
     flake = mkSubmoduleOptions {
       hosts = mkOption {
         description = ''
-          Auto-define hosts.
+          Generate `nixosConfigurations` with defaults:
             - auto-import host configurations from a directory
-            - define default modules, overlays, specialArgs for hosts
+            - define default `modules`, `overlays`, `specialArgs` for hosts
             - define extra options for colmena, deploy-rs integration
         '';
         default = {};
