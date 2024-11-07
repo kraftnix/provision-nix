@@ -132,7 +132,7 @@ in {
                 esac
               done
               cat ./$DOCS_PATH/intro-continued.md
-            } <${self.outPath + "/README.md"} >./$DOCS_PATH/intro.md
+            } <${site.defaults.substitution.outPath + "/README.md"} >./$DOCS_PATH/intro.md
             cp ./$DOCS_PATH/intro.md $out/$DOCS_PATH
             mkdir -p "$out/$DOCS_PATH/options"
             ${concatStringsSep "\n" (mapAttrsToList (
