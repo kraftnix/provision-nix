@@ -7,7 +7,9 @@ localFlake: {
     (lib)
     filterAttrs
     literalExpression
+    mapAttrs
     mkOption
+    removeAttrs
     types
     ;
   opts = localFlake.self.lib.options;
@@ -64,6 +66,11 @@ in {
     __enabledScripts = mkOption {
       default = filterAttrs (_: c: c.enable) config.scripts;
       description = "enabled scripts";
+      readOnly = true;
+    };
+    __exportableScripts = mkOption {
+      default = mapAttrs (_: c: removeAttrs c ["package"]) config.__enabledScripts;
+      description = "enabled scripts, with some config removed, suitable for importing between scripts";
       readOnly = true;
     };
   };

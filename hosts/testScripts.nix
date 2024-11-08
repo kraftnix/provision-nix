@@ -15,7 +15,7 @@
   provision.scripts.enable = true;
   provision.scripts.defaultLibDirs = self.scripts.${pkgs.system}.defaultLibDirs;
   provision.scripts.scripts =
-    self.scripts.${pkgs.system}.scripts
+    self.scripts.${pkgs.system}.__exportableScripts
     // {
       testing.inputs = [pkgs.afetch];
       testing.text = ''

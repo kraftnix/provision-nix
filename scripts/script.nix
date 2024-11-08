@@ -7,7 +7,7 @@
   defaultLibDirs,
   ...
 }: let
-  inherit (lib) filterAttrs literalExpression mapAttrsToList mkOption optionalString pipe types;
+  inherit (lib) filterAttrs literalExpression mapAttrsToList mkDefault mkOption optionalString pipe types;
   getNuFiles = dir:
     pipe dir [
       (builtins.readDir)
@@ -127,14 +127,15 @@ in {
   };
 
   config = {
-    runtimeShell =
+    runtimeShell = mkDefault (
       if lib.hasPrefix "nu" config.shell
       then pkgs.nushell
       else if config.shell == "zsh"
       then pkgs.zsh
       else if config.shell == "sh"
       then pkgs.sh
-      else pkgs.bash;
+      else pkgs.bash
+    );
     package =
       if lib.hasPrefix "nu" config.shell
       then
