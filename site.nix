@@ -11,6 +11,40 @@ localFlake: let
       url = "http://localhost:8937";
       body = "Homepage";
     };
+    docgen.scripts.hostOptions =
+      (lib.evalModules {
+        modules = [(import ./scripts/submodule.nix localFlake)];
+      })
+      .options;
+    docgen.scripts-flake.filter = option:
+      builtins.elemAt option.loc 0
+      == "perSystem"
+      && builtins.length option.loc > 1
+      && builtins.elemAt option.loc 1 == "scripts";
+    docgen.scripts-flake.hostOptions =
+      (localFlake.flake-parts-lib.evalFlakeModule
+        {inputs.self = localFlake.self;}
+        {
+          imports = [localFlake.self.flakeModules.scripts];
+          systems = [(throw "The `systems` option value is not available when generating documentation. This is generally caused by a missing `defaultText` on one or more options in the trace. Please run this evaluation with `--show-trace`, look for `while evaluating the default value of option` and add a `defaultText` to the one or more of the options involved.")];
+        })
+      .options;
+    docgen.scripts-nixos.filter = option:
+      builtins.elemAt option.loc 0
+      == "provision"
+      && builtins.elemAt option.loc 1 == "scripts";
+    docgen.scripts-home.hostOptions =
+      (lib.evalModules {
+        modules = [
+          (import ./scripts/homeModule.nix localFlake)
+          {options.home.packages = lib.mkOption {default = {};};}
+        ];
+      })
+      .options;
+    docgen.scripts-home.filter = option:
+      builtins.elemAt option.loc 0
+      == "provision"
+      && builtins.elemAt option.loc 1 == "scripts";
     docgen.flake-all = {
       hostOptions =
         (localFlake.flake-parts-lib.evalFlakeModule

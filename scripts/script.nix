@@ -160,30 +160,31 @@ in {
               }
               // config.extraConfig)
           else
-            pkgs.writeTextFile {
-              inherit (config) name;
-              executable = true;
-              destination = "/bin/${config.name}";
-              #!${config.runtimeShell}/bin/${config.shell} --env-config ${makeEnv config.name config.nuLibDirs}
-              # source ${makeEnv config.name config.nuLibDirs}
-              text = ''
-                #!${config.runtimeShell}/bin/${config.shell}
-                ${optionalString (config.env != null) ''
-                  load-env (open ${builtins.toFile "${config.name}-env.json" (builtins.toJSON config.env)})
-                ''}
-                ${optionalString (config.inputs != []) ''
-                  $env.PATH = ($env.PATH | append ${lib.makeBinPath config.inputs})
-                ''}
-                ${optionalString (config.nuLibDirs != null) ''
-                  $env.NU_LIB_DIRS = ($env.NU_LIB_DIRS | append ${config.nuLibDirs})
-                ''}
+            pkgs.writeTextFile ({
+                inherit (config) name;
+                executable = true;
+                destination = "/bin/${config.name}";
+                #!${config.runtimeShell}/bin/${config.shell} --env-config ${makeEnv config.name config.nuLibDirs}
+                # source ${makeEnv config.name config.nuLibDirs}
+                text = ''
+                  #!${config.runtimeShell}/bin/${config.shell}
+                  ${optionalString (config.env != null) ''
+                    load-env (open ${builtins.toFile "${config.name}-env.json" (builtins.toJSON config.env)})
+                  ''}
+                  ${optionalString (config.inputs != []) ''
+                    $env.PATH = ($env.PATH | append ${lib.makeBinPath config.inputs})
+                  ''}
+                  ${optionalString (config.nuLibDirs != null) ''
+                    $env.NU_LIB_DIRS = ($env.NU_LIB_DIRS | append ${config.nuLibDirs})
+                  ''}
 
-                ## imported from ${config.file}
+                  ## imported from ${config.file}
 
-                ${builtins.readFile config.file}
-              '';
-              meta.mainProgram = config.name;
-            }
+                  ${builtins.readFile config.file}
+                '';
+                meta.mainProgram = config.name;
+              }
+              // config.extraConfig)
         )
       else
         pkgs.writeShellApplication ({

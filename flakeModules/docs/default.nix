@@ -27,7 +27,7 @@ in {
         description = ''
           mdbook sites to generate, optionally generating module options documentation with `mkOptionsDoc`
 
-          The mdbook site for this repository can be found [here](https://github.com/kraftnix/provision-nix/tree/master/site.nix)
+          The mdbook site for this repository can be found [`site.nix`](https://github.com/kraftnix/provision-nix/tree/master/site.nix)
 
           Options documentation generated is added to `{mdbook.path}/options/{name}-options.md` before mdbook build is run.
 
@@ -201,6 +201,7 @@ in {
           DOCSITE_BASE = "${site.homepage.url}${site.homepage.siteBase}";
           MDBOOK_OUTPUT__HTML__SITE_URL = site.homepage.siteBase;
           DOCS_PATH = toString site.mdbook.path;
+          GIT_REPO_FILE_BASE = site.defaults.substitution.gitRepoFilePath;
           buildPhase = ''
             runHook preBuild
 
@@ -215,7 +216,8 @@ in {
               simple-replace $search "$replace" .
             fi
 
-            simple-replace '__DOCSITE_BASE__' "$DOCSITE_BASE" .
+            simple-replace '<--DOCSITE_BASE-->' "$DOCSITE_BASE" .
+            simple-replace '<--GIT_REPO_FILE_BASE-->' "$GIT_REPO_FILE_BASE" .
 
             mdbook build --dest-dir "$TMPDIR/out/$DOCS_PATH"
             cp -r "$TMPDIR/out/$DOCS_PATH/html" $out

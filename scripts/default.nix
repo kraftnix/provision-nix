@@ -7,6 +7,7 @@ localFlake @ {flake-parts-lib, ...}: {
   perSystem = {pkgs, ...}: {
     scripts.defaultLibDirs = ./nu;
     scripts.scripts = {
+      ssh-fpscan.inputs = [pkgs.openssh];
       ssh-fpscan.text = ''
         # scan ssh fingerprints
         def main [

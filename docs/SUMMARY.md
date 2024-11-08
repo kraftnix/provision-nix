@@ -40,3 +40,7 @@
 # Scripts
 
 - [Intro](./scripts/intro.md)
+  - [Options Reference: scripts](./options/scripts-options.md)
+  - [Flake Options Reference](./options/scripts-flake-options.md)
+  - [NixOS Options Reference](./options/scripts-nixos-options.md)
+  - [Home Options Reference](./options/scripts-home-options.md)
