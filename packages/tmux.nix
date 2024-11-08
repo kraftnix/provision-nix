@@ -112,7 +112,7 @@ in
       changelog = "https://github.com/tmux/tmux/raw/${finalAttrs.version}/CHANGES";
       license = lib.licenses.bsd3;
       platforms = lib.platforms.unix;
+      maintainers = ["kraftnix"];
       mainProgram = "tmux";
-      maintainers = with lib.maintainers; [thammers fpletz];
     };
   })

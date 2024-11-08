@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  inherit (lib) filterAttrs mapAttrsToList mkIf mkOption pipe types;
+  inherit (lib) filterAttrs literalExpression mapAttrsToList mkIf mkOption types;
   cfg = config.provision.scripts;
   opts = self.lib.options;
 in {
@@ -30,7 +30,21 @@ in {
         ];
       });
       default = {};
-      description = "scripts";
+      description = "scripts to generate from text, file or nuModule";
+      example = literalExpression ''
+        {
+          my-test-script.text = "ls -l";
+          my-test-script-bash-test.shell = "bash";
+          my-test-script-bash-test.text = "ls -la";
+          my-test-script-env-has.inputs = [pkgs.afetch];
+          my-test-script-env-has.text = '''
+            def main [ var ] {
+              print $"Env ($var) present: (envHas $var)"
+              afetch
+            }
+          ''';
+        }
+      '';
     };
     __enabledScripts = mkOption {
       default = filterAttrs (_: c: c.enable) cfg.scripts;

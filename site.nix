@@ -51,11 +51,13 @@ localFlake: let
               || (builtins.elemAt option.loc 1 == "hosts")
               && option.loc != ["flake" "hosts" "defaults" "self"]
               && option.loc != ["flake" "hosts" "configs" "<name>" "self"]
+              || (builtins.elemAt option.loc 1 == "lib")
               || (builtins.elemAt option.loc 1 == "profiles")
               || (lib.hasPrefix "homeModules" (builtins.elemAt option.loc 1))
               || (builtins.elemAt option.loc 1 == "nixosModules'")
               || (builtins.elemAt option.loc 1 == "nixosModulesAll")
               || (builtins.elemAt option.loc 1 == "scripts")
+              || (builtins.elemAt option.loc 1 == "__provision")
             ))
           || (perSystemEnabled
             && (

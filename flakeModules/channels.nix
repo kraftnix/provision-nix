@@ -7,6 +7,7 @@
 }: let
   inherit
     (lib)
+    literalExpression
     mapAttrs
     mkOption
     types
@@ -53,7 +54,7 @@
         '';
         type = types.raw;
         default = {allowUnfree = false;};
-        example = lib.literalExpression ''
+        example = literalExpression ''
           {
             permittedInsecurePackages = [ "electron-28.3.3" ];
             allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
@@ -64,9 +65,9 @@
         '';
       };
       pkgs = mkOption {
+        description = "Final `pkgs` to use for hosts.";
         type = types.pkgs;
         default = {};
-        description = "Final `pkgs` to use for hosts.";
       };
     };
     config = {
@@ -90,11 +91,35 @@ in {
     }: {
       _file = ./channels.nix;
       options.channels = mkOption {
-        type = types.attrsOf (types.submodule (channelModule pkgs));
-        default = {};
         description = ''
           NixOS Channels (pkgs) to allow hosts to use.
           The `nixpkgs` channel is always created, using your `inputs.nixpkgs`, but this is overridable.
+        '';
+        type = types.attrsOf (types.submodule (channelModule pkgs));
+        default = {};
+        example = literalExpression ''
+          {
+            stable = {};
+            latest.inputName = "nixpkgs-master";
+            nixpkgs = {
+              config.permittedInsecurePackages = [ "electron-28.3.3" ];
+              config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+                "steam"
+                "steamcmd"
+                "steam-run"
+              ];
+              overlays = [
+                self.overlays.channels
+                (final: prev: {
+                  inherit (final.channels.stable)
+                    prometheus
+                    vector
+                    ;
+                })
+                inputs.provision-nix.overlays.lnav
+              ];
+            };
+          }
         '';
       };
     });

@@ -9,9 +9,9 @@ localFlake @ {
   inherit (flake-parts-lib) importApply;
   flakeModules = {
     hosts = ./flakeModules/hosts/hosts.nix;
-    lib = ./flakeModules/lib-module.nix;
     packagesGroups = ./flakeModules/packagesGroups.nix;
     channels = ./flakeModules/channels.nix;
+    lib = ./flakeModules/lib.nix;
     profiles = ./flakeModules/profiles.nix;
     home = ./flakeModules/home-module.nix;
     nixosModulesExtended = ./flakeModules/nixos-module-wrapper.nix;
@@ -81,10 +81,11 @@ in {
     };
     lnav = final: prev: {
       # https://github.com/tstack/lnav/issues/1291
-      lnav = prev.lnav.overrideAttrs (self: {
-        nativeBuildInputs = self.nativeBuildInputs ++ [prev.tzdata];
-        buildInputs = self.buildInputs ++ [prev.tzdata];
-      });
+      lnav = prev.channels.stable.lnav;
+      # lnav = prev.lnav.overrideAttrs (self: {
+      #   nativeBuildInputs = self.nativeBuildInputs ++ [prev.tzdata];
+      #   buildInputs = self.buildInputs ++ [prev.tzdata];
+      # });
     };
   };
 

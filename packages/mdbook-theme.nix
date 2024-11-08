@@ -38,7 +38,7 @@ rustPlatform.buildRustPackage rec {
     homepage = "https://github.com/zjp-CN/mdbook-theme";
     changelog = "https://github.com/zjp-CN/mdbook-theme/blob/${src.rev}/CHANGELOG.md";
     license = with lib.licenses; [mit mpl20];
-    maintainers = with lib.maintainers; [];
+    maintainers = ["kraftnix"];
     mainProgram = "mdbook-theme";
   };
 }

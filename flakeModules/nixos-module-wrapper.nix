@@ -17,6 +17,7 @@
     hasAttrByPath
     isList
     listToAttrs
+    literalExpression
     mapAttrsRecursive
     mapAttrsRecursiveCond
     mkOption
@@ -72,84 +73,91 @@
     (map (concatStringsSep "-"))
   ];
 in {
-  options = {
-    flake = mkSubmoduleOptions {
-      __provision = {
-        nixosModules = {
-          dir = mkOption {
-            type = with types; nullOr path;
-            default = null;
-            example = ../nixosModules;
-            description = "If set, modules are raked and imported into `nixosModules`";
-          };
-          flakeArgs = mkOption {
-            type = with types; nullOr unspecified;
-            default = null;
-            example = args;
-            description = "If set, first argument for imported modules is this arg set";
-          };
-          filterByPath = mkOption {
-            type = with types; listOf (listOf str);
-            default = [];
-            description = "list of attr path lists in `nixosModules'` to remove from `nixosModulesAll`";
-            example = [
+  options.flake = mkSubmoduleOptions {
+    __provision = {
+      nixosModules = {
+        dir = mkOption {
+          description = "If set, modules are raked and imported into `nixosModules`";
+          type = with types; nullOr path;
+          default = null;
+          example = literalExpression "./nixosModules";
+        };
+        flakeArgs = mkOption {
+          description = ''
+            When set to null, modules are imported purely by path.
+            Otherwise, all imported modules are mapped through `import {module} {flakeArgs}`.
+
+            This can allow all auto-imported to have access to your flake level args.
+          '';
+          type = with types; nullOr unspecified;
+          default = null;
+          example = literalExpression "localFlake";
+        };
+        filterByPath = mkOption {
+          description = "list of attr path lists in `nixosModules'` to remove from `nixosModulesAll`";
+          type = with types; listOf (listOf str);
+          default = [];
+          example = literalExpression ''
+            [
               ["virt" "microvm" "vm"]
-            ];
-          };
-          filterPathCompat = mkOption {
-            type = types.bool;
-            default = true;
-            description = "performs compat filter for renamed nixosModules'";
-          };
-          all = mkOption {
-            type = with types; listOf raw;
-            default = lib.attrValues (self.nixosModules);
-            description = "all nixos modules from `nixosModules'` before being filtered by `filterAll`";
-          };
+            ]
+          '';
+        };
+        filterPathCompat = mkOption {
+          description = "performs compat filter for renamed nixosModules'";
+          type = types.bool;
+          default = true;
+          example = false;
+        };
+        all = mkOption {
+          description = "all nixos modules from `nixosModules'` before being filtered by `filterAll`";
+          type = with types; listOf raw;
+          default = lib.attrValues (self.nixosModules);
+          readOnly = true;
         };
       };
-      nixosModulesAll = mkOption {
-        type = types.listOf types.unspecified;
-        default = [];
-        description = ''
-          A list of all home modules.
-        '';
-      };
-      nixosModules' = mkOption {
-        type = types.lazyAttrsOf types.unspecified;
-        default = {};
-        apply = mapAttrsRecursive (
-          k: v:
-            if self.__provision.nixosModules.flakeArgs == null
-            then {
-              _file = toString v;
-              # class = "nixos";
-              imports = [v];
-            }
-            else {
-              _file = toString v;
-              # class = "nixos";
-              imports = [(import v self.__provision.nixosModules.flakeArgs)];
-            }
-        );
-        description = ''
-          NixOS modules.
+    };
+    nixosModulesAll = mkOption {
+      description = ''
+        A list of all home modules.
+      '';
+      type = types.listOf types.unspecified;
+      default = [];
+    };
+    nixosModules' = mkOption {
+      description = ''
+        NixOS modules.
 
-          You may use this for reusable pieces of nixos configuration, modules, etc.
-        '';
-      };
-      modules = mkOption {
-        type = types.lazyAttrsOf types.raw;
-        default = {};
-        # apply = lib.recursiveUpdate (self.nixosModules // { default = lib.attrValues self.nixosModules; });
-        description = ''
-          NixOS modules set, less strict that `flake.nixosModules` since it can be anything.
-          Used to allow arbitrary nixosModule attrsets for exporting, to allow for grouping.
+        You may use this for reusable pieces of nixos configuration, modules, etc.
+      '';
+      type = types.lazyAttrsOf types.unspecified;
+      default = {};
+      apply = mapAttrsRecursive (
+        k: v:
+          if self.__provision.nixosModules.flakeArgs == null
+          then {
+            _file = toString v;
+            # class = "nixos";
+            imports = [v];
+          }
+          else {
+            _file = toString v;
+            # class = "nixos";
+            imports = [(import v self.__provision.nixosModules.flakeArgs)];
+          }
+      );
+    };
+    modules = mkOption {
+      description = ''
+        NixOS modules set, less strict that `flake.nixosModules` since it can be anything.
+        Used to allow arbitrary nixosModule attrsets for exporting, to allow for grouping.
 
-          Always adds a `default` entry which contains all modules in `flake.nixosModules` in a list.
-          Always adds the rest of the modules in `nixosModules`.
-        '';
-      };
+        Always adds a `default` entry which contains all modules in `flake.nixosModules` in a list.
+        Always adds the rest of the modules in `nixosModules`.
+      '';
+      type = types.lazyAttrsOf types.raw;
+      default = {};
+      # apply = lib.recursiveUpdate (self.nixosModules // { default = lib.attrValues self.nixosModules; });
     };
   };
 

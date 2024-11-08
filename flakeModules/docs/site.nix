@@ -19,6 +19,7 @@ in {
       description = "site name";
       type = types.str;
       default = config._module.args.name;
+      example = "provision-nix";
     };
     defaults = {
       hostOptions = mkOption {
@@ -31,18 +32,14 @@ in {
             modules = [];
           })
           .options;
-        example = literalExpression ''
-          self.nixosConfigurations.myhost.options
-        '';
+        example = literalExpression "self.nixosConfigurations.myhost.options";
       };
       substitution = {
         outPath = mkOption {
           description = "outPath of the flake, used for rewriting /nix/store/ hardlinks in generated output from mkOptionsDoc";
           type = types.path;
           default = self.outPath;
-          example = literalExpression ''
-            self.outPath # self from current flake
-          '';
+          example = literalExpression "self.outPath";
         };
         gitRepoFilePath = mkOption {
           description = ''
@@ -82,7 +79,7 @@ in {
       description = "source directory of mdBook documentation";
       type = types.path;
       default = ../../docs;
-      example = "./.";
+      example = literalExpression "./.";
     };
     mdbook.path = mkOption {
       description = "path in `src` where mdbook docs are located";
@@ -100,6 +97,7 @@ in {
         description = "HTML Snippet inside <a> link used in documentation to point to home page.";
         type = types.str;
         default = "Home";
+        example = "Homepage";
       };
       siteBase = mkOption {
         description = "Base URL of docs";

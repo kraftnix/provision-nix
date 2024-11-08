@@ -7,7 +7,7 @@
   defaultLibDirs,
   ...
 }: let
-  inherit (lib) filterAttrs mapAttrsToList mkOption optionalString pipe types;
+  inherit (lib) filterAttrs literalExpression mapAttrsToList mkOption optionalString pipe types;
   getNuFiles = dir:
     pipe dir [
       (builtins.readDir)
@@ -20,27 +20,31 @@
     );
 in {
   options = {
-    enable = opts.enableTrue "enable script";
-    name = opts.string config._module.args.name "script name";
+    enable = opts.enableTrue "enable script, auto-matically adds script to packages";
+    name = opts.string config._module.args.name "script name, also used as name of binary";
     file = mkOption {
       default = builtins.toFile "${config.name}.nu" config.text;
       type = types.path;
       description = "optionally set script file path, recommended for script files which only contain a single main";
+      example = "./fill.nu";
     };
     nuLibDirs = mkOption {
       type = with types; nullOr path;
       description = "sets NU_LIB_DIRS in nushell scripts";
       default = defaultLibDirs;
+      example = "./nu";
     };
     nuModule = mkOption {
       type = with types; nullOr path;
       description = "optional nu module wrapper, very basic wrapper that exports a module to be called from cli";
       default = null;
+      example = literalExpression "./my-helpers.nu";
     };
     nuLegacyModule = mkOption {
       type = with types; nullOr path;
       description = "optional nu legacy module wrapper";
       default = null;
+      example = literalExpression "./my-helpers.nu";
     };
     text =
       opts.string
@@ -68,6 +72,7 @@ in {
       type = types.str;
       default = defaultShell;
       description = "runtime shell of script";
+      example = "bash";
     };
     checkPhase = mkOption {
       type = with types; nullOr str;
@@ -92,16 +97,33 @@ in {
       type = with types; listOf package;
       default = [];
       description = "runtime inputs to add to script";
+      example = literalExpression ''
+        with pkgs; [
+          caddy
+          gnused
+        ]
+      '';
     };
     env = mkOption {
       type = with types; nullOr (attrsOf str);
       default = null;
       description = "runtime env to provide to script";
+      example = literalExpression ''
+        {
+          ENV_VAR = "variable";
+        }
+      '';
     };
     extraConfig = mkOption {
       type = with types; attrsOf raw;
       default = {};
       description = "extra config to add to `writeShellApplication";
+      example = literalExpression ''
+        with pkgs; [
+          caddy
+          gnused
+        ]
+      '';
     };
     package =
       opts.package

@@ -6,26 +6,37 @@
 }: let
   inherit
     (lib)
+    literalExpression
     mkOption
     types
     ;
+  overlayType = lib.mkOptionType {
+    name = "nixpkgs-overlay";
+    description = "nixpkgs overlay";
+    check = lib.isFunction;
+    merge = lib.mergeOneOption;
+  };
 in {
   options = {
     system = mkOption {
+      description = "system for host.";
       type = types.enum lib.platforms.all;
       default = "x86_64-linux";
-      description = "system for host.";
+      example = "aarch64-linux";
     };
     self = mkOption {
+      description = "reference to current flake-parts self";
       type = types.lazyAttrsOf types.unspecified;
       default = config._module.args.self;
-      description = "reference to current flake-parts self";
+      example = literalExpression "self.outPath";
     };
     nixpkgs = mkOption {
       description = ''
         The Nixpkgs to use for this host.
           - if set to a `string`, then a channel's pkgs will be looked up in `flake.channels.{system}.{name}.pkgs`
           - otherwise, can be set to a `pkgs` directly.
+
+        By default uses `nixpkgs` channel in `channels` option.
       '';
       type = with types; oneOf [str pkgs];
       default = "nixpkgs";
@@ -33,43 +44,70 @@ in {
         if builtins.typeOf val == "string"
         then self.channels.${config.system}.${val}.pkgs
         else val;
+      example = "nixpkgs-stable";
     };
 
     modules = mkOption {
+      description = "extra nixos modules to eval for host.";
       type = types.listOf types.raw;
       default = [];
-      description = "extra nixos modules to eval for host.";
+      example = literalExpression ''
+        [
+          inputs.provision.nixosModules.provision-scripts
+          { networking.firewall.enable = lib.mkForce true; }
+        ];
+      '';
     };
     overlays = mkOption {
-      default = [];
       description = "extra overlays to add for host";
-    };
-    moduleArgs = mkOption {
-      type = types.lazyAttrsOf types.raw;
-      default = {};
-      description = "extra arguments to add to `_module.args` in host";
+      type = types.listOf overlayType;
+      default = [];
+      example = literalExpression ''
+        [
+          inputs.provision-nix.overlays.lnav
+        ]
+      '';
     };
     specialArgs = mkOption {
+      description = "extra arguments to add to `specialArgs` in `eval-config.nix`";
       type = types.lazyAttrsOf types.raw;
       default = {};
-      description = "extra arguments to add to `specialArgs` in `eval-config.nix`";
+      example = literalExpression ''
+        {
+          inherit self inputs;
+        }
+      '';
     };
     colmena = mkOption {
+      description = "extra arguments to add in flake `colmena.<host>.deployment`";
       type = types.raw;
       default = {};
       apply = lib.recursiveUpdate (config._module.args.colmena
         // {
           targetHost = config._module.args.name;
         });
-      description = "extra arguments to add in flake `colmena.<host>.deployment`";
+      example = literalExpression ''
+        {
+          targetPort = 22;
+          targetUser = "deploy";
+        }
+      '';
     };
     deploy = mkOption {
+      description = "extra arguments to add in flake `deploy.nodes.<host>`";
       type = types.raw;
       default = {};
       apply = lib.recursiveUpdate {
         hostname = config.colmena.targetHost;
       };
-      description = "extra arguments to add in flake `deploy.nodes.<host>`";
+      example = literalExpression ''
+        {
+          fastConnection = true;
+          sshUser = "deploy";
+          magicRollback = true;
+          autoRollback = true;
+        }
+      '';
     };
   };
 }

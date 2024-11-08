@@ -11,6 +11,7 @@
     defaults.overlays = [
       self.overlays.channels
       self.overlays.lib
+      self.overlays.lnav
       self.overlays.default
     ];
 
