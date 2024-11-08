@@ -11,6 +11,7 @@
       # pkgs.mdbook-cmdrun
       config.packages.yapp
       config.packages.mdbook-linkfix
+      config.packages.mdbook-variables
       # config.packages.mdbook-theme
     ];
     devshells.default.commands = [

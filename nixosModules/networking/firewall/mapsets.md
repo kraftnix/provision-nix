@@ -3,7 +3,7 @@
 Mapsets can be one of:
   - [Sets](https://wiki.nftables.org/wiki-nftables/index.php/Sets) (i.e. `{ 10.11.1.1, 10.11.22.33 }`)
   - [Maps](https://wiki.nftables.org/wiki-nftables/index.php/Maps) (i.e. `{ 80 : 192.168.1.100 }`)
-  - [Verdict Maps](https://wiki.nftables.org/wiki-nftables/index.php/Verdict_Maps_(vmaps)) (i.e. `{ 192.168.1.1 : drop }`)
+  - [Verdict Maps](https://wiki.nftables.org/wiki-nftables/index.php/Verdict_Maps_(vmaps)) (i.e. `{ 192.168.1.1 : drop }` or `{ 192.168.1.1 . 80 : drop }`)
 
 One reason mapsets can be useful, is they allow modifying the firewall while it is running
 with `nft` commands, without needing to write the full rules out.

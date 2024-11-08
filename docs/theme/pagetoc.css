@@ -18,40 +18,71 @@
     margin-left: var(--page-padding);
 }
 
+/* @mixin sidebar-visible($elementName) */
+/*     &:has(.className #{$elementName}:visible) */
+/*         .content-wrap { */
+/*             overflow-y: auto; */
+/*             width: 70vw; */
+/*         } */
+
 @media only screen {
     main {
         display: flex;
     }
 
-    @media (max-width: 1179px) {
+    @media (max-width: 1059px) {
+    /* @media (max-width: 1179px) { */
         .sidebar-hidden .sidetoc {
             display: none;
         }
+
+        /* .content-wrap { */
+        /*     overflow-y: auto; */
+        /*     width: 100vw; */
+        /* } */
     }
 
-    @media (max-width: 1429px) {
+    @media (max-width: 1329px) {
+    /* @media (max-width: 1429px) { */
         .sidebar-visible .sidetoc {
             display: none;
         }
+
+        /* .content-wrap { */
+        /*     overflow-y: auto; */
+        /*     width: 100vw; */
+        /* } */
     }
 
-    @media (1180px <= width <= 1429px) {
+    @media (1060px <= width <= 1329px) {
+    /* @media (1180px <= width <= 1429px) { */
         .sidebar-hidden main {
             position: relative;
             left: var(--center-content-toc-shift);
         }
+
+        /* .content-wrap { */
+        /*     overflow-y: auto; */
+        /*     width: 50vw; */
+        /* } */
     }
 
-    @media (1430px <= width <= 1700px) {
+    @media (1330px <= width <= 1700px) {
+    /* @media (1430px <= width <= 1700px) { */
         .sidebar-visible main {
             position: relative;
             left: var(--center-content-toc-shift);
         }
+
+        /* .content-wrap { */
+        /*     overflow-y: auto; */
+        /*     width: 50vw; */
+        /* } */
     }
 
     .content-wrap {
         overflow-y: auto;
-        width: 100%;
+        width: 100vw;
     }
 
     .sidetoc {
@@ -79,7 +110,7 @@
     .pagetoc a:hover,
     .pagetoc a.active {
         background: var(--sidebar-bg);
-        color: var(--sidebar-fg) !important;
+        color: var(--active-header) !important;
     }
     .pagetoc .active {
         background: var(--sidebar-bg);

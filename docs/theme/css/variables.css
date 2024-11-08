@@ -1,17 +1,113 @@
 /* Globals */
 
 :root {
+    /* --sidebar-width: 280px; */
     --sidebar-width: 300px;
     --sidebar-resize-indicator-width: 8px;
     --sidebar-resize-indicator-space: 2px;
-    --page-padding: 15px;
-    --content-max-width: 750px;
+    /* --page-padding: 15px; */
+    --page-padding: 0px;
+    /* --content-max-width: 1050px; */
+    --content-max-width: 700px;
     --menu-bar-height: 50px;
     --mono-font: "Source Code Pro", Consolas, "Ubuntu Mono", Menlo, "DejaVu Sans Mono", monospace, monospace;
     --code-font-size: 0.875em /* please adjust the ace font size accordingly in editor.js */
 }
 
 /* Themes */
+.navy {
+    /* not the default navy, this is a modified ayu theme */
+    --bg: #101010;
+    --fg: #c5c5c5;
+
+    /* --sidebar-bg: #191c1a; */
+    --sidebar-bg: #161616;
+    --sidebar-fg: #c8c9db;
+    --sidebar-non-existant: #5c6773;
+    /* --sidebar-active: #ffb454; */
+    --sidebar-active: #bfa4ff; /* purple1-4 */
+    --sidebar-spacer: #2d334f;
+
+    --scrollbar: var(--sidebar-fg);
+
+    --icons: #737480;
+    --icons-hover: #b7b9cc;
+
+    --links: #0096cf; /* blue */
+    --active-header: #afa4ff; /* purple3-4 */
+
+    --inline-code-color: #ffb454; /* orange */
+
+    --theme-popup-bg: #14191f;
+    --theme-popup-border: #5c6773;
+    --theme-hover: #191f26;
+
+    --quote-bg: hsl(226, 15%, 17%);
+    --quote-border: hsl(226, 15%, 22%);
+
+    --warning-border: #ff8e00;
+
+    --table-border-color: hsl(210, 25%, 13%);
+    --table-header-bg: hsl(210, 25%, 28%);
+    --table-alternate-bg: hsl(210, 25%, 11%);
+
+    /* --searchbar-border-color: #848484; */
+    --searchbar-border-color: hsl(124, 56.9%, 70.0%);
+    /* --searchbar-bg: #424242; */
+    --searchbar-bg: #161616;
+    --searchbar-fg: #fff;
+    --searchbar-shadow-color: #d4c89f;
+    --searchresults-header-fg: #666;
+    --searchresults-border-color: #888;
+    --searchresults-li-bg: #252932;
+    --search-mark-bg: #e3b171;
+
+    --color-scheme: dark;
+
+    /* Same as `--icons` */
+    --copy-button-filter: invert(45%) sepia(6%) saturate(621%) hue-rotate(198deg) brightness(99%) contrast(85%);
+    /* Same as `--sidebar-active` */
+    --copy-button-filter-hover: invert(68%) sepia(55%) saturate(531%) hue-rotate(341deg) brightness(104%) contrast(101%);
+
+
+    /* italics */
+    em {
+        color: hsl(124, 56.9%, 70.0%) !important; /* light green */
+    }
+
+    /* bold */
+    main {
+        strong {
+            color: #9950ef !important; /* purple 1-3 */
+        }
+    }
+
+    /* change search result titles */
+    ul#searchresults li {
+        a {
+            color: #9950ef !important; /* purple 1-3 */
+        }
+    }
+    /* change search result matches */
+    ul#searchresults span.teaser em {
+        color: #ffb454 !important; /* orange */
+    }
+
+    /* change title in left sidebar */
+    .chapter li.part-title {
+        color:  #9950ef !important; /* purple 1-3 */
+    }
+
+    /* change all icons */
+    .fa {
+        color: #77daf4 !important; /* purple 2-4 */
+    }
+
+    .homepage-url a {
+        color: #6622cc !important; /* purple 1-1 */
+        font-size: 1.5em;
+    }
+}
 
 .ayu {
     --bg: hsl(210, 25%, 8%);
@@ -28,6 +124,7 @@
     --icons: #737480;
     --icons-hover: #b7b9cc;
 
+    --active-header: #afa4ff;
     --links: #0096cf;
 
     --inline-code-color: #ffb454;
@@ -77,6 +174,7 @@
     --icons: #43484d;
     --icons-hover: #b3c0cc;
 
+    --active-header: #afa4ff;
     --links: #2b79a2;
 
     --inline-code-color: #c5c8c6;
@@ -126,6 +224,7 @@
     --icons: #747474;
     --icons-hover: #000000;
 
+    --active-header: #afa4ff;
     --links: #20609f;
 
     --inline-code-color: #301900;
@@ -160,55 +259,6 @@
     --copy-button-filter-hover: invert(14%) sepia(93%) saturate(4250%) hue-rotate(243deg) brightness(99%) contrast(130%);
 }
 
-.navy {
-    --bg: hsl(226, 23%, 11%);
-    --fg: #bcbdd0;
-
-    --sidebar-bg: #282d3f;
-    --sidebar-fg: #c8c9db;
-    --sidebar-non-existant: #505274;
-    --sidebar-active: #2b79a2;
-    --sidebar-spacer: #2d334f;
-
-    --scrollbar: var(--sidebar-fg);
-
-    --icons: #737480;
-    --icons-hover: #b7b9cc;
-
-    --links: #2b79a2;
-
-    --inline-code-color: #c5c8c6;
-
-    --theme-popup-bg: #161923;
-    --theme-popup-border: #737480;
-    --theme-hover: #282e40;
-
-    --quote-bg: hsl(226, 15%, 17%);
-    --quote-border: hsl(226, 15%, 22%);
-
-    --warning-border: #ff8e00;
-
-    --table-border-color: hsl(226, 23%, 16%);
-    --table-header-bg: hsl(226, 23%, 31%);
-    --table-alternate-bg: hsl(226, 23%, 14%);
-
-    --searchbar-border-color: #aaa;
-    --searchbar-bg: #aeaec6;
-    --searchbar-fg: #000;
-    --searchbar-shadow-color: #aaa;
-    --searchresults-header-fg: #5f5f71;
-    --searchresults-border-color: #5c5c68;
-    --searchresults-li-bg: #242430;
-    --search-mark-bg: #a2cff5;
-
-    --color-scheme: dark;
-
-    /* Same as `--icons` */
-    --copy-button-filter: invert(51%) sepia(10%) saturate(393%) hue-rotate(198deg) brightness(86%) contrast(87%);
-    /* Same as `--sidebar-active` */
-    --copy-button-filter-hover: invert(46%) sepia(20%) saturate(1537%) hue-rotate(156deg) brightness(85%) contrast(90%);
-}
-
 .rust {
     --bg: hsl(60, 9%, 87%);
     --fg: #262625;
@@ -224,6 +274,7 @@
     --icons: #737480;
     --icons-hover: #262625;
 
+    --active-header: #afa4ff;
     --links: #2b79a2;
 
     --inline-code-color: #6e6b5e;
@@ -272,6 +323,7 @@
         --icons: #43484d;
         --icons-hover: #b3c0cc;
 
+        --active-header: #afa4ff;
         --links: #2b79a2;
 
         --inline-code-color: #c5c8c6;

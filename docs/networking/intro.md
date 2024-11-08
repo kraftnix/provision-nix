@@ -4,7 +4,7 @@ NixOS options are located at `provision.networking`.
 
 Module Options Reference for [`provision.networking`](../options/nixos-all-options.md#provisionnetworkingfail2banenable)
 
-The modules can be found at [nixosModules/networking](<--GIT_REPO_FILE_BASE-->nixosModules/networking).
+The modules can be found at [nixosModules/networking]({{git_file_base_url}}nixosModules/networking).
 
 ## Features
 

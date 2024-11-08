@@ -4,7 +4,7 @@ Generate scripts from different shells from string snippets, files, or nushell m
 
 This submodule contains NixOS, home-manager and flake-parts modules to generate user runnable scripts.
 
-To see example usage from this repository, see [`scripts/default.nix`](<--GIT_REPO_FILE_BASE-->scripts/default.nix)
+To see example usage from this repository, see [`scripts/default.nix`]({{git_file_base_url}}scripts/default.nix)
 
 ## Common options
 

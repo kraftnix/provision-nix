@@ -26,6 +26,7 @@
         };
       });
       mdbook-theme = pkgs.callPackage (import ./mdbook-theme.nix) {};
+      mdbook-variables = pkgs.callPackage (import ./mdbook-variables.nix) {};
       yapp = pkgs.callPackage (import ./yapp.nix) {};
     };
   };

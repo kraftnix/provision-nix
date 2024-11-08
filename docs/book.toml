@@ -7,8 +7,9 @@ title = "provision-nix Documentation"
 
 [output.html]
 # theme = "my-theme"
-default-theme = "ayu"
-preferred-dark-theme = "ayu"
+# my theme is a modified ayu, overriden on navy
+default-theme = "navy"
+preferred-dark-theme = "navy"
 smart-punctuation = true
 copy-fonts = true
 no-section-label = false
@@ -37,6 +38,11 @@ heading-split-level = 2
 
 [output.linkcheck]
 follow-web-links = false # no Internet during the build
+
+[preprocessor.variables]
+env = true
+[preprocessor.variables.variables]
+git_file_base_url = "https://github.com/kraftnix/provision-nix/tree/master/"
 
 # [preprocessor.cmdrun]
 

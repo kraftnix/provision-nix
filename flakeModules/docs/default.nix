@@ -119,15 +119,15 @@ in {
                 substituteSiteRoot = "s/file:\\/\\/${escapedNixStorePath}\\//${escapedSiteRootPath}/";
               in
                 pkgs.stdenvNoCC.mkDerivation {
-                  name = "docs-mdbook-${site.name}";
+                  name = "docs-options-${site.name}-${name}-filtered";
                   buildInputs = [pkgs.gnused];
                   src = config.packages."docs-options-${site.name}-${name}-base";
                   unpackPhase = ''
-                    cp $src .
+                    cp $src options.md
                   '';
                   buildPhase = ''
                     runHook preBuild
-                    sed '${removeNixStorePath}' ${config.packages."docs-options-${site.name}-${name}-base"} > path-filtered.md
+                    sed '${removeNixStorePath}' options.md > path-filtered.md
                     sed '${substituteSiteRoot}' path-filtered.md > link-filtered.md
                     cp link-filtered.md $out
                     runHook postBuild
@@ -191,6 +191,7 @@ in {
             # pkgs.mdbook-cmdrun
             pkgs.nushell
             localFlake.self.packages.${pkgs.system}.mdbook-linkfix
+            localFlake.self.packages.${pkgs.system}.mdbook-variables
             localFlake.self.packages.${pkgs.system}.yapp
             localFlake.self.packages.${pkgs.system}.simple-replace
             # config.packages.mdbook-theme
@@ -212,7 +213,7 @@ in {
             # hacky way to inject a link back to a homepage, styled in the same way as the Summary items
             if [[ -n "$HOMEPAGE_URL" ]]; then
               local search='<!--HACKY_HOMEPAGE_REPLACE-->'
-              local replace="<ol class=\"chapter\"><li class=\"part-title\"><a href=\"$HOMEPAGE_URL\">$HOMEPAGE_BODY</a></li></ol>"
+              local replace="<ol class=\"chapter\"><li class=\"part-title homepage-url\"><a href=\"$HOMEPAGE_URL\">$HOMEPAGE_BODY</a></li></ol>"
               simple-replace $search "$replace" .
             fi
 
