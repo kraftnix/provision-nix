@@ -18,6 +18,7 @@ in {
       description = "host to use for options evaluation";
       type = types.lazyAttrsOf types.raw;
       default = defaults.hostOptions;
+      defaultText = literalExpression "defaults.hostOptions";
       example = literalExpression ''
         # gather `flake-parts` options from current flake
         flake-parts-lib.evalFlakeModule

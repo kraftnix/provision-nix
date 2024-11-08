@@ -8,7 +8,7 @@
   pkgs,
   ...
 }: let
-  inherit (lib) filterAttrs mapAttrs mapAttrsToList mkDefault mkOption mkMerge mkIf types;
+  inherit (lib) filterAttrs literalExpression mapAttrs mapAttrsToList mkDefault mkOption mkMerge mkIf types;
   opts = self.lib.options;
   cfg = config.provision.nix;
   enabledSubstituters = filterAttrs (_: s: s.enable) cfg.substituters;
@@ -49,10 +49,10 @@ in {
     flakes = {
       enable = opts.enable "enable basic flakes usage (--experimental-features)";
       inputs = mkOption {
+        description = "Flake inputs to add to nix-path and registry";
         type = with types; attrsOf unspecified;
         default = {};
-        example = inputs;
-        description = "Flake inputs to add to nix-path and registry";
+        example = literalExpression "inputs";
       };
       registry = mkOption {
         description = "registry entries to add, expects set(name -> input)";

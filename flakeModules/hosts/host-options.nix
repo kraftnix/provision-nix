@@ -28,7 +28,8 @@ in {
       description = "reference to current flake-parts self";
       type = types.lazyAttrsOf types.unspecified;
       default = config._module.args.self;
-      example = literalExpression "self.outPath";
+      defaultText = literalExpression "self";
+      example = literalExpression "self";
     };
     nixpkgs = mkOption {
       description = ''

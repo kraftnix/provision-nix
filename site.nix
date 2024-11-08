@@ -30,66 +30,52 @@ localFlake: let
             systems = [(throw "The `systems` option value is not available when generating documentation. This is generally caused by a missing `defaultText` on one or more options in the trace. Please run this evaluation with `--show-trace`, look for `while evaluating the default value of option` and add a `defaultText` to the one or more of the options involved.")];
           })
         .options;
-      filter =
-        option: let
-          flakeEnabled = (
-            builtins.elemAt option.loc 0
-            == "flake"
-            && builtins.length option.loc > 1
-          );
-          perSystemEnabled = (
-            builtins.elemAt option.loc 0
-            == "perSystem"
-            && builtins.length option.loc > 1
-          );
-        in
-          (flakeEnabled
-            && (
-              (builtins.elemAt option.loc 1 == "docs")
-              && option.loc != ["flake" "docs" "sites" "<name>" "defaults" "hostOptions"]
-              && option.loc != ["flake" "docs" "sites" "<name>" "docgen" "<name>" "hostOptions"]
-              || (builtins.elemAt option.loc 1 == "hosts")
-              && option.loc != ["flake" "hosts" "defaults" "self"]
-              && option.loc != ["flake" "hosts" "configs" "<name>" "self"]
-              || (builtins.elemAt option.loc 1 == "lib")
-              || (builtins.elemAt option.loc 1 == "profiles")
-              || (lib.hasPrefix "homeModules" (builtins.elemAt option.loc 1))
-              || (builtins.elemAt option.loc 1 == "nixosModules'")
-              || (builtins.elemAt option.loc 1 == "nixosModulesAll")
-              || (builtins.elemAt option.loc 1 == "scripts")
-              || (builtins.elemAt option.loc 1 == "__provision")
-            ))
-          || (perSystemEnabled
-            && (
-              (builtins.elemAt option.loc 1 == "channels")
-              || (builtins.elemAt option.loc 1 == "packagesGroups")
-              || (builtins.elemAt option.loc 1 == "scripts")
-            ))
-        # ||
-        # (builtins.elemAt option.loc 0 == "perSystem" && (builtins.length option.loc == 1))
-        ;
+      filter = option: let
+        flakeEnabled = (
+          builtins.elemAt option.loc 0
+          == "flake"
+          && builtins.length option.loc > 1
+        );
+        perSystemEnabled = (
+          builtins.elemAt option.loc 0
+          == "perSystem"
+          && builtins.length option.loc > 1
+        );
+        loc1 = name: builtins.elemAt option.loc 1 == name;
+      in
+        (flakeEnabled
+          && (
+            (loc1 "docs")
+            || (loc1 "hosts")
+            || (loc1 "lib")
+            || (loc1 "profiles")
+            || (lib.hasPrefix "homeModules" (builtins.elemAt option.loc 1))
+            || (loc1 "nixosModules'")
+            || (loc1 "nixosModulesAll")
+            || (loc1 "scripts")
+            || (loc1 "__provision")
+          ))
+        || (perSystemEnabled
+          && (
+            (loc1 "channels")
+            || (loc1 "packagesGroups")
+            || (loc1 "scripts")
+          ));
     };
     docgen.nixos-all.filter = option:
-      (
-        builtins.elemAt option.loc 0
-        == "provision"
-        # NOTE: tofix
-        && option.loc != ["provision" "scripts" "scripts" "<name>" "file"]
-        && option.loc != ["provision" "nix" "flakes" "inputs"]
-        && option.loc != ["provision" "fs" "zfs" "kernel" "latest"]
-      )
+      builtins.elemAt option.loc 0
+      == "provision"
       || (
         builtins.elemAt option.loc 0
         == "networking"
         && builtins.elemAt option.loc 1 == "nftables"
         && builtins.elemAt option.loc 2 == "gen"
       );
-    docgen.nixos-nftables.filter = option: (
+    docgen.nixos-nftables.filter = option:
       builtins.elemAt option.loc 0
       == "networking"
       && builtins.elemAt option.loc 1 == "nftables"
-      && builtins.elemAt option.loc 2 == "gen"
-    );
+      && builtins.elemAt option.loc 2 == "gen";
   };
 in {
   flake.docs = {

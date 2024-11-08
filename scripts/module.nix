@@ -23,16 +23,17 @@ in {
     enable = opts.enableTrue "enable script, auto-matically adds script to packages";
     name = opts.string config._module.args.name "script name, also used as name of binary";
     file = mkOption {
-      default = builtins.toFile "${config.name}.nu" config.text;
-      type = types.path;
       description = "optionally set script file path, recommended for script files which only contain a single main";
-      example = "./fill.nu";
+      type = types.path;
+      default = builtins.toFile "${config.name}.nu" config.text;
+      defaultText = literalExpression ''builtins.toFile "${config.name}.nu" config.text'';
+      example = literalExpression "./fill.nu";
     };
     nuLibDirs = mkOption {
       type = with types; nullOr path;
       description = "sets NU_LIB_DIRS in nushell scripts";
       default = defaultLibDirs;
-      example = "./nu";
+      example = literalExpression "./nu";
     };
     nuModule = mkOption {
       type = with types; nullOr path;
