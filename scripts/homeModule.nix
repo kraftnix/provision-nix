@@ -14,7 +14,7 @@ in {
       Enabled scripts are added to `home.packages` by name if `scripts.addToPackages` is set.
     '';
     type = types.submoduleWith {
-      specialArgs = {};
+      specialArgs.pkgs = pkgs;
       modules = [(import ./submodule.nix localFlake)];
     };
     default = {};
@@ -36,7 +36,8 @@ in {
     '';
   };
 
-  config = mkIf cfg.enable {
-    home.packages = mkIf cfg.addToPackages (mapAttrsToList (_: c: c.package) cfg.__enabledScripts);
+  config = {
+    provision.scripts.pkgs = pkgs;
+    home.packages = mkIf (cfg.enable && cfg.addToPackages) (mapAttrsToList (_: c: c.package) cfg.__enabledScripts);
   };
 }

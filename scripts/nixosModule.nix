@@ -1,6 +1,7 @@
 localFlake: {
   config,
   lib,
+  pkgs,
   ...
 }: let
   inherit (lib) literalExpression mapAttrsToList mkIf mkOption types;
@@ -13,7 +14,7 @@ in {
       Enabled scripts are added to `environment.systemPackages` by name if `scripts.addToPackages` is set.
     '';
     type = types.submoduleWith {
-      specialArgs = {};
+      specialArgs.pkgs = pkgs;
       modules = [(import ./submodule.nix localFlake)];
     };
     default = {};
@@ -35,7 +36,8 @@ in {
     '';
   };
 
-  config = mkIf cfg.enable {
-    environment.systemPackages = mkIf cfg.addToPackages (mapAttrsToList (_: c: c.package) cfg.__enabledScripts);
+  config = {
+    provision.scripts.pkgs = pkgs;
+    environment.systemPackages = mkIf (cfg.enable && cfg.addToPackages) (mapAttrsToList (_: c: c.package) cfg.__enabledScripts);
   };
 }
