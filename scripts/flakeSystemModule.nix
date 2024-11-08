@@ -29,6 +29,7 @@ in
             '';
             type = types.pkgs;
             default = {};
+            defaultText = literalExpression "{}";
           };
           addToPackages = opts.enableTrue "adds all scripts to flake's `packages.<system>`";
           defaultShell = opts.string "nu" "set default shell for all scripts";

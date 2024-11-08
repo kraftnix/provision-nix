@@ -25,7 +25,7 @@ localFlake: let
               localFlake.self.flakeModules.nixosModulesExtended
               localFlake.self.flakeModules.packagesGroups
               localFlake.self.flakeModules.profiles
-              # localFlake.self.flakeModules.scripts
+              localFlake.self.flakeModules.scripts
             ];
             systems = [(throw "The `systems` option value is not available when generating documentation. This is generally caused by a missing `defaultText` on one or more options in the trace. Please run this evaluation with `--show-trace`, look for `while evaluating the default value of option` and add a `defaultText` to the one or more of the options involved.")];
           })

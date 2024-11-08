@@ -113,6 +113,7 @@ in {
           description = "all nixos modules from `nixosModules'` before being filtered by `filterAll`";
           type = with types; listOf raw;
           default = lib.attrValues (self.nixosModules);
+          defaultText = literalExpression "[]";
           readOnly = true;
         };
       };

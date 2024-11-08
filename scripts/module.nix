@@ -83,17 +83,10 @@ in {
         else null;
       description = "setting of `writeShellApplication`, if null runs a default bash one";
     };
-    runtimeShell =
-      opts.package
-      (
-        if lib.hasPrefix "nu" config.shell
-        then pkgs.nushell
-        else if config.shell == "zsh"
-        then pkgs.zsh
-        else if config.shell == "sh"
-        then pkgs.sh
-        else pkgs.bash
-      ) "shell package";
+    runtimeShell = mkOption {
+      description = "runtime shell package.";
+      type = types.package;
+    };
     inputs = mkOption {
       type = with types; listOf package;
       default = [];
@@ -126,65 +119,78 @@ in {
         ]
       '';
     };
+    package = mkOption {
+      description = "package binary for running script";
+      type = types.package;
+      defaultText = "";
+    };
+  };
+
+  config = {
+    runtimeShell =
+      if lib.hasPrefix "nu" config.shell
+      then pkgs.nushell
+      else if config.shell == "zsh"
+      then pkgs.zsh
+      else if config.shell == "sh"
+      then pkgs.sh
+      else pkgs.bash;
     package =
-      opts.package
-      (
-        if lib.hasPrefix "nu" config.shell
-        then
-          (
-            if config.nuModule != null
-            then
-              pkgs.writeShellApplication
-              ({
-                  inherit (config) name checkPhase;
-                  runtimeInputs = [config.runtimeShell] ++ config.inputs;
-                  runtimeEnv = config.env;
-                  text = ''
-                    command=$(cat << EOM
-                      source ${config.nuModule}
-                      ${config.name} ''${@}
-                    EOM
-                    )
-                    nu ${
-                      optionalString (config.nuLibDirs != null)
-                      "--env-config ${makeEnv config.name config.nuLibDirs}"
-                    } -c "$command"
-                  '';
-                }
-                // config.extraConfig)
-            else
-              pkgs.writeTextFile {
-                inherit (config) name;
-                executable = true;
-                destination = "/bin/${config.name}";
-                #!${config.runtimeShell}/bin/${config.shell} --env-config ${makeEnv config.name config.nuLibDirs}
-                # source ${makeEnv config.name config.nuLibDirs}
+      if lib.hasPrefix "nu" config.shell
+      then
+        (
+          if config.nuModule != null
+          then
+            pkgs.writeShellApplication
+            ({
+                inherit (config) name checkPhase;
+                runtimeInputs = [config.runtimeShell] ++ config.inputs;
+                runtimeEnv = config.env;
                 text = ''
-                  #!${config.runtimeShell}/bin/${config.shell}
-                  ${optionalString (config.env != null) ''
-                    load-env (open ${builtins.toFile "${config.name}-env.json" (builtins.toJSON config.env)})
-                  ''}
-                  ${optionalString (config.inputs != []) ''
-                    $env.PATH = ($env.PATH | append ${lib.makeBinPath config.inputs})
-                  ''}
-                  ${optionalString (config.nuLibDirs != null) ''
-                    $env.NU_LIB_DIRS = ($env.NU_LIB_DIRS | append ${config.nuLibDirs})
-                  ''}
-
-                  ## imported from ${config.file}
-
-                  ${builtins.readFile config.file}
+                  command=$(cat << EOM
+                    source ${config.nuModule}
+                    ${config.name} ''${@}
+                  EOM
+                  )
+                  nu ${
+                    optionalString (config.nuLibDirs != null)
+                    "--env-config ${makeEnv config.name config.nuLibDirs}"
+                  } -c "$command"
                 '';
-                meta.mainProgram = config.name;
               }
-          )
-        else
-          pkgs.writeShellApplication ({
-              inherit (config) name checkPhase text;
-              runtimeInputs = [config.runtimeShell] ++ config.inputs;
-              runtimeEnv = config.env;
+              // config.extraConfig)
+          else
+            pkgs.writeTextFile {
+              inherit (config) name;
+              executable = true;
+              destination = "/bin/${config.name}";
+              #!${config.runtimeShell}/bin/${config.shell} --env-config ${makeEnv config.name config.nuLibDirs}
+              # source ${makeEnv config.name config.nuLibDirs}
+              text = ''
+                #!${config.runtimeShell}/bin/${config.shell}
+                ${optionalString (config.env != null) ''
+                  load-env (open ${builtins.toFile "${config.name}-env.json" (builtins.toJSON config.env)})
+                ''}
+                ${optionalString (config.inputs != []) ''
+                  $env.PATH = ($env.PATH | append ${lib.makeBinPath config.inputs})
+                ''}
+                ${optionalString (config.nuLibDirs != null) ''
+                  $env.NU_LIB_DIRS = ($env.NU_LIB_DIRS | append ${config.nuLibDirs})
+                ''}
+
+                ## imported from ${config.file}
+
+                ${builtins.readFile config.file}
+              '';
+              meta.mainProgram = config.name;
             }
-            // config.extraConfig)
-      ) "package binary for running script";
+        )
+      else
+        pkgs.writeShellApplication ({
+            inherit (config) name checkPhase text;
+            runtimeInputs = [config.runtimeShell] ++ config.inputs;
+            runtimeEnv = config.env;
+          }
+          // config.extraConfig);
   };
 }
