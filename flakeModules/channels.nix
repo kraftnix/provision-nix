@@ -9,6 +9,7 @@
     (lib)
     literalExpression
     mapAttrs
+    mkDefault
     mkOption
     types
     ;
@@ -71,7 +72,7 @@
       };
     };
     config = {
-      input = inputs.${config.inputName};
+      input = mkDefault inputs.${config.inputName};
       pkgs = import config.input ({
           inherit (pkgs) system;
           overlays = config.overlays;

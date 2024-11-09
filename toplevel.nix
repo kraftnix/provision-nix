@@ -81,7 +81,7 @@ in {
     };
     lnav = final: prev: {
       # https://github.com/tstack/lnav/issues/1291
-      lnav = prev.channels.stable.lnav;
+      lnav = final.channels.stable.lnav;
       # lnav = prev.lnav.overrideAttrs (self: {
       #   nativeBuildInputs = self.nativeBuildInputs ++ [prev.tzdata];
       #   buildInputs = self.buildInputs ++ [prev.tzdata];
