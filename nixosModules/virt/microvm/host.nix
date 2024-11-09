@@ -43,6 +43,8 @@ in {
       source = lib.mkForce "${pkgs.qemu}/libexec/qemu-bridge-helper";
     };
 
+    networking.firewall.interfaces.${cfg.network.basic.name}.allowedUDPPorts = [67];
+
     networking.nat = mkIf cfg.network.nat.enable {
       enable = true;
       enableIPv6 = true;
