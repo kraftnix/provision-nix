@@ -12,7 +12,7 @@ localFlake: {
     mkOption
     types
     ;
-  cfg = self.provision;
+  cfg = self.auto-import;
   defaultOpts = (import ./options.nix {inherit lib;}).options;
   genSpecialArgs = class: {
     inherit class localFlake moduleLocation;
@@ -20,7 +20,7 @@ localFlake: {
   };
 in {
   options.flake = flake-parts-lib.mkSubmoduleOptions {
-    provision = {
+    auto-import = {
       enable = mkEnableOption "enable auto-importing modules";
       addTo = defaultOpts.addTo;
       flakeArgs = defaultOpts.flakeArgs;
@@ -71,7 +71,7 @@ in {
     };
 
     flakeModules = mkIf (cfg.enable && cfg.flake.addTo.modules) cfg.flake.modules';
-    provision.flake.genImport = n: c: {
+    auto-import.flake.genImport = n: c: {
       key = "${toString moduleLocation}#flakeModules.${n}";
       _file = "${toString moduleLocation}#flakeModules.${n}";
       _class = "flake";

@@ -7,7 +7,7 @@
   flake.hosts = {
     hostsDir = ./.;
 
-    defaults.modules = self.provision.nixos.all;
+    defaults.modules = self.auto-import.nixos.all;
     defaults.overlays = [
       self.overlays.lib
       self.overlays.lnav

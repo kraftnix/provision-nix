@@ -20,7 +20,7 @@ in {
       channels = ./flakeModules/channels;
       lib = ./flakeModules/lib.nix;
       profiles = ./flakeModules/profiles.nix;
-      nixosModulesExtended = ./flakeModules/auto-import;
+      auto-import = ./flakeModules/auto-import;
       scripts = ./scripts/flakeModule.nix;
       docs = ./flakeModules/docs;
       site = ./site.nix;
@@ -31,7 +31,7 @@ in {
       inherit lib;
       extra-lib = inputs.extra-lib.lib;
     };
-    provision = {
+    auto-import = {
       enable = true;
       flakeArgs = localFlake;
       addTo = {

@@ -6,7 +6,7 @@
   ...
 }: {
   imports = [
-    self.provision.nixos.modules.virt.microvm.vm
+    self.auto-import.nixos.modules.virt.microvm.vm
     inputs.microvm.nixosModules.microvm
     profiles.users.test-operator
     profiles.users.test-deploy
