@@ -1,10 +1,4 @@
-localFlake @ {flake-parts-lib, ...}: {
-  # imports = [ (flake-parts-lib.importApply ./flakeModule.nix localFlake) ];
-
-  flake.nixos.modules.provision.scripts = ./nixosModule.nix;
-  flake.homeModulesFlakeArgs = localFlake;
-  flake.homeModules.provision.scripts = ./homeModule.nix;
-
+{flake-parts-lib, ...}: {
   perSystem = {pkgs, ...}: {
     scripts.defaultLibDirs = ./nu;
     scripts.scripts = {

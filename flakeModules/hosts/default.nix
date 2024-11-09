@@ -1,4 +1,4 @@
-{
+localFlake: {
   config,
   self,
   inputs,
@@ -157,9 +157,7 @@ in {
         config.defaults = mapDefault {
           inherit self;
           system = "x86_64-linux";
-          # modules = self.modules.default;
-          modules = self.provision.nixos.all;
-          # modules = [];
+          modules = [];
           specialArgs = mapDefault {
             inherit self;
             inherit (self) inputs nixosModules profiles;

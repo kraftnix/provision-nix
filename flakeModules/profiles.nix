@@ -1,5 +1,4 @@
-{
-  self,
+localFlake: {
   lib,
   flake-parts-lib,
   moduleLocation,

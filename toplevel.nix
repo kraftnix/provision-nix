@@ -7,45 +7,51 @@ localFlake @ {
 }: let
   l = lib;
   inherit (flake-parts-lib) importApply;
-  flakeModules = {
-    hosts = ./flakeModules/hosts/hosts.nix;
-    packagesGroups = ./flakeModules/packagesGroups.nix;
-    channels = ./flakeModules/channels.nix;
-    lib = ./flakeModules/lib.nix;
-    profiles = ./flakeModules/profiles.nix;
-    home = ./flakeModules/home-module.nix;
-    nixosModulesExtended = importApply ./flakeModules/nixos-module-wrapper.nix localFlake;
-    scripts = importApply ./scripts/flakeModule.nix localFlake;
-    docs = importApply ./flakeModules/docs localFlake;
-    site = importApply ./site.nix localFlake;
-  };
-  provision = import ./lib {
-    inherit lib;
-    extra-lib = inputs.extra-lib.lib;
-  };
-  flakeModulesAll = l.attrValues flakeModules;
 in {
   imports =
     [
       inputs.flake-parts.flakeModules.easyOverlay
+      ./scripts
     ]
-    ++ (l.attrValues flakeModules);
+    # we can't import `provison.flake.all` due to infinite cursion
+    ++ (l.mapAttrsToList (_: c: importApply c localFlake) {
+      hosts = ./flakeModules/hosts;
+      packagesGroups = ./flakeModules/packagesGroups.nix;
+      channels = ./flakeModules/channels;
+      lib = ./flakeModules/lib.nix;
+      profiles = ./flakeModules/profiles.nix;
+      nixosModulesExtended = ./flakeModules/auto-import;
+      scripts = ./scripts/flakeModule.nix;
+      docs = ./flakeModules/docs;
+      site = ./site.nix;
+    });
 
   flake = {
-    inherit flakeModules flakeModulesAll;
-    lib = provision;
-    __provision.nixosModules.flakeArgs = localFlake;
-    __provision.nixosModules.dir = ./nixosModules;
-    __provision.nixosModules.filterByPath = [
-      ["virt" "microvm" "vm"]
-      # [ "provision" "scripts" ]
-    ];
-    provision.nixos.addTo = {
-      fpModules = true;
-      nixosModules = true;
+    lib = import ./lib {
+      inherit lib;
+      extra-lib = inputs.extra-lib.lib;
     };
-    provision.nixos.dir = ./nixosModules;
-    provision.nixos.flakeArgs = localFlake;
+    provision = {
+      enable = true;
+      flakeArgs = localFlake;
+      addTo = {
+        flakeParts = true;
+        modules = true;
+      };
+      flake = {
+        dir = ./flakeModules;
+        modules.scripts = ./scripts/flakeModule.nix;
+      };
+      nixos = {
+        dir = ./nixosModules;
+        filterByPath = [
+          ["virt" "microvm" "vm"]
+          # [ "provision" "scripts" ]
+        ];
+        modules.provision.scripts = ./scripts/nixosModule.nix;
+      };
+      home.modules.provision.scripts = ./scripts/homeModule.nix;
+    };
 
     profiles = lib.recursiveUpdate (self.lib.nix.rakeLeaves ./profiles) {
       users = {
@@ -81,7 +87,7 @@ in {
   flake.overlays = {
     lib = final: prev: {
       lib = prev.lib.extend (_: _: {
-        inherit provision;
+        provision = self.lib;
         # siteBase = "/projects/provision-nix/";
       });
     };

@@ -47,7 +47,7 @@ in {
         StreamLocalBindUnlink yes
       '';
     };
-    networking.firewall.allowedTCPPorts = mkIf (cfg.openFirewallAll && (cfg.allowedInterfaces != [])) cfg.ports;
+    networking.firewall.allowedTCPPorts = mkIf cfg.openFirewallAll cfg.ports;
     networking.firewall.interfaces = lib.genAttrs cfg.allowedInterfaces (name: {
       allowedTCPPorts = cfg.ports;
     });

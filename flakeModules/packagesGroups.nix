@@ -1,4 +1,4 @@
-{
+localFlake: {
   lib,
   flake-parts-lib,
   ...

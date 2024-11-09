@@ -27,6 +27,7 @@ Usage:
   imports = [ inputs.provision-nix.flakeModules.channels ];
   perSystem = { config, ... }: {
     channels.nixpkgs = {
+      addChannelsOverlay = true; # default
       config.permittedInsecurePackages = [ "electron-28.3.3" ];
       config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
         "steam"
@@ -34,7 +35,6 @@ Usage:
         "steam-run"
       ];
       overlays = [
-        self.overlays.channels
         (final: prev: {
           inherit (final.channels.stable)
             prometheus

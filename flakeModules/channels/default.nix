@@ -1,4 +1,4 @@
-{
+localFlake: {
   self,
   inputs,
   lib,
@@ -25,6 +25,12 @@
     ...
   }: {
     options = {
+      addChannelsOverlay = mkOption {
+        description = "insert self `channels` overlay to each channel";
+        type = types.bool;
+        default = true;
+        example = false;
+      };
       inputName = mkOption {
         description = "Name of `nixpkgs` input to use as channel base.";
         type = types.str;
@@ -41,6 +47,10 @@
         '';
         type = types.listOf overlayType;
         default = [];
+        apply = os:
+          if config.addChannelsOverlay
+          then [self.overlays.channels] ++ os
+          else os;
       };
       extraArgs = mkOption {
         description = ''

@@ -51,15 +51,14 @@ localFlake: let
           {inputs.self = localFlake.self;}
           {
             imports = [
-              localFlake.self.flakeModules.channels
-              localFlake.self.flakeModules.docs
-              localFlake.self.flakeModules.home
-              localFlake.self.flakeModules.hosts
-              localFlake.self.flakeModules.lib
-              localFlake.self.flakeModules.nixosModulesExtended
-              localFlake.self.flakeModules.packagesGroups
-              localFlake.self.flakeModules.profiles
-              localFlake.self.flakeModules.scripts
+              localFlake.self.provision.flake.modules.auto-import
+              localFlake.self.provision.flake.modules.channels
+              localFlake.self.provision.flake.modules.docs
+              localFlake.self.provision.flake.modules.hosts
+              localFlake.self.provision.flake.modules.lib
+              localFlake.self.provision.flake.modules.packagesGroups
+              localFlake.self.provision.flake.modules.profiles
+              localFlake.self.provision.flake.modules.scripts
             ];
             systems = [(throw "The `systems` option value is not available when generating documentation. This is generally caused by a missing `defaultText` on one or more options in the trace. Please run this evaluation with `--show-trace`, look for `while evaluating the default value of option` and add a `defaultText` to the one or more of the options involved.")];
           })
@@ -83,6 +82,7 @@ localFlake: let
             || (loc1 "hosts")
             || (loc1 "lib")
             || (loc1 "profiles")
+            || (loc1 "provision")
             || (lib.hasPrefix "homeModules" (builtins.elemAt option.loc 1))
             || (loc1 "nixosModules'")
             || (loc1 "nixosModulesAll")
