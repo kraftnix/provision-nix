@@ -14,11 +14,11 @@
   ];
   boot.loader.systemd-boot.enable = true;
 
-  provision.defaults.enable = true;
-  provision.core.shell.enable = true;
-  provision.core.env.enable = true;
-  provision.nix.basic = true;
-  provision.nix.flakes.enable = true;
+  # provision.defaults.enable = true;
+  # provision.core.shell.enable = true;
+  # provision.core.env.enable = true;
+  # provision.nix.basic = true;
+  # provision.nix.flakes.enable = true;
 
   services.openssh.enable = true;
   networking.firewall.allowedTCPPorts = [22];

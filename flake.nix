@@ -93,6 +93,7 @@
     flake-parts.lib.mkFlake {inherit inputs;} {
       debug = true;
       imports = [
+        flake-parts.flakeModules.modules
         ./disko
         ./hosts
         ./install

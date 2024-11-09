@@ -157,7 +157,9 @@ in {
         config.defaults = mapDefault {
           inherit self;
           system = "x86_64-linux";
-          modules = self.modules.default;
+          # modules = self.modules.default;
+          modules = self.provision.nixos.all;
+          # modules = [];
           specialArgs = mapDefault {
             inherit self;
             inherit (self) inputs nixosModules profiles;

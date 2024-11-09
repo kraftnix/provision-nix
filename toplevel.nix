@@ -14,7 +14,7 @@ localFlake @ {
     lib = ./flakeModules/lib.nix;
     profiles = ./flakeModules/profiles.nix;
     home = ./flakeModules/home-module.nix;
-    nixosModulesExtended = ./flakeModules/nixos-module-wrapper.nix;
+    nixosModulesExtended = importApply ./flakeModules/nixos-module-wrapper.nix localFlake;
     scripts = importApply ./scripts/flakeModule.nix localFlake;
     docs = importApply ./flakeModules/docs localFlake;
     site = importApply ./site.nix localFlake;
@@ -40,6 +40,12 @@ in {
       ["virt" "microvm" "vm"]
       # [ "provision" "scripts" ]
     ];
+    provision.nixos.addTo = {
+      fpModules = true;
+      nixosModules = true;
+    };
+    provision.nixos.dir = ./nixosModules;
+    provision.nixos.flakeArgs = localFlake;
 
     profiles = lib.recursiveUpdate (self.lib.nix.rakeLeaves ./profiles) {
       users = {
