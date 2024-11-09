@@ -1,13 +1,16 @@
 {
-  self,
   config,
   lib,
+  name,
+  colmena,
+  self,
   ...
 }: let
   inherit
     (lib)
     literalExpression
     mkOption
+    recursiveUpdate
     types
     ;
   overlayType = lib.mkOptionType {
@@ -26,8 +29,8 @@ in {
     };
     self = mkOption {
       description = "reference to current flake-parts self";
-      type = types.lazyAttrsOf types.unspecified;
-      default = config._module.args.self;
+      type = with types; lazyAttrsOf unspecified;
+      default = self;
       defaultText = literalExpression "self";
       example = literalExpression "self";
     };
@@ -71,7 +74,7 @@ in {
     };
     specialArgs = mkOption {
       description = "extra arguments to add to `specialArgs` in `eval-config.nix`";
-      type = types.lazyAttrsOf types.raw;
+      type = with types; lazyAttrsOf raw;
       default = {};
       example = literalExpression ''
         {
@@ -81,12 +84,9 @@ in {
     };
     colmena = mkOption {
       description = "extra arguments to add in flake `colmena.<host>.deployment`";
-      type = types.raw;
+      type = with types; attrsOf anything;
       default = {};
-      apply = lib.recursiveUpdate (config._module.args.colmena
-        // {
-          targetHost = config._module.args.name;
-        });
+      apply = recursiveUpdate (colmena // {targetHost = name;});
       example = literalExpression ''
         {
           targetPort = 22;
@@ -96,9 +96,9 @@ in {
     };
     deploy = mkOption {
       description = "extra arguments to add in flake `deploy.nodes.<host>`";
-      type = types.raw;
+      type = with types; attrsOf anything;
       default = {};
-      apply = lib.recursiveUpdate {
+      apply = recursiveUpdate {
         hostname = config.colmena.targetHost;
       };
       example = literalExpression ''
