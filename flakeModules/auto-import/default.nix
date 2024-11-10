@@ -7,6 +7,7 @@ localFlake: {
 }: let
   inherit
     (lib)
+    mkDefault
     mkIf
     mkEnableOption
     mkOption
@@ -61,16 +62,12 @@ in {
   };
 
   config.flake = {
+    homeManagerModules = mkIf (cfg.enable && cfg.homeManager.addTo.modules) cfg.homeManager.modules';
     nixosModules = mkIf (cfg.enable && cfg.nixos.addTo.modules) cfg.nixos.__flattened;
-    nixosModules' = mkIf cfg.enable cfg.nixos.modules';
-
-    modules = mkIf cfg.enable {
-      nixos = mkIf cfg.nixos.addTo.flakeParts cfg.nixos.__flattened;
-      flake = mkIf cfg.flake.addTo.flakeParts cfg.flake.__flattened;
-      homeManager = mkIf cfg.homeManager.addTo.flakeParts cfg.homeManager.__flattened;
-    };
-
-    flakeModules = mkIf (cfg.enable && cfg.flake.addTo.modules) cfg.flake.modules';
+    flakeModules =
+      if (cfg.enable && cfg.flake.addTo.modules)
+      then cfg.flake.modules'
+      else mkDefault {};
     auto-import.flake.genImport = n: c: {
       key = "${toString moduleLocation}#flakeModules.${n}";
       _file = "${toString moduleLocation}#flakeModules.${n}";
@@ -78,6 +75,10 @@ in {
       imports = [c];
     };
 
-    homeManagerModules = mkIf (cfg.enable && cfg.homeManager.addTo.modules) cfg.homeManager.modules';
+    modules = mkIf cfg.enable {
+      nixos = mkIf cfg.nixos.addTo.flakeParts cfg.nixos.__flattened;
+      flake = mkIf cfg.flake.addTo.flakeParts cfg.flake.__flattened;
+      homeManager = mkIf cfg.homeManager.addTo.flakeParts cfg.homeManager.__flattened;
+    };
   };
 }
