@@ -83,16 +83,12 @@ in {
     peers = mkOption {
       default = {};
       type = types.attrsOf (types.submoduleWith {
-        modules = [
-          ./peer.nix
-          {
-            config._module.args = {
-              networkName = config.name;
-              inherit lib opts;
-              inherit (config) allowAll destination listenPort mask mtu persistentKeepAlive privateKeyFile subnet hubId mode firewall;
-            };
-          }
-        ];
+        specialArgs = {
+          networkName = config.name;
+          inherit lib opts;
+          inherit (config) allowAll destination listenPort mask mtu persistentKeepAlive privateKeyFile subnet hubId mode firewall;
+        };
+        modules = [./peer.nix];
       });
       description = "wireguard network module, contains peers";
     };

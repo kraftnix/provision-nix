@@ -25,14 +25,49 @@
   ];
 in {
   config = mkIf cfg.enable {
-    provision.networking.wireguard.p2p.currHost.networks = pipe enabledNetworks [
-      (filterAttrs (_: n: hasAttr cfg.currHost.name n.peers))
-      (mapAttrs (_: w: {
-        netdev = config.systemd.network.netdevs."40-${w.name}";
-        network = config.systemd.network.networks."40-${w.name}";
-        netdevUnit = config.systemd.network.units."40-${w.name}.netdev".text;
-        networkUnit = config.systemd.network.units."40-${w.name}.network".text;
-      }))
+    provision.networking.wireguard.p2p.currHost.networks = mkMerge [
+      (pipe enabledNetworks [
+        (mapAttrs (_: network: rec {
+          info = {
+            host = network.peers.${cfg.currHost.name};
+            peers = network.__renderedPeers;
+          };
+          wgQuick = {
+            inherit (info.host) listenPort mtu privateKeyFile;
+            address = "${info.host.ip}/${toString info.host.mask}";
+            peers =
+              mapAttrs (_: p: {
+                publicKey = p.pubkey;
+                inherit (p) endpoint allowedIPs persistentKeepAlive;
+              })
+              info.peers;
+          };
+          wgQuickFile = ''
+            [Interface]
+            Address = ${wgQuick.address}
+            PrivateKeyFile = ${wgQuick.privateKeyFile}
+            MTU = ${toString wgQuick.mtu}
+
+            ${builtins.concatStringsSep "\n" (mapAttrsToList (_: p: ''
+                [Peer]
+                PublicKey = ${p.pubkey}
+                AllowedIPs = ${builtins.concatStringsSep ", " p.allowedIPs}
+                ${lib.optionalString (p.endpoint != "") "Endpoint = ${p.endpoint}"}
+                PersistentKeepAlive = ${toString p.persistentKeepAlive}
+              '')
+              info.peers)}
+          '';
+        }))
+      ])
+      (pipe enabledNetworks [
+        (filterAttrs (_: n: hasAttr cfg.currHost.name n.peers))
+        (mapAttrs (_: w: {
+          netdev = config.systemd.network.netdevs."40-${w.name}";
+          network = config.systemd.network.networks."40-${w.name}";
+          netdevUnit = config.systemd.network.units."40-${w.name}.netdev".text;
+          networkUnit = config.systemd.network.units."40-${w.name}.network".text;
+        }))
+      ])
     ];
 
     systemd.network = {

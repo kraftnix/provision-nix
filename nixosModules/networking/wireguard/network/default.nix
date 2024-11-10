@@ -55,14 +55,17 @@ in {
     currHost = {
       name = opts.string config.networking.hostName "current host's user, looks host up in `networks`";
       networks = mkOption {
-        type = types.attrsOf (types.submodule {
+        type = types.attrsOf (types.submodule ({config, ...}: {
           options = {
+            info = opts.raw {} "(read-only) core information";
+            wgQuick = opts.raw {} "(read-only) wg-quick connection information";
+            wgQuickFile = opts.string "" "(read-only) wg-quick connection information";
             netdev = opts.raw {} "(read-only) nixos netdev link";
             network = opts.raw {} "(read-only) nixos network";
             netdevUnit = opts.string "" "(read-only) nixos netdev unit file";
             networkUnit = opts.string "" "(read-only) nixos network unit file";
           };
-        });
+        }));
         default = {};
         description = "(read-only) links to systemd network config and files";
       };
@@ -71,16 +74,12 @@ in {
       default = {};
       description = "wireguard networks to configure";
       type = types.attrsOf (types.submoduleWith {
-        modules = [
-          ./network.nix
-          {
-            config._module.args = {
-              inherit lib opts;
-              host = cfg.currHost.name;
-              interface = config.networking.nat.externalInterface;
-            };
-          }
-        ];
+        specialArgs = {
+          inherit lib opts;
+          host = cfg.currHost.name;
+          interface = config.networking.nat.externalInterface;
+        };
+        modules = [./network.nix];
       });
     };
   };
