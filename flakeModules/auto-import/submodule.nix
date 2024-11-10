@@ -12,6 +12,7 @@
     collect
     concatStringsSep
     elem
+    hasPrefix
     filterAttrs
     flatten
     isList
@@ -33,6 +34,7 @@
   ];
   filterNixosModules = filterAttrs (name: cfg: ! (elem name nixosModuleNameFilters));
   flattenedNixosModules = lib.pipe cfg.modules [
+    (lib.filterAttrsRecursive cfg.filterModules)
     (mapAttrsRecursiveCond builtins.isAttrs genPath)
     (collect isList)
     flatten
@@ -77,6 +79,13 @@ in {
           ["virt" "microvm" "vm"]
         ]
       '';
+    };
+    filterModules = mkOption {
+      description = "If set, apply this filter function to auto-imported modules from {dir}";
+      type = with types; functionTo (functionTo bool);
+      default = n: c: !(hasPrefix "__" n);
+      defaultText = literalExpression ''n: c: !(hasPrefix "__" n)'';
+      example = literalExpression "_: _: true";
     };
     class = mkOption {
       description = "Class to set by default for imports";
