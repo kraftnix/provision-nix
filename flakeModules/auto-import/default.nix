@@ -26,7 +26,7 @@ in {
       flakeArgs = defaultOpts.flakeArgs;
       nixos = mkOption {
         description = ''
-          Auto-imported nixos modules from `./dir`
+          Auto-imported nixos modules from {dir}
 
           NixOS modules set, less strict that `flake.nixosModules` since it can be recursiveAttrsOf config.
           Used to allow arbitrary nixosModule attrsets for exporting, to allow for grouping.
@@ -39,7 +39,7 @@ in {
       };
       flake = mkOption {
         description = ''
-          Auto-imported flake-parts modules from `./dir`
+          Auto-imported flake-parts modules from {dir}
         '';
         type = types.submoduleWith {
           specialArgs = genSpecialArgs "flake";
@@ -47,12 +47,12 @@ in {
         };
         default = {};
       };
-      home = mkOption {
+      homeManager = mkOption {
         description = ''
-          Auto-imported home-manager modules from `./dir`
+          Auto-imported home-manager modules from {dir}
         '';
         type = types.submoduleWith {
-          specialArgs = genSpecialArgs "home";
+          specialArgs = genSpecialArgs "homeManager";
           modules = [./submodule.nix ./options.nix];
         };
         default = {};
@@ -67,7 +67,7 @@ in {
     modules = mkIf cfg.enable {
       nixos = mkIf cfg.nixos.addTo.flakeParts cfg.nixos.__flattened;
       flake = mkIf cfg.flake.addTo.flakeParts cfg.flake.__flattened;
-      home = mkIf cfg.home.addTo.flakeParts cfg.home.__flattened;
+      homeManager = mkIf cfg.home.addTo.flakeParts cfg.homeManager.__flattened;
     };
 
     flakeModules = mkIf (cfg.enable && cfg.flake.addTo.modules) cfg.flake.modules';
@@ -78,7 +78,6 @@ in {
       imports = [c];
     };
 
-    homeModules = mkIf (cfg.enable && cfg.home.addTo.modules) cfg.home.__flattened;
-    homeModules' = mkIf cfg.enable cfg.home.modules';
+    homeManagerModules = mkIf (cfg.enable && cfg.homeManager.addTo.modules) cfg.homeManager.modules';
   };
 }

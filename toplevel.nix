@@ -50,7 +50,7 @@ in {
         ];
         modules.provision.scripts = ./scripts/nixosModule.nix;
       };
-      home.modules.provision.scripts = ./scripts/homeModule.nix;
+      homeManager.modules.provision.scripts = ./scripts/homeModule.nix;
     };
 
     profiles = lib.recursiveUpdate (self.lib.nix.rakeLeaves ./profiles) {

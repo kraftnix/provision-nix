@@ -94,6 +94,7 @@ in {
         nix-doc # An interactive Nix documentation tool
         nix-diff # Explain why two Nix derivations differ
         nix-init # Command line tool to generate Nix packages from URLs
+        nix-inspect # TUI to inspect nix expresions and configurations
         nix-ld # Run unpatched dynamic binaries on NixOS
         nix-melt # A ranger-like flake.lock viewer
         nix-output-monitor # nom, pretty build printing

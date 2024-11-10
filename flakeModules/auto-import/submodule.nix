@@ -20,7 +20,6 @@
     mapAttrsRecursive
     mapAttrsRecursiveCond
     mkIf
-    mkEnableOption
     mkOption
     nameValuePair
     pipe
@@ -70,7 +69,7 @@ in {
       default = {};
     };
     filterByPath = mkOption {
-      description = "list of attr path lists in `nixosModules'` to remove from `nixosModulesAll`";
+      description = "list of attr path lists in `modules'` to remove from {all}";
       type = with types; listOf (listOf str);
       default = [];
       example = literalExpression ''
@@ -78,6 +77,12 @@ in {
           ["virt" "microvm" "vm"]
         ]
       '';
+    };
+    class = mkOption {
+      description = "Class to set by default for imports";
+      type = types.str;
+      default = class;
+      example = "homeManager";
     };
     genImport = mkOption {
       description = "";
