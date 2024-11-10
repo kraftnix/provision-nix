@@ -67,7 +67,7 @@ in {
     modules = mkIf cfg.enable {
       nixos = mkIf cfg.nixos.addTo.flakeParts cfg.nixos.__flattened;
       flake = mkIf cfg.flake.addTo.flakeParts cfg.flake.__flattened;
-      homeManager = mkIf cfg.home.addTo.flakeParts cfg.homeManager.__flattened;
+      homeManager = mkIf cfg.homeManager.addTo.flakeParts cfg.homeManager.__flattened;
     };
 
     flakeModules = mkIf (cfg.enable && cfg.flake.addTo.modules) cfg.flake.modules';
