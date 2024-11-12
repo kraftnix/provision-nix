@@ -7,12 +7,9 @@ localFlake: {
     (localFlake.lib)
     concatStringsSep
     filterAttrs
-    flatten
-    literalExpression
     mapAttrs
     mapAttrs'
     mapAttrsToList
-    mkEnableOption
     mkOption
     nameValuePair
     replaceStrings
@@ -86,18 +83,14 @@ localFlake: {
     };
   };
 in {
-  options.perSystem = flake-parts-lib.mkPerSystemOption ({
-    config,
-    pkgs,
-    ...
-  }: {
+  options.perSystem = flake-parts-lib.mkPerSystemOption ({pkgs, ...}: {
     _file = ./perSystem.nix;
     options.sites = mkOption {
       description = "generated docs packages";
       default = {};
       type = types.attrsOf (types.submodule (siteConfig @ {
-        config,
         name,
+        config,
         ...
       }: {
         options = {
@@ -123,7 +116,7 @@ in {
           site = cfg.sites.${siteConfig.name};
         in {
           docgen =
-            mapAttrs (name: opt: rec {
+            mapAttrs (name: opt: {
             }) (filterEnable site.docgen);
 
           mdbook-pre = pkgs.stdenvNoCC.mkDerivation {
@@ -175,7 +168,8 @@ in {
               localFlake.self.packages.${pkgs.system}.simple-replace
               # config.packages.mdbook-theme
             ];
-            src = config.mdbook-pre;
+            # have to set as string or can't evaluate in nix repl
+            src = "${config.mdbook-pre}";
             HOMEPAGE_URL = site.homepage.url;
             HOMEPAGE_BODY = site.homepage.body;
             DOCSITE_BASE = "${site.homepage.url}${site.homepage.siteBase}";
@@ -212,12 +206,7 @@ in {
   });
 
   config.transposition.sites = {};
-  config.perSystem = {
-    config,
-    pkgs,
-    lib,
-    ...
-  }: {
+  config.perSystem = {config, ...}: {
     sites = mapAttrs (_: site: {}) (filterEnable cfg.sites);
     packages = mapAttrs' (name: site: nameValuePair "docs-mdbook-${name}" site.mdbook) config.sites;
   };
