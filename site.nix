@@ -92,6 +92,7 @@ localFlake: let
         || (perSystemEnabled
           && (
             (loc1 "channels")
+            || (loc1 "sites")
             || (loc1 "packagesGroups")
             || (loc1 "scripts")
           ));

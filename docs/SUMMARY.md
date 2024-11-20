@@ -33,6 +33,7 @@
 - [Intro](./flake/intro.md)
 - [Hosts](./flake/hosts.md)
 - [Channels](./flake/channels.md)
+- [Docs](./flake/docs.md)
 - [Full Flake Options Reference](./options/flake-all-options.md)
 
 ---
