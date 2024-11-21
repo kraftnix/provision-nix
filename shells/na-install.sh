@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 LUKS_KEY_LENGTH=${1:-128}
 
 # check env vars present
@@ -16,7 +18,14 @@ args=()
 # generate LUKS key
 if [[ -n "${NA_LUKS_PROVISION}" ]]; then
   echo "Encrypting with luks key length: $LUKS_KEY_LENGTH"
-  cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $LUKS_KEY_LENGTH | head -n 1 | tr -d '\n' > /tmp/root-luks.key
+  # see if user sets password
+  if [[ -n "${NA_LUKS_PASSWORD}" ]]; then
+    read -p "Enter your password: " -s LUKS_PASSWORD
+    echo $LUKS_PASSWORD > /tmp/root-luks.key
+  else
+    echo "Encrypting with luks key length: $LUKS_KEY_LENGTH"
+    cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $LUKS_KEY_LENGTH | head -n 1 | tr -d '\n' > /tmp/root-luks.key
+  fi
   args+=( '--disk-encryption-keys' '/tmp/root-luks.key' '/tmp/root-luks.key' )
 fi
 
