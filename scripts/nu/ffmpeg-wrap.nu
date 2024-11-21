@@ -190,7 +190,7 @@ module ffmpeg-wrap {
     let args = ($acceleration
       | append [ "-i" $input ]
       | append (($start != "") | maybeArgList "-ss" $start)
-      | append (($end != "") | maybeArgList "-t" $end)
+      | append (($end != "") | maybeArgList "-to" $end)
       | append ($compress | maybeArgList "-codec:v" $codec)
       | append ($compress | maybeArgList "-crf" ($crf | into string))
       | append (($compress and $preset != "") | maybeArgList "-preset" $preset)
