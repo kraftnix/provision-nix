@@ -18,6 +18,8 @@
       iptools.nuModule = ../scripts/nu/iptools.nu;
       iplink.nuModule = ../scripts/nu/iplink.nu;
       flake-archive.file = ../scripts/nu/flake-archive.nu;
+      ffmpeg-wrap.inputs = [pkgs.ffmpeg-full];
+      ffmpeg-wrap.nuModule = ../scripts/nu/ffmpeg-wrap.nu;
       ffmpeg-compress.inputs = [pkgs.ffmpeg-full];
       ffmpeg-compress.nuModule = ../scripts/nu/ffmpeg-compress.nu;
       dest.nuModule = ../scripts/nu/dest.nu;
