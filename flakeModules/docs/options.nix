@@ -48,6 +48,14 @@ in {
         default = defaults.substitution.outPath;
         example = literalExpression "self.outPath";
       };
+      gitRepoUrl = mkOption {
+        description = ''
+          URL of git repo
+        '';
+        type = types.str;
+        default = defaults.substitution.gitRepoUrl;
+        example = "https://github.com/kraftnix/provision-nix";
+      };
       gitRepoFilePath = mkOption {
         description = ''
           Base URL of git repo file browser, used for rewriting urls to source to the correct URL

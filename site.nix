@@ -5,7 +5,9 @@ localFlake: let
     defaults = {
       hostOptions = localFlake.self.nixosConfigurations.basic.options;
       substitution.outPath = localFlake.self.outPath;
-      substitution.gitRepoFilePath = "https://github.com/kraftnix/provision-nix/tree/master/";
+      substitution.gitRepoUrl = "https://gitea.home.lan/kraftnix/provision-nix";
+      # substitution.gitRepoFilePath = "https://github.com/kraftnix/provision-nix/tree/master/";
+      substitution.gitRepoFilePath = "https://gitea.home.lan/kraftnix/provision-nix/src/branch/master/";
     };
     homepage = {
       url = "http://localhost:8937";
@@ -121,6 +123,14 @@ in {
             body = "Homepage";
             siteBase = "/projects/provision-nix/";
           };
+          defaults =
+            provision-nix-docs-local.defaults
+            // {
+              substitution = {
+                outPath = localFlake.self.outPath;
+                gitRepoUrl = "https://github.com/kraftnix/provision-nix";
+              };
+            };
         };
     };
   };

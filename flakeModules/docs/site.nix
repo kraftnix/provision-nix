@@ -49,12 +49,20 @@ in {
           default = self.outPath;
           example = literalExpression "self.outPath";
         };
+        gitRepoUrl = mkOption {
+          description = ''
+            URL of git repo
+          '';
+          type = types.str;
+          default = "";
+          example = "https://github.com/kraftnix/provision-nix";
+        };
         gitRepoFilePath = mkOption {
           description = ''
             Base URL of git repo file browser, used for rewriting urls to source to the correct URL
           '';
           type = types.str;
-          default = "";
+          default = "${config.defaults.substitution.gitRepoUrl}/tree/master";
           example = "https://github.com/kraftnix/provision-nix/tree/master/";
         };
       };

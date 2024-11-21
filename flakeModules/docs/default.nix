@@ -5,20 +5,11 @@ localFlake: {
 }: let
   inherit
     (localFlake.lib)
-    concatStringsSep
-    filterAttrs
     literalExpression
-    mapAttrs
-    mapAttrs'
-    mapAttrsToList
     mkEnableOption
     mkOption
-    nameValuePair
-    replaceStrings
     types
     ;
-  cfg = self.docs;
-  filterEnable = filterAttrs (_: c: c.enable);
 in {
   imports = [(import ./perSystem.nix localFlake)];
   options.flake = flake-parts-lib.mkSubmoduleOptions {
@@ -52,7 +43,9 @@ in {
               defaults = {
                 hostOptions = self.nixosConfigurations.basic.options;
                 substitution.outPath = self.outPath;
-                substitution.gitRepoFilePath = "https://github.com/kraftnix/provision-nix/tree/master/";
+                substitution.gitRepoUrl = "https://github.com/kraftnix/provision-nix";
+                # automatically set by above path
+                # substitution.gitRepoFilePath = "https://github.com/kraftnix/provision-nix/tree/master/";
               };
               homepage = {
                 url = "http://localhost:1111";
