@@ -177,7 +177,7 @@ module ffmpeg-wrap {
     let file = ($input | parseFile)
     let outputFile = (
       $output | default
-      $"($file.name)($compress | defaultIfStr '-compressed')-($stabilise | defaultIfStr '-stabilised').($outputFormat)"
+      $"($file.name)($compress | defaultIfStr '-compressed')($stabilise | defaultIfStr '-stabilised').($outputFormat)"
     )
     let acceleration = (
       if $hwaccel == "" {[]} else
@@ -191,7 +191,7 @@ module ffmpeg-wrap {
       | append [ "-i" $input ]
       | append (($start != "") | maybeArgList "-ss" $start)
       | append (($end != "") | maybeArgList "-to" $end)
-      | append ($compress | maybeArgList "-codec:v" $codec)
+      | append (($compress and $codec != "") | maybeArgList "-codec:v" $codec)
       | append ($compress | maybeArgList "-crf" ($crf | into string))
       | append (($compress and $preset != "") | maybeArgList "-preset" $preset)
       | append (($compress and $pixfmt != "") | maybeArgList "-pix_fmt" $pixfmt)
