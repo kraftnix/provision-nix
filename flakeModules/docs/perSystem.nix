@@ -13,6 +13,7 @@ localFlake: {
     mapAttrsToList
     mkDefault
     mkEnableOption
+    mkMerge
     mkOption
     nameValuePair
     optionalAttrs
@@ -135,26 +136,9 @@ in {
                   default = "";
                   type = types.str;
                 };
-                out.multiSearch = mkOption {
-                  description = "output of `mkMultiSearch`";
+                multiSearch = mkOption {
+                  description = "final output of `mkMultiSearch`";
                   type = types.package;
-                  default = localFlake.inputs.nuschtos-search.packages.${pkgs.system}.mkMultiSearch {
-                    inherit (config) baseHref title;
-                    scopes =
-                      mapAttrsToList (
-                        _: c:
-                          {
-                            inherit (c) name modules urlPrefix;
-                          }
-                          // (optionalAttrs (c.optionsPrefix != null) {
-                            inherit (c) optionsPrefix;
-                          })
-                          // (optionalAttrs (c.optionsJSON != null) {
-                            inherit (c) optionsJSON;
-                          })
-                      )
-                      config.scopes;
-                  };
                 };
                 scopes = mkOption {
                   default = {};
@@ -251,6 +235,23 @@ in {
               urlPrefix = site.defaults.substitution.gitRepoUrl;
             }))
           ];
+          nuschtos.multiSearch = localFlake.inputs.nuschtos-search.packages.${pkgs.system}.mkMultiSearch {
+            inherit (config.nuschtos) baseHref title;
+            scopes =
+              mapAttrsToList (
+                _: c:
+                  {
+                    inherit (c) name modules urlPrefix;
+                  }
+                  // (optionalAttrs (c.optionsPrefix != null) {
+                    inherit (c) optionsPrefix;
+                  })
+                  // (optionalAttrs (c.optionsJSON != null) {
+                    inherit (c) optionsJSON;
+                  })
+              )
+              config.nuschtos.scopes;
+          };
 
           mdbook-pre = pkgs.stdenvNoCC.mkDerivation {
             name = "docs-mdbook-${site.name}-preprocessed";
@@ -341,6 +342,9 @@ in {
   config.transposition.sites = {};
   config.perSystem = {config, ...}: {
     sites = mapAttrs (_: site: {}) (filterEnable cfg.sites);
-    packages = mapAttrs' (name: site: nameValuePair "docs-mdbook-${name}" site.mdbook) config.sites;
+    packages = mkMerge [
+      (mapAttrs' (name: site: nameValuePair "docs-mdbook-${name}" site.mdbook) config.sites)
+      (mapAttrs' (name: site: nameValuePair "docs-nuschtos-${name}" site.nuschtos.multiSearch) config.sites)
+    ];
   };
 }

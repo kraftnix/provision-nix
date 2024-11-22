@@ -33,7 +33,8 @@
 - [Intro](./flake/intro.md)
 - [Hosts](./flake/hosts.md)
 - [Channels](./flake/channels.md)
-- [Docs](./flake/docs.md)
+- [Documentation Generation](./flake/docs.md)
+  - [NüschtOS Integration](./flake/nuschtos.md)
 - [Full Flake Options Reference](./options/flake-all-options.md)
 
 ---

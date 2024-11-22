@@ -37,7 +37,7 @@
             category = "docs";
             command = let
               mdbookRoot = "docs-mdbook-${name}";
-              nuschtosRoot = "sites.${pkgs.system}.${name}.nuschtos.out.multiSearch";
+              nuschtosRoot = "docs-nuschtos-${name}";
               sp = lib.strings.splitString "/" site.nuschtos.baseHref;
               stripped =
                 if builtins.stringLength site.nuschtos.baseHref > 1

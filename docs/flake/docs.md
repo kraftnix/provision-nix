@@ -64,15 +64,15 @@ the build process.
 ### Stages
 
 1. `nixosOptionsDoc` is run for each entry in `docs.sites.<site>.docgen.<opt>`
-  - available at [`perSystem.sites.<site>.docgen.<opt>.mdbook`](#)
+    - available at [`perSystem.sites.<site>.docgen.<opt>.mdbook`](#)
 2. the `optionsCommonMark` output from _(1)_ is post-processed:
-  - rewrite `/nix/store/XXXX` current flake paths to point to the git repo base url in `substitution.gitRepoFilePath`
-  - rewrite markdown links to fix current page linking
-  - available at [`perSystem.sites.<site>.docgen.<opt>.filtered`](#)
+    - rewrite `/nix/store/XXXX` current flake paths to point to the git repo base url in `substitution.gitRepoFilePath`
+    - rewrite markdown links to fix current page linking
+    - available at [`perSystem.sites.<site>.docgen.<opt>.filtered`](#)
 3. combine `mdbook.src` and options markdown files generated in _(2)_
-  - available at [`perSystem.sites.<site>.mdbook-pre`]
+    - available at [`perSystem.sites.<site>.mdbook-pre`]
 4. run mdBook build + run some very hacky pre-processing of HTML to fix homepage url
-  - available at [`perSystem.sites.<site>.mdbook`]
+    - available at [`perSystem.sites.<site>.mdbook`]
 
 ### Outputs
 
@@ -146,5 +146,5 @@ Like the last example, this example is from this site, and the `flakeModules` im
 bound to `flake-parts` modules, so need to use `evalFlakeModule` from `flake-parts`.
 
 ```nix
-{{#include ../../site.nix:48:96}}
+{{#include ../../site.nix:51:99}}
 ```
