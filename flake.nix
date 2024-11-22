@@ -42,6 +42,9 @@
 
     devshell.url = "github:numtide/devshell";
     devshell.inputs.nixpkgs.follows = "nixpkgs";
+
+    nuschtos-search.url = "github:NuschtOS/search";
+    nuschtos-search.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   # deploy

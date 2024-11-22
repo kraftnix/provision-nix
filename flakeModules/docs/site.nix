@@ -22,6 +22,19 @@ in {
       example = "provision-nix";
     };
     defaults = {
+      nuschtos = {
+        baseHref = mkOption {
+          description = "The directory to where the search is going to be deployed relative to the domain. Defaults to /.";
+          default = "/";
+          type = types.str;
+          example = "/search/";
+        };
+        title = mkOption {
+          description = "The title on the top left. Defaults to NüschtOS Search.";
+          default = "Custom Options Search";
+          type = types.str;
+        };
+      };
       hostOptions = mkOption {
         description = "default options to use for documentation generation";
         type = types.lazyAttrsOf types.raw;

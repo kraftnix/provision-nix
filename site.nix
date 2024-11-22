@@ -3,6 +3,7 @@ localFlake: let
   provision-nix-docs-local = {
     mdbook.src = ./.;
     defaults = {
+      nuschtos.baseHref = "/search/";
       hostOptions = localFlake.self.nixosConfigurations.basic.options;
       substitution.outPath = localFlake.self.outPath;
       substitution.gitRepoUrl = "https://gitea.home.lan/kraftnix/provision-nix";
