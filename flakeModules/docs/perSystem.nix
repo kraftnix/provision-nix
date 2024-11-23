@@ -335,10 +335,10 @@ in {
             buildInputs = [
               pkgs.ripgrep
               pkgs.mdbook-linkcheck
+              pkgs.mdbook-variables
               # pkgs.mdbook-cmdrun
               pkgs.nushell
               localFlake.self.packages.${pkgs.system}.mdbook-linkfix
-              localFlake.self.packages.${pkgs.system}.mdbook-variables
               localFlake.self.packages.${pkgs.system}.yapp
               localFlake.self.packages.${pkgs.system}.simple-replace
               # config.packages.mdbook-theme
