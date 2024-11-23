@@ -50,7 +50,7 @@ module ffmpeg-wrap {
     --result(-r) : string = "" # file name (should end in trf), i.e. myvid.trf
   ] {
     # $"vidstabdetect=stepsize=($stepsize):shakiness=($shakiness):accuracy=($accuracy):result=($file)"
-    $"vidstabdetect=stepsize=($stepsize):shakiness=($shakiness):accuracy=($accuracy)(($result != "") | defaultIfStr $result)"
+    $"vidstabdetect=stepsize=($stepsize):shakiness=($shakiness):accuracy=($accuracy)(($result != "") | defaultIfStr $':result=($result)')"
   }
 
   # No such filter: 'vidstabdetect'
@@ -60,25 +60,34 @@ module ffmpeg-wrap {
     shakiness = 10
     accuracy = 15
     stepsize = 6
+    acceleration = []
+    extraArgs = []
   ] {
     let f = ($file | parse "{name}.{ext}" | get 0)
     # let starStr = $"vidstabdetect=stepsize=($stepsize):shakiness=($shakiness):accuracy=($accuracy):result=($f.name).trf"
-    let stabStr = (genTransformationsStr -h $shakiness -a $accuracy -s $stepsize -r $"(f.name).trf")
-    let out = (run-external "ffmpeg"  "-i" $file "-vf" $stabStr "-f" "null" "-" e+o>| complete)
-    if ($out.stderr | str contains "No such filter: 'vidstabdetect'") {
-      $out
+    let stabStr = (genTransformationsStr -h $shakiness -a $accuracy -s $stepsize -r $"($f.name).trf")
+    let args = ($acceleration
+      | append [ "-i" $file ]
+      | append [ "-vf" $stabStr ]
+      | append [ "-f" "null" "-" ]
+      | append $extraArgs
+      | flatten --all
+    )
+    print $"Running `ffmpeg ($args | str join ' ')`"
+    let out = (run-external ffmpeg ...$args e+o>| complete)
+    if ($out | get -i stderr | default "" | str contains "No such filter: 'vidstabdetect'") {
       ansi red
-      print "you need a full version of ffmpeg with filters compiled in, in nix `nix shell nixos#ffmpeg-full`"
+      print "you need a full version of ffmpeg with filters compiled in, in nix `nix shell nixos#ffmpeg-full`" $out
       ansi reset
     } else if ($out.exit_code != 0) {
-      $out
       ansi red
-      print "Some unknown error occured, here is the output:"
+      print "Some unknown error occured, here is the output:" $out
       ansi reset
     } else {
       ansi green
       print $"Succeeded in creating transformations"
     }
+    $out
   }
 
   # compress and stabilise video file with ffmpeg
@@ -166,7 +175,8 @@ module ffmpeg-wrap {
     --crf : int = 18 # (compression) crf
     --preset : string = "slow" # (compression) preset to use
     --pixfmt : string = "yuv420p" # (compression) pixfmt
-    --stabilise(-s) # pass flag to enable stabilisation
+    --stabiliseFile : path # path to a `.trf` file generated from `genTransformations`
+    --genStabilise(-s) # pass flag to enable stabilisation
     --smoothing : int = 20 # (stabilisation) smoothing
     --shakiness : int = 10 # (stabilisation) shakiness
     --accuracy : int = 15 # (stabilisation) accuracy
@@ -177,7 +187,7 @@ module ffmpeg-wrap {
     let file = ($input | parseFile)
     let outputFile = (
       $output | default
-      $"($file.name)($compress | defaultIfStr '-compressed')($stabilise | defaultIfStr '-stabilised').($outputFormat)"
+      $"($file.name)($compress | defaultIfStr '-compressed')(($genStabilise or ($stabiliseFile != null)) | defaultIfStr '-stabilised').($outputFormat)"
     )
     let acceleration = (
       if $hwaccel == "" {[]} else
@@ -187,6 +197,15 @@ module ffmpeg-wrap {
       ]} else {[
         "-hwaccel" $hwaccel
       ]})
+    let stabiliseTrf = (if $genStabilise {
+      print $"Generating transformations for ($input)"
+      genTransformations $input $shakiness $accuracy $stepsize
+      $"($file.name).trf"
+    } else if ($stabiliseFile != null) {
+      $stabiliseFile
+    } else {
+      ""
+    })
     let args = ($acceleration
       | append [ "-i" $input ]
       | append (($start != "") | maybeArgList "-ss" $start)
@@ -196,7 +215,7 @@ module ffmpeg-wrap {
       | append (($compress and $preset != "") | maybeArgList "-preset" $preset)
       | append (($compress and $pixfmt != "") | maybeArgList "-pix_fmt" $pixfmt)
       | append ($copy | maybeArgList "-c:a" copy)
-      | append ($stabilise | maybeArgList "-vf" $"vidstabtransform=smoothing=($smoothing):input=($file.name).trf")
+      | append (($stabiliseTrf != "") | maybeArgList "-vf" $"vidstabtransform=smoothing=($smoothing):input=($file.name).trf")
       | append $outputFile
       | append (($hwaccel == "vaapi" and $hw == "gpu") | maybeArgList "-vf" "format=vaapi,hwupload")
       | append $extraArgs
