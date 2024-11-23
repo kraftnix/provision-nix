@@ -4,6 +4,8 @@ localFlake: let
     mdbook.src = ./.;
     defaults = {
       nuschtos.baseHref = "/search/";
+      nuschtos.title = "Provision Nix Options Search";
+      nuschtos.customTheme = ./docs/theme/css/nuschtos.css;
       hostOptions = localFlake.self.nixosConfigurations.basic.options;
       substitution.outPath = localFlake.self.outPath;
       substitution.gitRepoUrl = "https://gitea.home.lan/kraftnix/provision-nix";

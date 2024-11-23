@@ -34,6 +34,31 @@ in {
           default = "Custom Options Search";
           type = types.str;
         };
+        customTheme = mkOption {
+          description = "Custom theme file that replaces `styles.scss` in upstream package";
+          default = null;
+          type = with types; nullOr path;
+          example = literalExpression ''
+            pkgs.writeText "styles.scss" ''''''
+              @import "theme";
+              @include theme();
+              @import "scss/kanagawa";
+
+              :root {
+                --f-color: hsl(214, 41.1%, 78.0%); // lightsteelblue
+              }
+
+              * {
+                box-sizing: border-box;
+                background: #101010;
+              }
+
+              pre {
+                white-space: pre-wrap;
+              }
+            ''''''
+          '';
+        };
       };
       hostOptions = mkOption {
         description = "default options to use for documentation generation";

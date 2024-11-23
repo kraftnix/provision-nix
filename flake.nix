@@ -43,7 +43,8 @@
     devshell.url = "github:numtide/devshell";
     devshell.inputs.nixpkgs.follows = "nixpkgs";
 
-    nuschtos-search.url = "github:NuschtOS/search";
+    # fork that allows some overrides for mkMultiSearch to allow custom theming
+    nuschtos-search.url = "github:kraftnix/nuschtos-search";
     nuschtos-search.inputs.nixpkgs.follows = "nixpkgs";
   };
 

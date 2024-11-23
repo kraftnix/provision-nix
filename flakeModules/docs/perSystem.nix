@@ -17,6 +17,7 @@ localFlake: {
     mkOption
     nameValuePair
     optionalAttrs
+    optionalString
     pipe
     replaceStrings
     types
@@ -89,7 +90,11 @@ localFlake: {
     };
   };
 in {
-  options.perSystem = flake-parts-lib.mkPerSystemOption ({pkgs, ...}: {
+  options.perSystem = flake-parts-lib.mkPerSystemOption ({
+    pkgs,
+    lib,
+    ...
+  }: {
     _file = ./perSystem.nix;
     options.sites = mkOption {
       description = "generated docs packages";
@@ -125,6 +130,31 @@ in {
             '';
             type = types.submodule ({config, ...}: {
               options = {
+                customTheme = mkOption {
+                  description = "Custom theme file that replaces `styles.scss` in upstream package";
+                  default = null;
+                  type = with types; nullOr path;
+                  example = literalExpression ''
+                    pkgs.writeText "styles.scss" ''''''
+                      @import "theme";
+                      @include theme();
+                      @import "scss/kanagawa";
+
+                      :root {
+                        --f-color: hsl(214, 41.1%, 78.0%); // lightsteelblue
+                      }
+
+                      * {
+                        box-sizing: border-box;
+                        background: #101010;
+                      }
+
+                      pre {
+                        white-space: pre-wrap;
+                      }
+                    ''''''
+                  '';
+                };
                 baseHref = mkOption {
                   description = "The directory to where the search is going to be deployed relative to the domain. Defaults to /.";
                   default = "/";
@@ -219,11 +249,14 @@ in {
 
         config = let
           site = cfg.sites.${siteConfig.name};
+          # inherit (localFlake.inputs.nuschtos-search.packages.${pkgs.system}) nuscht-search ixxPkgs;
+          inherit (localFlake.inputs.nuschtos-search.packages.${pkgs.system}) ixxPkgs mkSearchData mkMultiSearch;
         in {
           docgen =
             mapAttrs (name: opt: {
             }) (filterEnable site.docgen);
 
+          nuschtos.customTheme = mkDefault site.defaults.nuschtos.customTheme;
           nuschtos.title = mkDefault site.defaults.nuschtos.title;
           nuschtos.baseHref = mkDefault site.defaults.nuschtos.baseHref;
           nuschtos.scopes = pipe config.docgen [
@@ -235,8 +268,16 @@ in {
               urlPrefix = site.defaults.substitution.gitRepoUrl;
             }))
           ];
-          nuschtos.multiSearch = localFlake.inputs.nuschtos-search.packages.${pkgs.system}.mkMultiSearch {
+          # nuschtos.multiSearch = localFlake.inputs.nuschtos-search.packages.${pkgs.system}.mkMultiSearch {
+          nuschtos.multiSearch = mkMultiSearch {
             inherit (config.nuschtos) baseHref title;
+            nuscht-search = (pkgs.callPackage "${localFlake.inputs.nuschtos-search}/nix/frontend.nix" {}).overrideAttrs (oldAttrs: {
+              postPatch =
+                oldAttrs.postPatch
+                + ''
+                  ${optionalString (config.nuschtos.customTheme != null) "cp ${config.nuschtos.customTheme} src/styles.scss"}
+                '';
+            });
             scopes =
               mapAttrsToList (
                 _: c:
@@ -345,6 +386,8 @@ in {
     packages = mkMerge [
       (mapAttrs' (name: site: nameValuePair "docs-mdbook-${name}" site.mdbook) config.sites)
       (mapAttrs' (name: site: nameValuePair "docs-nuschtos-${name}" site.nuschtos.multiSearch) config.sites)
+      {
+      }
     ];
   };
 }
