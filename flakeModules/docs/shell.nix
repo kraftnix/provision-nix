@@ -1,19 +1,19 @@
-{self, ...}: {
+localFlake: {
   perSystem = {
     config,
     pkgs,
     lib,
     ...
   }: {
-    devshells.default = lib.mkIf self.docs.enable {
+    devshells.default = lib.mkIf localFlake.self.docs.enable {
       packages = [
         pkgs.caddy
         pkgs.ripgrep
         pkgs.mdbook-linkcheck
         pkgs.mdbook-variables
         # pkgs.mdbook-cmdrun
-        config.packages.yapp
-        config.packages.mdbook-linkfix
+        localFlake.self.packages.${pkgs.system}.yapp
+        localFlake.self.packages.${pkgs.system}.mdbook-linkfix
         # config.packages.mdbook-theme
       ];
 
