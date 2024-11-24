@@ -8,6 +8,7 @@ localFlake: let
       nuschtos.customTheme = ./docs/theme/css/nuschtos.css;
       hostOptions = localFlake.self.nixosConfigurations.basic.options;
       substitution.outPath = localFlake.self.outPath;
+      # substitution.gitRepoFilePath = "https://github.com/kraftnix/provision-nix";
       substitution.gitRepoUrl = "https://gitea.home.lan/kraftnix/provision-nix";
       # substitution.gitRepoFilePath = "https://github.com/kraftnix/provision-nix/tree/master/";
       substitution.gitRepoFilePath = "https://gitea.home.lan/kraftnix/provision-nix/src/branch/master/";
