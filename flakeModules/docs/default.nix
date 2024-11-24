@@ -11,7 +11,7 @@ localFlake: {
     types
     ;
 in {
-  imports = [(import ./perSystem.nix localFlake)];
+  imports = [(import ./perSystem.nix localFlake) ./shell.nix];
   options.flake = flake-parts-lib.mkSubmoduleOptions {
     docs = {
       enable = mkEnableOption "enable docs integration";
