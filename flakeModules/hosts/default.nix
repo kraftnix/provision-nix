@@ -196,6 +196,16 @@ in {
             default = {};
             # apply = mapAttrs (overrideHosts hostDefaults);
           };
+          toplevels = mkOption {
+            description = ''
+              Post eval nixosConfiguration's `config.system.build.toplevel` field, useful for nix-fast-build.
+
+              nix-fast-build -f .#hosts.toplevels
+            '';
+            readOnly = true;
+            type = types.lazyAttrsOf types.raw;
+            default = mapAttrs (_: cfg: cfg.rendered.config.system.build.toplevel) hosts;
+          };
           rendered = mkOption {
             description = ''
               Post eval nixosConfiguration's `config` field, useful for introspection.

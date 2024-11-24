@@ -1,0 +1,37 @@
+steps:
+  - name: fast-build devshells
+    image: bash
+    commands:
+      - set -e
+      - nix-fast-build -f .#devShells --no-nom
+
+  - name: fast-build packages
+    image: bash
+    commands:
+      - set -e
+      - nix-fast-build -f .#packages --no-nom
+
+  - name: fast-build checks
+    image: bash
+    commands:
+      - nix-fast-build -f .#checks --no-nom
+
+  # some hosts can't be eval-ed only, must be built
+  # - name: nix flake check (eval only)
+  #   image: bash
+  #   commands:
+  #     - nix flake check --no-build --show-trace
+  #   when:
+  #     - event: pull_request
+  #     - event: push
+  #       branch: master
+
+  - name: fast-build all hosts
+    image: bash
+    commands:
+      - set -e
+      - nix-fast-build -f .#hosts.toplevels --no-nom
+    when:
+      - event: pull_request
+      - event: push
+        branch: master
