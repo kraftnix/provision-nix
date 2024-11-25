@@ -34,7 +34,7 @@
 - [Hosts](./flake/hosts.md)
 - [Channels](./flake/channels.md)
 - [Documentation Generation](./flake/docs.md)
-  - [NüschtOS Integration](./flake/nuschtos.md)
+  - [Nüscht Search Integration](./flake/nuscht-search.md)
 - [Full Flake Options Reference](./options/flake-all-options.md)
 
 ---

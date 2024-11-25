@@ -16,7 +16,7 @@ in {
     _file = ./perSystem.nix;
     options.nuscht-search = mkOption {
       description = ''
-        NuschtOS search integration which combines all options in `docgen` into scopes
+        Nüscht Search integration which combines all options in `docgen` into scopes
 
         Options from a host, or `evalModules` can be provided, and custom
         filters can be applied to generate only specific options.

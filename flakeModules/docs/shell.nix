@@ -39,17 +39,17 @@ localFlake: {self, ...}: {
               category = "docs";
               command = let
                 mdbookRoot = "docs-mdbook-${name}";
-                nuschtosRoot = "nuscht-search-${name}";
+                nuschtRoot = "nuscht-search-${name}";
                 siteConfig = self.docs.sites.${name};
-                sp = lib.strings.splitString "/" siteConfig.defaults.nuschtos.baseHref;
+                sp = lib.strings.splitString "/" siteConfig.defaults.nuscht-search.baseHref;
                 stripped =
-                  if builtins.stringLength siteConfig.defaults.nuschtos.baseHref > 1
+                  if builtins.stringLength siteConfig.defaults.nuscht-search.baseHref > 1
                   then
                     lib.concatStringsSep "" (lib.map (s:
                       if s == ""
                       then "/"
                       else s) (lib.take (lib.length sp - 1) sp))
-                  else siteConfig.defaults.nuschtos.baseHref;
+                  else siteConfig.defaults.nuscht-search.baseHref;
                 caddyfile = pkgs.writeText "Caddyfile.dev" ''
                   {
                     debug
@@ -63,8 +63,8 @@ localFlake: {self, ...}: {
                     }
 
                     rewrite ${stripped} ${stripped}/
-                    handle_path ${siteConfig.defaults.nuschtos.baseHref}* {
-                      root * {$NUSCHTOS_ROOT}
+                    handle_path ${siteConfig.defaults.nuscht-search.baseHref}* {
+                      root * {$NUSCHT_ROOT}
                       file_server
                     }
                     root * {$SITE_ROOT}
@@ -76,10 +76,10 @@ localFlake: {self, ...}: {
                 set -e
 
                 export SITE_ROOT=$(nix build $PRJ_ROOT#${mdbookRoot} --no-link --print-out-paths)
-                export NUSCHTOS_ROOT=$(nix build $PRJ_ROOT#${nuschtosRoot} --no-link --print-out-paths)
+                export NUSCHT_ROOT=$(nix build $PRJ_ROOT#${nuschtRoot} --no-link --print-out-paths)
                 echo "Running with:"
                 echo "- SITE_ROOT: $SITE_ROOT"
-                echo "- NUSCHTOS_ROOT: $NUSCHTOS_ROOT"
+                echo "- NUSCHT_ROOT: $NUSCHT_ROOT"
                 caddy run --adapter caddyfile --config ${caddyfile}
               '';
             }

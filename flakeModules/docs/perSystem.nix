@@ -222,9 +222,9 @@ in {
       siteConfig = cfg.sites.${name};
     in
       nameValuePair name {
-        customTheme = mkDefault siteConfig.defaults.nuschtos.customTheme;
-        title = mkDefault siteConfig.defaults.nuschtos.title;
-        baseHref = mkDefault siteConfig.defaults.nuschtos.baseHref;
+        customTheme = mkDefault siteConfig.defaults.nuscht-search.customTheme;
+        title = mkDefault siteConfig.defaults.nuscht-search.title;
+        baseHref = mkDefault siteConfig.defaults.nuscht-search.baseHref;
         scopes = pipe site.docgen [
           (mapAttrsToList (n: c:
             nameValuePair "${name}-${n}" {

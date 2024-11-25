@@ -72,7 +72,7 @@ Alternatively, you can import all nixos modules provided:
 
 ## Home Manager Modules
 
-A single home-manager module is provided by for the [Scripts Integration](../scripts/intro.md).
+A single home-manager module is provided by for the [Scripts Integration]({{DOCSITE_BASE}}/scripts/intro.html)
 
 ## Other Outputs
 

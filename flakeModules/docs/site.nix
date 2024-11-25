@@ -35,8 +35,8 @@ in {
               modules = [];
             }).options;
 
-          # set some nuschtos defaults
-          nuschtos = {
+          # set some nuscht-search defaults
+          nuscht-search = {
             baseHref = "/";
             customTheme = null;
             title = "Custom Options Search";

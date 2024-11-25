@@ -14,3 +14,5 @@ The module extends NixOS with default configurations and behaviours, focusing on
         + basic support: bcachefs, btrfs, zfs, nfs
 
 For more information, have a look at the [Documentation](https://kraftnix.dev/projects/provision-nix)
+
+Or for full options search [Kraftnix Options Search](https://kraftnix.dev/search).

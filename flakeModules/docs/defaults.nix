@@ -6,7 +6,7 @@ localFlake @ {self, ...}: {
   inherit (lib) literalExpression mkOption types;
 in {
   options = {
-    nuschtos = {
+    nuscht-search = {
       baseHref = mkOption {
         description = "The directory to where the search is going to be deployed relative to the domain. Defaults to /.";
         default = "/";

@@ -40,7 +40,7 @@ heading-split-level = 2
 follow-web-links = false # no Internet during the build
 
 [preprocessor.variables]
-env = true
+use_env = true
 [preprocessor.variables.variables]
 git_file_base_url = "https://github.com/kraftnix/provision-nix/tree/master/"
 

@@ -8,6 +8,8 @@ across hosts.
 
 Most of the disko profiles only define root disk setups.
 
+Module Options Reference for [`provision.fs.disko`](../options/nixos-all-options.md#provisionfsdiskoenable)
+
 ## Usage
 
 You can use preconfigured disko profiles in your NixOS configurations:
