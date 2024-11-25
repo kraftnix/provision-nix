@@ -1,11 +1,11 @@
-localFlake: {
+localFlake: {self, ...}: {
   perSystem = {
     config,
     pkgs,
     lib,
     ...
   }: {
-    devshells.default = lib.mkIf localFlake.self.docs.enable {
+    devshells.default = lib.mkIf self.docs.enable {
       packages = [
         pkgs.caddy
         pkgs.ripgrep
@@ -40,7 +40,7 @@ localFlake: {
               command = let
                 mdbookRoot = "docs-mdbook-${name}";
                 nuschtosRoot = "nuscht-search-${name}";
-                siteConfig = localFlake.self.docs.sites.${name};
+                siteConfig = self.docs.sites.${name};
                 sp = lib.strings.splitString "/" siteConfig.defaults.nuschtos.baseHref;
                 stripped =
                   if builtins.stringLength siteConfig.defaults.nuschtos.baseHref > 1
