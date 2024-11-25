@@ -6,7 +6,7 @@ args @ {
 }: let
   inherit (flake-parts-lib) importApply;
 in {
-  imports = [inputs.devshell.flakeModule inputs.git-hooks-nix.flakeModule ../flakeModules/docs/shell.nix];
+  imports = [inputs.devshell.flakeModule inputs.git-hooks-nix.flakeModule];
 
   flake.nixd.options.nixos = self.nixosConfigurations.testAllProfiles.options;
 

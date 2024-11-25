@@ -39,16 +39,17 @@ localFlake: {
               category = "docs";
               command = let
                 mdbookRoot = "docs-mdbook-${name}";
-                nuschtosRoot = "docs-nuschtos-${name}";
-                sp = lib.strings.splitString "/" site.nuschtos.baseHref;
+                nuschtosRoot = "nuscht-search-${name}";
+                siteConfig = localFlake.self.docs.sites.${name};
+                sp = lib.strings.splitString "/" siteConfig.defaults.nuschtos.baseHref;
                 stripped =
-                  if builtins.stringLength site.nuschtos.baseHref > 1
+                  if builtins.stringLength siteConfig.defaults.nuschtos.baseHref > 1
                   then
                     lib.concatStringsSep "" (lib.map (s:
                       if s == ""
                       then "/"
                       else s) (lib.take (lib.length sp - 1) sp))
-                  else site.nuschtos.baseHref;
+                  else siteConfig.defaults.nuschtos.baseHref;
                 caddyfile = pkgs.writeText "Caddyfile.dev" ''
                   {
                     debug
@@ -62,7 +63,7 @@ localFlake: {
                     }
 
                     rewrite ${stripped} ${stripped}/
-                    handle_path ${site.nuschtos.baseHref}* {
+                    handle_path ${siteConfig.defaults.nuschtos.baseHref}* {
                       root * {$NUSCHTOS_ROOT}
                       file_server
                     }

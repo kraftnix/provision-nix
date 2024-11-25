@@ -15,14 +15,15 @@ in {
     ]
     # we can't import `provison.flake.all` due to infinite cursion
     ++ (l.mapAttrsToList (_: c: importApply c localFlake) {
-      hosts = ./flakeModules/hosts;
-      packagesGroups = ./flakeModules/packagesGroups.nix;
-      channels = ./flakeModules/channels;
-      lib = ./flakeModules/lib.nix;
-      profiles = ./flakeModules/profiles.nix;
       auto-import = ./flakeModules/auto-import;
-      scripts = ./scripts/flakeModule.nix;
+      channels = ./flakeModules/channels;
       docs = ./flakeModules/docs;
+      hosts = ./flakeModules/hosts;
+      lib = ./flakeModules/lib.nix;
+      nuscht-search = ./flakeModules/nuscht-search;
+      packagesGroups = ./flakeModules/packagesGroups.nix;
+      profiles = ./flakeModules/profiles.nix;
+      scripts = ./scripts/flakeModule.nix;
       site = ./site.nix;
     });
 

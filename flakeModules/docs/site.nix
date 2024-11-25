@@ -21,88 +21,41 @@ in {
       default = config._module.args.name;
       example = "provision-nix";
     };
-    defaults = {
-      nuschtos = {
-        baseHref = mkOption {
-          description = "The directory to where the search is going to be deployed relative to the domain. Defaults to /.";
-          default = "/";
-          type = types.str;
-          example = "/search/";
-        };
-        title = mkOption {
-          description = "The title on the top left. Defaults to NüschtOS Search.";
-          default = "Custom Options Search";
-          type = types.str;
-        };
-        customTheme = mkOption {
-          description = "Custom theme file that replaces `styles.scss` in upstream package";
-          default = null;
-          type = with types; nullOr path;
-          example = literalExpression ''
-            pkgs.writeText "styles.scss" ''''''
-              @import "theme";
-              @include theme();
-              @import "scss/kanagawa";
+    defaults = mkOption {
+      description = "default values to pass into sites";
+      default = self.docs.defaults;
+      defaultText = literalExpression ''
+        {
 
-              :root {
-                --f-color: hsl(214, 41.1%, 78.0%); // lightsteelblue
-              }
+          # use a host from your config and optionally pass extra modules
+          hostOptions =
+            (import (localFlake.self.nixosConfigurations.basic.pkgs.path + "/nixos/lib/eval-config.nix") {
+              # Overriden explicitly here, this would include all modules from NixOS otherwise.
+              # See: docs of eval-config.nix for more details
+              modules = [];
+            }).options;
 
-              * {
-                box-sizing: border-box;
-                background: #101010;
-              }
+          # set some nuschtos defaults
+          nuschtos = {
+            baseHref = "/";
+            customTheme = null;
+            title = "Custom Options Search";
+          };
 
-              pre {
-                white-space: pre-wrap;
-              }
-            ''''''
-          '';
-        };
-      };
-      hostOptions = mkOption {
-        description = "default options to use for documentation generation";
-        type = types.lazyAttrsOf types.raw;
-        default =
-          (import (localFlake.self.nixosConfigurations.basic.pkgs.path + "/nixos/lib/eval-config.nix") {
-            # Overriden explicitly here, this would include all modules from NixOS otherwise.
-            # See: docs of eval-config.nix for more details
-            modules = [];
-          })
-          .options;
-        defaultText = literalExpression ''
-          (import (localFlake.self.nixosConfigurations.basic.pkgs.path + "/nixos/lib/eval-config.nix") {
-            # Overriden explicitly here, this would include all modules from NixOS otherwise.
-            # See: docs of eval-config.nix for more details
-            modules = [];
-          })
-          .options;
-        '';
-        example = literalExpression "self.nixosConfigurations.myhost.options";
-      };
-      substitution = {
-        outPath = mkOption {
-          description = "outPath of the flake, used for rewriting /nix/store/ hardlinks in generated output from mkOptionsDoc";
-          type = types.path;
-          default = self.outPath;
-          example = literalExpression "self.outPath";
-        };
-        gitRepoUrl = mkOption {
-          description = ''
-            URL of git repo
-          '';
-          type = types.str;
-          default = "";
-          example = "https://github.com/kraftnix/provision-nix";
-        };
-        gitRepoFilePath = mkOption {
-          description = ''
-            Base URL of git repo file browser, used for rewriting urls to source to the correct URL
-          '';
-          type = types.str;
-          default = "${config.defaults.substitution.gitRepoUrl}/tree/master";
-          example = "https://github.com/kraftnix/provision-nix/tree/master/";
-        };
+          # substitutions for nuscht-search and options references
+          substitution = {
+            gitRepoUrl = "https://github.com/kraftnix/provision-nix";
+
+            # by default, adds "/tree/master" to `gitRepoUrl`
+            # gitRepoFilePath = "https://github.com/kraftnix/provision-nix/tree/master";
+
+            # by default: is set to current flake's outPath
+            # outPath = self.outPath;
+          };
+        }
+      '';
+      type = types.submoduleWith {
+        modules = [(import ./defaults.nix localFlake)];
       };
     };
     docgen = mkOption {
@@ -113,9 +66,7 @@ in {
         filters can be applied to generate only specific options.
       '';
       type = types.attrsOf (types.submoduleWith {
-        specialArgs = {
-          inherit (config) defaults;
-        };
+        specialArgs = {inherit (config) defaults;};
         modules = [./options.nix];
       });
       default = {};

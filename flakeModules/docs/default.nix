@@ -18,6 +18,13 @@ in {
   options.flake = flake-parts-lib.mkSubmoduleOptions {
     docs = {
       enable = mkEnableOption "enable docs integration";
+      defaults = mkOption {
+        description = "default values to pass into sites";
+        default = {};
+        type = types.submoduleWith {
+          modules = [(import ./defaults.nix localFlake)];
+        };
+      };
       sites = mkOption {
         description = ''
           mdbook sites to generate, optionally generating module options documentation with `mkOptionsDoc`
