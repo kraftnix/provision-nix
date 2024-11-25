@@ -3,7 +3,8 @@ steps:
     image: bash
     commands:
       - set -e
-      - nix-fast-build -f .#devShells --no-nom
+      # - nix-fast-build -f .#devShells --no-nom
+      - nix build .#devShells.x86_64-linux.default --show-trace
 
   - name: fast-build packages
     image: bash
