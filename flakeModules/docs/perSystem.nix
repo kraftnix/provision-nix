@@ -45,7 +45,7 @@ localFlake: {
       };
       filtered = mkOption {
         description = "filter `optionsCommonMark` output of {mkdocs}, removing file paths + fixing siteRoot links";
-        type = types.package;
+        type = types.pathInStore;
       };
     };
     config = let
@@ -116,11 +116,11 @@ in {
           };
           mdbook-pre = mkOption {
             description = "mdbook with some preprocessing applied + docgen options copied in";
-            type = types.package;
+            type = types.pathInStore;
           };
           mdbook = mkOption {
             description = "mdbook build and some postprocessing";
-            type = types.package;
+            type = types.pathInStore;
           };
         };
 

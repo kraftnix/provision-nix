@@ -25,7 +25,7 @@ in {
     file = mkOption {
       description = "optionally set script file path, recommended for script files which only contain a single main";
       type = types.path;
-      default = builtins.toFile "${config.name}.nu" config.text;
+      default = pkgs.writeText "${config.name}.nu" config.text;
       defaultText = literalExpression ''builtins.toFile "${config.name}.nu" config.text'';
       example = literalExpression "./fill.nu";
     };
@@ -170,7 +170,7 @@ in {
                 text = ''
                   #!${config.runtimeShell}/bin/${config.shell}
                   ${optionalString (config.env != null) ''
-                    load-env (open ${builtins.toFile "${config.name}-env.json" (builtins.toJSON config.env)})
+                    load-env (open ${pkgs.writeText "${config.name}-env.json" (builtins.toJSON config.env)})
                   ''}
                   ${optionalString (config.inputs != []) ''
                     $env.PATH = ($env.PATH | append ${lib.makeBinPath config.inputs})

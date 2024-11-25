@@ -15,4 +15,4 @@ The module extends NixOS with default configurations and behaviours, focusing on
 
 For more information, have a look at the [Documentation](https://kraftnix.dev/projects/provision-nix)
 
-Or for full options search [Kraftnix Options Search](https://kraftnix.dev/search).
+Or for full options search [Kraftnix Projects Options Search](https://kraftnix.dev/projects/search).

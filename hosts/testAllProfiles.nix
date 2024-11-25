@@ -13,8 +13,16 @@
 
   provision.scripts.enable = true;
   provision.scripts.scripts = {
+    my-test-script.env.TEST_HOME_PATH = "/home";
     my-test-script.text = ''
-      ls -la
+      ls -la $env.TEST_HOME_PATH
+    '';
+    my-test-script-ls-coreutils.env.TEST_PACKAGE_PATH = "${pkgs.coreutils}/bin";
+    my-test-script-ls-coreutils.text = ''
+      ls -la $env.TEST_PACKAGE_PATH
+    '';
+    my-test-script-ls-coreutils2.text = ''
+      ls -la ${pkgs.coreutils}/bin
     '';
     my-test-script-bash-test.shell = "bash";
     my-test-script-bash-test.text = ''

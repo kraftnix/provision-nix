@@ -80,7 +80,7 @@ in {
           };
           multiSearch = mkOption {
             description = "final output of `mkMultiSearch`";
-            type = types.package;
+            type = types.pathInStore;
           };
           scopes = mkOption {
             default = {};
@@ -97,6 +97,12 @@ in {
               config,
               ...
             }: {
+              config = {
+                optionsJSON =
+                  if config.optionsJSONPackage != null
+                  then "${config.optionsJSONPackage}/share/doc/nixos/options.json"
+                  else null;
+              };
               options = {
                 enable = mkEnableOption "enable inclusion of scope in module" // {default = true;};
                 name = mkOption {
@@ -118,10 +124,7 @@ in {
                 };
                 optionsJSON = mkOption {
                   description = "Path to a pre-generated options.json file. Exclusive with modules.";
-                  default =
-                    if config.optionsJSONPackage != null
-                    then "${config.optionsJSONPackage}/share/doc/nixos/options.json"
-                    else null;
+                  default = null;
                   type = with types; nullOr path;
                   example = literalExpression "./path/to/options.json";
                 };
