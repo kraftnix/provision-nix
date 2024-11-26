@@ -11,7 +11,7 @@ let
 in
 {
   imports = [
-    # ./nixos-anywhere.nix
+    ./nixos-anywhere.nix
     ./examples
     ./modules
   ];

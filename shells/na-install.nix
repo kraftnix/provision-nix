@@ -1,8 +1,4 @@
-{
-  self,
-  inputs,
-  ...
-}:
+localFlake:
 {
   config,
   lib,
@@ -22,15 +18,15 @@ in
     enableLuksProvision = mkEnableOption "Enable LUKS provisioning for script by default" // {
       default = true;
     };
-    enableInitrdProvision = mkEnableOption "Enable initrd provisionig for script by default" // {
+    enableInitrdProvision = mkEnableOption "Enable initrd provisioning for script by default" // {
       default = true;
     };
   };
 
   config = mkIf cfg.enable {
     packages = [
-      inputs.nixos-anywhere.packages.${pkgs.system}.default
-      self.packages.${pkgs.system}.na-install
+      localFlake.inputs.nixos-anywhere.packages.${pkgs.system}.default
+      localFlake.self.packages.${pkgs.system}.na-install
     ];
     env = [
       {
@@ -46,7 +42,7 @@ in
       {
         name = "na-install";
         category = "na-install";
-        package = self.packages.${pkgs.system}.na-install;
+        package = localFlake.self.packages.${pkgs.system}.na-install;
         help = ''
           Use `nixos-anywhere` to install a to an external host.
                           - `NA_HOST`: matches a host configuration in `nixosConfigurations.{NA_HOST}`.

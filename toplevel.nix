@@ -13,6 +13,7 @@ in
   imports =
     [
       inputs.flake-parts.flakeModules.easyOverlay
+      ./install
       ./scripts
     ]
     # we can't import `provison.flake.all` due to infinite cursion
@@ -131,7 +132,13 @@ in
       ];
       # FIX(zfs): 6_10 removed from stable and unstable
       channels.nixpkgs-zfs.inputName = "nixpkgs-zfs";
-      provision.enable = true;
-      provision.enableDefaults = true;
+      provision = {
+        enable = true;
+        enableDefaults = true;
+      };
+      devshells.default = {
+        imports = [ self.devshellModules.na-install ];
+        na-install.enable = true;
+      };
     };
 }
