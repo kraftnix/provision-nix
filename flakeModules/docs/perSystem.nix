@@ -9,17 +9,13 @@ let
   inherit (localFlake.lib)
     concatStringsSep
     filterAttrs
-    literalExpression
     mapAttrs
     mapAttrs'
     mapAttrsToList
     mkDefault
-    mkEnableOption
     mkMerge
     mkOption
     nameValuePair
-    optionalAttrs
-    optionalString
     pipe
     replaceStrings
     types

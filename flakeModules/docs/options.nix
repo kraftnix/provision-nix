@@ -47,7 +47,7 @@ in
     substitution = {
       outPath = mkOption {
         description = "outPath of the flake, used for rewriting /nix/store/ hardlinks in generated output from mkOptionsDoc";
-        type = types.path;
+        type = types.pathInStore;
         default = defaults.substitution.outPath;
         example = literalExpression "self.outPath";
       };

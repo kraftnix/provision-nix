@@ -24,7 +24,7 @@ in
       customTheme = mkOption {
         description = "Custom theme file that replaces `styles.scss` in upstream package";
         default = null;
-        type = with types; nullOr path;
+        type = with types; nullOr pathInStore;
         example = literalExpression ''
           pkgs.writeText "styles.scss" ''''''
             @import "theme";
@@ -50,14 +50,9 @@ in
     hostOptions = mkOption {
       description = "default options to use for documentation generation";
       type = types.lazyAttrsOf types.raw;
-      default =
-        (import (localFlake.self.nixosConfigurations.basic.pkgs.path + "/nixos/lib/eval-config.nix") {
-          # Overriden explicitly here, this would include all modules from NixOS otherwise.
-          # See: docs of eval-config.nix for more details
-          modules = [ ];
-        }).options;
+      default = { };
       defaultText = literalExpression ''
-        (import (localFlake.self.nixosConfigurations.basic.pkgs.path + "/nixos/lib/eval-config.nix") {
+        (import (localFlake.inputs.nixpkgs.outPath + "/nixos/lib/eval-config.nix") {
           # Overriden explicitly here, this would include all modules from NixOS otherwise.
           # See: docs of eval-config.nix for more details
           modules = [];
@@ -69,7 +64,7 @@ in
     substitution = {
       outPath = mkOption {
         description = "outPath of the flake, used for rewriting /nix/store/ hardlinks in generated output from mkOptionsDoc";
-        type = types.path;
+        type = types.pathInStore;
         default = self.outPath;
         example = literalExpression "self.outPath";
       };
