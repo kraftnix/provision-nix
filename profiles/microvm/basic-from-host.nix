@@ -1,4 +1,5 @@
-{self, ...}: {
+{ self, ... }:
+{
   # uses a host defined in ./hosts, inferred via vm name
   microvm.vms.microVM = {
     # Host build-time reference to where the MicroVM NixOS is defined

@@ -1,4 +1,6 @@
-localFlake: {config, ...}: {
+localFlake:
+{ config, ... }:
+{
   assertions = [
     {
       assertion = false;

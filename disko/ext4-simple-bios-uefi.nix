@@ -5,7 +5,8 @@
   bootEnd ? "1G",
   luksSize ? "100%",
   ...
-}: {
+}:
+{
   disko.devices.disk.${diskName} = {
     type = "disk";
     inherit device;

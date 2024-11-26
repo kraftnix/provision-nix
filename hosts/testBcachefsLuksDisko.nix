@@ -4,7 +4,8 @@
   profiles,
   inputs,
   ...
-}: {
+}:
+{
   imports = with profiles.users; [
     test-operator
     test-deploy
@@ -14,9 +15,12 @@
   provision = {
     roles.edge = {
       enable = true;
-      initrdUnlockUsers = ["test-operator"];
-      initrdNetModules = ["virtio_net"]; # normally already added with guestAgent enabled, but shows example usage
-      nixTrustedUsers = ["test-deploy" "test-operator"];
+      initrdUnlockUsers = [ "test-operator" ];
+      initrdNetModules = [ "virtio_net" ]; # normally already added with guestAgent enabled, but shows example usage
+      nixTrustedUsers = [
+        "test-deploy"
+        "test-operator"
+      ];
       bigMachine = true;
     };
     fs.bcachefs.enable = true; # enable extra tools etc.

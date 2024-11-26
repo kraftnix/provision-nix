@@ -1,12 +1,15 @@
-{self, ...}: {
+{ self, ... }:
+{
   config,
   lib,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf mkDefault;
   opts = self.lib.options;
   cfg = config.provision.roles;
-in {
+in
+{
   options.provision.roles.desktop = {
     enable = opts.enable ''
       Enable desktop node default configuration.
@@ -17,8 +20,8 @@ in {
         - boot integrated, systemd-boot by default but can be changed
         - initrd + SSH encrypted root unlock
     '';
-    nixTrustedUsers = opts.stringList [] "trusted nix users (needed for deploy user at least)";
-    initrdUnlockUsers = opts.stringList [] "list of users to import SSH keyFiles from";
+    nixTrustedUsers = opts.stringList [ ] "trusted nix users (needed for deploy user at least)";
+    initrdUnlockUsers = opts.stringList [ ] "list of users to import SSH keyFiles from";
   };
 
   config = mkIf cfg.desktop.enable {

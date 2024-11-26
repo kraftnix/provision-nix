@@ -1,12 +1,13 @@
-localFlake: {
+localFlake:
+{
   self,
   lib,
   config,
   options,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     filterAttrs
     hasPrefix
     mapAttrs
@@ -19,14 +20,17 @@ localFlake: {
   opts = localFlake.lib.options;
   enabledNetworks = pipe cfg.networks [
     (filterAttrs (_: c: c.enable))
-    (mapAttrs (_: c:
+    (mapAttrs (
+      _: c:
       c
       // {
         peers = filterAttrs (_: p: p.enable) c.peers;
-      }))
+      }
+    ))
   ];
   agenixEnabled = options ? age;
-in {
+in
+{
   options.provision.networking.wireguard.p2p.currHost = {
     enableAgenix = opts.enable ''
       Enable agenix integration for wireguard keys on current host.
@@ -37,36 +41,35 @@ in {
   };
 
   config =
-    if agenixEnabled
-    then
+    if agenixEnabled then
       (mkIf (cfg.enable && cfg.currHost.enableAgenix) {
         age.secrets =
           mapAttrs'
-          (
-            network: wireguard:
+            (
+              network: wireguard:
               nameValuePair "wg-${network}" {
                 file = "${self}/secrets/${cfg.currHost.name}/wg-${network}.age";
                 owner = "systemd-network";
               }
-          )
-          (filterAttrs
-            (
-              _: n:
-                hasPrefix "/run/agenix" n.peers.${cfg.currHost.name}.privateKeyFile
             )
-            enabledNetworks);
+            (
+              filterAttrs (
+                _: n: hasPrefix "/run/agenix" n.peers.${cfg.currHost.name}.privateKeyFile
+              ) enabledNetworks
+            );
       })
-    else {
-      assertions = [
-        {
-          assertion = cfg.enable -> !cfg.currHost.enableAgenix;
-          message = ''
-            You have enabled agenix integration in `provision.networking.wireguard.p2p`
-            but there is no agenix module found.
+    else
+      {
+        assertions = [
+          {
+            assertion = cfg.enable -> !cfg.currHost.enableAgenix;
+            message = ''
+              You have enabled agenix integration in `provision.networking.wireguard.p2p`
+              but there is no agenix module found.
 
-            Please import the agenix nixosModule into the host.
-          '';
-        }
-      ];
-    };
+              Please import the agenix nixosModule into the host.
+            '';
+          }
+        ];
+      };
 }

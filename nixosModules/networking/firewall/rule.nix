@@ -7,10 +7,10 @@
   ruleReplaceMap,
   firewallLib,
   ...
-}: let
+}:
+let
   inherit (firewallLib) mapNftablesList;
-  inherit
-    (lib)
+  inherit (lib)
     concatStringsSep
     head
     filterAttrs
@@ -24,8 +24,7 @@
     optional
     pipe
     ;
-  inherit
-    (lib.types)
+  inherit (lib.types)
     attrsOf
     bool
     int
@@ -34,68 +33,72 @@
     submodule
     ;
 
-  genNftList = filter: vals:
-    if length vals == 1
-    then "${filter} ${toString (head vals)}"
-    else "${filter} ${mapNftablesList vals}";
+  genNftList =
+    filter: vals:
+    if length vals == 1 then
+      "${filter} ${toString (head vals)}"
+    else
+      "${filter} ${mapNftablesList vals}";
 
   # returns an nftables filter string if `config.field` is not an empty list
-  maybeList = config: field:
-    optional
-    (config.${field} != [])
-    (genNftList field config.${field});
+  maybeList = config: field: optional (config.${field} != [ ]) (genNftList field config.${field});
 
-  mapIp = field:
-    if field == "daddr"
-    then "ip daddr"
-    else if field == "saddr"
-    then "ip saddr"
-    else throw "Unsupported field ${field}";
+  mapIp =
+    field:
+    if field == "daddr" then
+      "ip daddr"
+    else if field == "saddr" then
+      "ip saddr"
+    else
+      throw "Unsupported field ${field}";
   # returns an nftables filter string if `config.field` is not an empty list
-  maybeIpList = config: field:
-    optional
-    (config.${field} != [])
-    (genNftList (mapIp field) (map toString config.${field}));
+  maybeIpList =
+    config: field:
+    optional (config.${field} != [ ]) (genNftList (mapIp field) (map toString config.${field}));
 
-  mapPort = field:
-    if field == "tcpDport"
-    then "tcp dport"
-    else if field == "tcpSport"
-    then "tcp sport"
-    else if field == "udpDport"
-    then "udp dport"
-    else if field == "udpSport"
-    then "udp sport"
-    else throw "Unsupported field ${field}";
+  mapPort =
+    field:
+    if field == "tcpDport" then
+      "tcp dport"
+    else if field == "tcpSport" then
+      "tcp sport"
+    else if field == "udpDport" then
+      "udp dport"
+    else if field == "udpSport" then
+      "udp sport"
+    else
+      throw "Unsupported field ${field}";
   # returns an nftables filter string if `config.field` is not an empty list
-  maybePortList = config: field:
-    optional
-    (config.${field} != [])
-    (genNftList (mapPort field) (map toString config.${field}));
+  maybePortList =
+    config: field:
+    optional (config.${field} != [ ]) (genNftList (mapPort field) (map toString config.${field}));
 
   /*
-  returns `name` if `name` not in `config`
-  if list, returns first element
-  if string returns string
+    returns `name` if `name` not in `config`
+    if list, returns first element
+    if string returns string
   */
-  getString = config: name: let
-    v = config.${name};
-  in
+  getString =
+    config: name:
+    let
+      v = config.${name};
+    in
     # if !(builtins.hasAttr name config) then name
-    if builtins.typeOf v == "list"
-    then
-      if builtins.length v == 0
-      then "__${name}__"
-      else builtins.head v
-    else v;
-in {
+    if builtins.typeOf v == "list" then
+      if builtins.length v == 0 then "__${name}__" else builtins.head v
+    else
+      v;
+in
+{
   options = {
     ruleReplaceMap = mkOption {
-      default = {};
+      default = { };
       description = "a list of string replacements to run to create final rule";
       type = attrsOf (submodule {
         options = {
-          enable = mkEnableOption "enable string replacement" // {default = true;};
+          enable = mkEnableOption "enable string replacement" // {
+            default = true;
+          };
           stringMatch = mkOption {
             default = "";
             description = "string to match";
@@ -171,61 +174,73 @@ in {
       description = "Filter by `udp dport`";
       type = listOf int;
       default = defaults.udpDport;
-      example = [53 67];
+      example = [
+        53
+        67
+      ];
     };
     udpSport = mkOption {
       description = "Filter by `udp sport`";
       type = listOf int;
       default = defaults.udpSport;
-      example = [53 67];
+      example = [
+        53
+        67
+      ];
     };
     tcpDport = mkOption {
       description = "Filter by `tcp dport`";
       type = listOf int;
       default = defaults.tcpDport;
-      example = [53 67];
+      example = [
+        53
+        67
+      ];
     };
     tcpSport = mkOption {
       description = "Filter by `tcp sport`";
       type = listOf int;
       default = defaults.tcpSport;
-      example = [53 67];
+      example = [
+        53
+        67
+      ];
     };
     oifname = mkOption {
       description = "Filter by oifname";
       type = listOf str;
       default = defaults.oifname; # [];
-      example = ["wan"];
+      example = [ "wan" ];
     };
     iifname = mkOption {
       description = "Filter by iifname";
       type = listOf str;
       default = defaults.iifname; # [];
-      example = ["lan"];
+      example = [ "lan" ];
     };
     oif = mkOption {
       description = "Filter by oif";
       type = listOf str;
       default = defaults.oif; # [];
-      example = ["wan"];
+      example = [ "wan" ];
     };
     iif = mkOption {
       description = "Filter by iif";
       type = listOf str;
       default = defaults.iif; # [];
-      example = ["lan"];
+      example = [ "lan" ];
     };
     saddr = mkOption {
       description = "Filter by saddr";
       type = listOf str;
       default = defaults.saddr; # [];
-      example = ["10.11.0.0/24"];
+      example = [ "10.11.0.0/24" ];
     };
     daddr = mkOption {
       description = "Filter by daddr";
       type = listOf str;
       default = defaults.daddr; # [];
-      example = ["10.1.1.1"];
+      example = [ "10.1.1.1" ];
     };
     main = mkOption {
       description = ''
@@ -275,10 +290,7 @@ in {
       '';
       type = str;
       example = "jump another-chain";
-      default =
-        if defaults.comment == ""
-        then config.__name
-        else defaults.comment;
+      default = if defaults.comment == "" then config.__name else defaults.comment;
     };
     __name = mkOption {
       description = "Rule name, doesn't influence rule except setting the comment by default";
@@ -295,40 +307,44 @@ in {
     ruleReplaceMap = pipe ruleReplaceMap [
       (mapAttrsToList (
         network:
-          mapAttrsToList (host: ip:
-            nameValuePair "host-replace-${network}-${host}" {
-              stringMatch = "<-${network}.${host}->";
-              replace = ip;
-            })
+        mapAttrsToList (
+          host: ip:
+          nameValuePair "host-replace-${network}-${host}" {
+            stringMatch = "<-${network}.${host}->";
+            replace = ip;
+          }
+        )
       ))
       flatten
       listToAttrs
     ];
 
     __final =
-      lib.pipe [
-        (maybeList config "iif")
-        (maybeList config "iifname")
-        (maybePortList config "tcpSport")
-        (maybePortList config "udpSport")
-        (maybeIpList config "saddr")
-        (maybeList config "oif")
-        (maybeList config "oifname")
-        (maybePortList config "tcpDport")
-        (maybePortList config "udpDport")
-        (maybeIpList config "daddr")
-        config.main
-        (optional config.log "log")
-        (optional config.counter "counter")
-        (optional config.trace "meta nftrace set 1")
-        (optional (config.mapset != "") mapsets.${config.mapset}.__map)
-        (optional (config.verdict != "") config.verdict)
-        (optional (config.comment != "") "comment \"${config.comment}\"")
-      ] [
-        flatten
-        (concatStringsSep " ")
-        (builtins.replaceStrings config.rewriteLists.match config.rewriteLists.replace)
-        lib.mkDefault
-      ];
+      lib.pipe
+        [
+          (maybeList config "iif")
+          (maybeList config "iifname")
+          (maybePortList config "tcpSport")
+          (maybePortList config "udpSport")
+          (maybeIpList config "saddr")
+          (maybeList config "oif")
+          (maybeList config "oifname")
+          (maybePortList config "tcpDport")
+          (maybePortList config "udpDport")
+          (maybeIpList config "daddr")
+          config.main
+          (optional config.log "log")
+          (optional config.counter "counter")
+          (optional config.trace "meta nftrace set 1")
+          (optional (config.mapset != "") mapsets.${config.mapset}.__map)
+          (optional (config.verdict != "") config.verdict)
+          (optional (config.comment != "") "comment \"${config.comment}\"")
+        ]
+        [
+          flatten
+          (concatStringsSep " ")
+          (builtins.replaceStrings config.rewriteLists.match config.rewriteLists.replace)
+          lib.mkDefault
+        ];
   };
 }

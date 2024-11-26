@@ -1,17 +1,22 @@
-{self, ...}: {
+{ self, ... }:
+{
   config,
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf;
   opts = self.lib.options;
   cfg = config.provision.fs.luks;
-in {
+in
+{
   options.provision.fs.luks = {
-    enable = opts.enable' (cfg.devices != {}) "enable luks encryption, is read by `provision.fs.initrd` and `provision.fs.boot`";
+    enable = opts.enable' (
+      cfg.devices != { }
+    ) "enable luks encryption, is read by `provision.fs.initrd` and `provision.fs.boot`";
     devices = opts.mk {
-      default = {};
+      default = { };
       description = "map of luks name -> device path to unlock";
       example = {
         enc-root = "/dev/vda1";
@@ -21,12 +26,9 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    boot.initrd.luks.devices =
-      lib.mapAttrs
-      (_: device: {
-        inherit device;
-        allowDiscards = lib.mkDefault true;
-      })
-      cfg.devices;
+    boot.initrd.luks.devices = lib.mapAttrs (_: device: {
+      inherit device;
+      allowDiscards = lib.mkDefault true;
+    }) cfg.devices;
   };
 }

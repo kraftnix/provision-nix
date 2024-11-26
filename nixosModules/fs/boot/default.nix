@@ -1,23 +1,28 @@
-{self, ...}: {
+{ self, ... }:
+{
   config,
   lib,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf;
   opts = self.lib.options;
   cfg = config.provision.fs.boot;
-in {
+in
+{
   options.provision.fs.boot = {
     enable = opts.enable "enable boot configuration, adds boot to supportedFilesystems";
     device = opts.stringNull "set `/boot` to point to a vfat filesystem at device path";
     configurationLimit = opts.intNull "optionally set configuration limit";
     grub = {
-      enable = opts.enable' (cfg.grub.devices != []) "enable grub as bootloader";
-      devices = opts.stringList [] "device to set for bootloader";
+      enable = opts.enable' (cfg.grub.devices != [ ]) "enable grub as bootloader";
+      devices = opts.stringList [ ] "device to set for bootloader";
       luks = opts.enable' config.provision.fs.luks.enable "sets `enableCryptodisk`";
     };
     systemd = {
-      enable = opts.enable' (!cfg.grub.enable) "enable systemd-boot as bootloader (boot.loader.systemd-boot)";
+      enable = opts.enable' (
+        !cfg.grub.enable
+      ) "enable systemd-boot as bootloader (boot.loader.systemd-boot)";
       initrd.enable = opts.enable "enable systemd as initrd (boot.initrd.systemd)";
       initrd.emergencyAccess = opts.enable "enable emergency access in initrd, useful for debugging";
     };

@@ -2,13 +2,14 @@
   config,
   profiles,
   ...
-}: {
+}:
+{
   imports = with profiles; [
     # NOTE: infinite recursion when used in lib.nixosSystem
     #kserv.virt.podman.basic
     #kserv.virt.podman.registries
   ];
-  users.users.test-operator.extraGroups = ["podman"];
+  users.users.test-operator.extraGroups = [ "podman" ];
   # Arion
   virtualisation.arion = {
     backend = "podman-socket";

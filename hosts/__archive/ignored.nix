@@ -5,6 +5,7 @@
   inputs,
   pkgs,
   ...
-}: {
+}:
+{
   not.an.option.will.fail = true;
 }

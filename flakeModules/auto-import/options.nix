@@ -8,9 +8,11 @@
     flakeArgs = null;
   },
   ...
-}: let
-  enable = desc: default: lib.mkEnableOption desc // {inherit default;};
-in {
+}:
+let
+  enable = desc: default: lib.mkEnableOption desc // { inherit default; };
+in
+{
   options = {
     addTo = {
       modules = enable "add {modules'} entries to toplevel flake output (i.e. nixosModules, flakeModules)" defaults.addTo.modules;

@@ -2,18 +2,31 @@
   self,
   inputs,
   ...
-}: {
+}:
+{
   config,
   lib,
   pkgs,
   ...
-}: let
-  inherit (lib) filterAttrs literalExpression mapAttrs mapAttrsToList mkDefault mkOption mkMerge mkIf types;
+}:
+let
+  inherit (lib)
+    filterAttrs
+    literalExpression
+    mapAttrs
+    mapAttrsToList
+    mkDefault
+    mkOption
+    mkMerge
+    mkIf
+    types
+    ;
   opts = self.lib.options;
   cfg = config.provision.nix;
   enabledSubstituters = filterAttrs (_: s: s.enable) cfg.substituters;
   substitutersUsed = lib.partition (sub: sub.use) (lib.attrValues enabledSubstituters);
-in {
+in
+{
   options.provision.nix = {
     basic = opts.enable "good defaults for most usecases";
     develop = opts.enable "good defaults for developers";
@@ -27,23 +40,28 @@ in {
     };
 
     trustWheel = opts.enable "add wheel as allowed + trusted users";
-    trustedUsers = opts.stringList [] "adds these users to `allowed-users` and `trusted-users`";
+    trustedUsers = opts.stringList [ ] "adds these users to `allowed-users` and `trusted-users`";
 
     substituters = mkOption {
       description = "easily set binary cache substituters and keys";
-      default = {};
-      type = types.attrsOf (types.submodule ({config, ...}: {
-        options = {
-          enable = opts.enable' (config.publicKey != "" && config.substituter != "") ''
-            Whether to allow (but not enable by default) a substituter:
+      default = { };
+      type = types.attrsOf (
+        types.submodule (
+          { config, ... }:
+          {
+            options = {
+              enable = opts.enable' (config.publicKey != "" && config.substituter != "") ''
+                Whether to allow (but not enable by default) a substituter:
 
-            sets `trusted-substituters"
-          '';
-          use = opts.enable "use as a system substituter";
-          publicKey = opts.string "" "Pubkey that signed substituter store paths, sets `trusted-public-keys`";
-          substituter = opts.string "" "Substituter for binaries, sets `trusted-public-keys`";
-        };
-      }));
+                sets `trusted-substituters"
+              '';
+              use = opts.enable "use as a system substituter";
+              publicKey = opts.string "" "Pubkey that signed substituter store paths, sets `trusted-public-keys`";
+              substituter = opts.string "" "Substituter for binaries, sets `trusted-public-keys`";
+            };
+          }
+        )
+      );
     };
 
     flakes = {
@@ -51,13 +69,13 @@ in {
       inputs = mkOption {
         description = "Flake inputs to add to nix-path and registry";
         type = with types; attrsOf unspecified;
-        default = {};
+        default = { };
         example = literalExpression "inputs";
       };
       registry = mkOption {
         description = "registry entries to add, expects set(name -> input)";
         type = with types; attrsOf unspecified;
-        default = mapAttrs (_: value: {flake = value;}) cfg.flakes.inputs;
+        default = mapAttrs (_: value: { flake = value; }) cfg.flakes.inputs;
       };
     };
   };
@@ -74,7 +92,10 @@ in {
         # frees garbage until `max-free` when disk space drops below `min-free` during a build
         min-free = mkDefault 536870912; # 500MB
         max-free = mkDefault 1036870912; # 1GB
-        experimental-features = ["nix-command" "flakes"];
+        experimental-features = [
+          "nix-command"
+          "flakes"
+        ];
         connect-timeout = mkDefault 5; # timeout for substituters
       };
       environment.systemPackages = with pkgs; [
@@ -107,7 +128,12 @@ in {
       nix.settings = {
         keep-outputs = true;
         keep-derivations = true;
-        system-features = ["nixos-test" "benchmark" "big-parallel" "kvm"];
+        system-features = [
+          "nixos-test"
+          "benchmark"
+          "big-parallel"
+          "kvm"
+        ];
         max-silent-time = mkDefault 600; # timeout after 10mins if no stdout in build
       };
       environment.systemPackages = with pkgs; [
@@ -120,7 +146,12 @@ in {
       nix.settings = {
         keep-outputs = true;
         keep-derivations = true;
-        system-features = ["nixos-test" "benchmark" "big-parallel" "kvm"];
+        system-features = [
+          "nixos-test"
+          "benchmark"
+          "big-parallel"
+          "kvm"
+        ];
       };
       environment.systemPackages = with pkgs; [
         nix-tree # Interactively browse a Nix store paths dependencies
@@ -132,8 +163,11 @@ in {
     ## User ops / ACLs
     (mkIf cfg.trustWheel {
       nix.settings = {
-        allowed-users = ["@wheel"];
-        trusted-users = ["root" "@wheel"];
+        allowed-users = [ "@wheel" ];
+        trusted-users = [
+          "root"
+          "@wheel"
+        ];
       };
     })
     {
@@ -158,8 +192,11 @@ in {
 
     ## Flakes
     (mkIf cfg.flakes.enable {
-      nix.nixPath = ["nixpkgs=flake:nixos"]; # https://github.com/NixOS/nixpkgs/issues/241356
-      nix.settings.extra-experimental-features = ["flakes" "nix-command"];
+      nix.nixPath = [ "nixpkgs=flake:nixos" ]; # https://github.com/NixOS/nixpkgs/issues/241356
+      nix.settings.extra-experimental-features = [
+        "flakes"
+        "nix-command"
+      ];
       nix.registry = mkMerge [
         cfg.flakes.registry
         {

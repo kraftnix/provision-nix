@@ -23,43 +23,52 @@
   extraDatasets ? {
     "@snapshots" = {
       mountpoint = "/snapshots";
-      mountOptions = ["compress=zstd" "noatime"];
+      mountOptions = [
+        "compress=zstd"
+        "noatime"
+      ];
     };
     "@containers" = {
       mountpoint = "/containers";
-      mountOptions = ["noatime"];
+      mountOptions = [ "noatime" ];
     };
   },
   lib,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf optional;
   # btrfs filesystem inside luks container
   root = {
     type = "btrfs";
-    extraArgs = ["--label nixos"];
-    subvolumes =
-      {
-        "@" = {
-          mountpoint = "/";
-          mountOptions = ["noatime"];
-        };
-        "@nix" = {
-          mountpoint = "/nix";
-          mountOptions = ["compress=zstd" "noatime"];
-        };
-        "@home" = {
-          mountpoint = "/home";
-          mountOptions = ["compress=zstd" "noatime"];
-        };
-        "@log" = {
-          mountpoint = "/var/log";
-          mountOptions = ["noatime"];
-        };
-      }
-      // extraDatasets;
+    extraArgs = [ "--label nixos" ];
+    subvolumes = {
+      "@" = {
+        mountpoint = "/";
+        mountOptions = [ "noatime" ];
+      };
+      "@nix" = {
+        mountpoint = "/nix";
+        mountOptions = [
+          "compress=zstd"
+          "noatime"
+        ];
+      };
+      "@home" = {
+        mountpoint = "/home";
+        mountOptions = [
+          "compress=zstd"
+          "noatime"
+        ];
+      };
+      "@log" = {
+        mountpoint = "/var/log";
+        mountOptions = [ "noatime" ];
+      };
+    } // extraDatasets;
   };
-in {
+in
+{
   disko.devices.disk.${diskName} = {
     type = "disk";
     inherit device;
@@ -86,14 +95,12 @@ in {
             # this is expected to be present at boot
             settings.keyFile = mkIf (keyFile != "") keyFile;
             settings.allowDiscards = mkIf discard true;
-            extraFormatArgs =
-              [
-                "--iter-time ${toString iterTime}"
-                "--hash ${hash}"
-                "--cipher ${cipher}"
-                "--key-size ${toString keySize}"
-              ]
-              ++ (optional useRandom "--use-random");
+            extraFormatArgs = [
+              "--iter-time ${toString iterTime}"
+              "--hash ${hash}"
+              "--cipher ${cipher}"
+              "--key-size ${toString keySize}"
+            ] ++ (optional useRandom "--use-random");
             # required using na-install script during nixos-anywhere installation
             # when using luks
             passwordFile = mkIf (passwordFile != "") passwordFile;

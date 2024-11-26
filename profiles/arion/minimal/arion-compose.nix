@@ -1,4 +1,5 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   # is rootfull podman
   config.services = {
     webserver = {

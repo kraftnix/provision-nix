@@ -1,10 +1,13 @@
-localFlake @ {self, ...}: {
+localFlake@{ self, ... }:
+{
   config,
   lib,
   ...
-}: let
+}:
+let
   inherit (lib) literalExpression mkOption types;
-in {
+in
+{
   options = {
     nuscht-search = {
       baseHref = mkOption {
@@ -51,9 +54,8 @@ in {
         (import (localFlake.self.nixosConfigurations.basic.pkgs.path + "/nixos/lib/eval-config.nix") {
           # Overriden explicitly here, this would include all modules from NixOS otherwise.
           # See: docs of eval-config.nix for more details
-          modules = [];
-        })
-        .options;
+          modules = [ ];
+        }).options;
       defaultText = literalExpression ''
         (import (localFlake.self.nixosConfigurations.basic.pkgs.path + "/nixos/lib/eval-config.nix") {
           # Overriden explicitly here, this would include all modules from NixOS otherwise.

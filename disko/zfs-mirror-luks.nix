@@ -1,5 +1,8 @@
 {
-  disks ? ["/dev/vda1" "/dev/vda2"],
+  disks ? [
+    "/dev/vda1"
+    "/dev/vda2"
+  ],
   ## LUKS options
   # LUKS password file
   passwordFile ? "/tmp/secret.key",
@@ -35,13 +38,19 @@
     };
   },
   ...
-}: {
+}:
+{
   disko.devices = {
     ## ZFS Pool Setup
     zpool.${pool} = {
       type = "zpool";
       mode = "mirror";
-      inherit datasets mountpoint options rootFsOptions;
+      inherit
+        datasets
+        mountpoint
+        options
+        rootFsOptions
+        ;
     };
 
     ## Physical Disk Layout

@@ -1,7 +1,10 @@
-toplevel: {config, ...}: let
+toplevel:
+{ config, ... }:
+let
   currDir = "/etc/podman/traefik";
-  #domain = "traefik.${toplevel.networking.domain}";
-in {
+in
+#domain = "traefik.${toplevel.networking.domain}";
+{
   # is rootfull podman
   config.docker-compose.raw = {
     networks.proxy = {
@@ -26,7 +29,7 @@ in {
   };
   config.services = {
     traefik.out.service.networks = {
-      proxy = {};
+      proxy = { };
       external = {
         ipv4_address = "172.31.5.2";
         #ports = [

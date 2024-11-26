@@ -1,13 +1,15 @@
-localFlake @ {
+localFlake@{
   self,
   lib,
   inputs,
   flake-parts-lib,
   ...
-}: let
+}:
+let
   l = lib;
   inherit (flake-parts-lib) importApply;
-in {
+in
+{
   imports =
     [
       inputs.flake-parts.flakeModules.easyOverlay
@@ -25,9 +27,13 @@ in {
       profiles = ./flakeModules/profiles.nix;
       scripts = ./scripts/flakeModule.nix;
       site = ./site.nix;
+      shells = ./shells/flakeModule.nix;
     });
 
   flake = {
+    devshellModules.provision = importApply ./shells/provision.nix localFlake;
+    devshellModules.na-install = importApply ./shells/na-install.nix localFlake;
+    nixd.options.nixos = self.nixosConfigurations.testAllProfiles.options;
     lib = import ./lib {
       inherit lib;
       extra-lib = inputs.extra-lib.lib;
@@ -42,11 +48,16 @@ in {
       flake = {
         dir = ./flakeModules;
         modules.scripts = ./scripts/flakeModule.nix;
+        modules.provision-shells = ./shells/flakeModule.nix;
       };
       nixos = {
         dir = ./nixosModules;
         filterByPath = [
-          ["virt" "microvm" "vm"]
+          [
+            "virt"
+            "microvm"
+            "vm"
+          ]
           # [ "provision" "scripts" ]
         ];
         modules.provision.scripts = ./scripts/nixosModule.nix;
@@ -68,14 +79,13 @@ in {
   # for CI / nix-fast-build
   flake.checks.x86_64-linux =
     (lib.genAttrs [
-        "basic"
-        "basic-iso"
-        "testAllProfiles"
-        "testSecurity"
-        "testBtrfsBios"
-        "testZfsUefi"
-      ]
-      (name: self.nixosConfigurations.${name}.config.system.build.toplevel))
+      "basic"
+      "basic-iso"
+      "testAllProfiles"
+      "testSecurity"
+      "testBtrfsBios"
+      "testZfsUefi"
+    ] (name: self.nixosConfigurations.${name}.config.system.build.toplevel))
     // {
       wireguard-basic = import ./tests/wireguard-basic.nix self;
       wireguard-firewall = import ./tests/wireguard-firewall.nix self;
@@ -87,10 +97,12 @@ in {
   ];
   flake.overlays = {
     lib = final: prev: {
-      lib = prev.lib.extend (_: _: {
-        provision = self.lib;
-        # siteBase = "/projects/provision-nix/";
-      });
+      lib = prev.lib.extend (
+        _: _: {
+          provision = self.lib;
+          # siteBase = "/projects/provision-nix/";
+        }
+      );
     };
     lnav = final: prev: {
       # https://github.com/tstack/lnav/issues/1291
@@ -102,21 +114,24 @@ in {
     };
   };
 
-  perSystem = {config, ...}: {
-    channels.nixpkgs.overlays = self.hosts.defaults.overlays;
-    channels.stable.input = inputs.nixpkgs-stable;
-    channels.stable.overlays = [
-      (final: prev: {
-        # import packages from other channels via overlays
-        inherit
-          (config.channels.nixpkgs.pkgs)
-          yazi
-          dnscrypt-proxy
-          matrix-synapse-unwrapped
-          ;
-      })
-    ];
-    # FIX(zfs): 6_10 removed from stable and unstable
-    channels.nixpkgs-zfs.inputName = "nixpkgs-zfs";
-  };
+  perSystem =
+    { config, ... }:
+    {
+      channels.nixpkgs.overlays = self.hosts.defaults.overlays;
+      channels.stable.input = inputs.nixpkgs-stable;
+      channels.stable.overlays = [
+        (final: prev: {
+          # import packages from other channels via overlays
+          inherit (config.channels.nixpkgs.pkgs)
+            yazi
+            dnscrypt-proxy
+            matrix-synapse-unwrapped
+            ;
+        })
+      ];
+      # FIX(zfs): 6_10 removed from stable and unstable
+      channels.nixpkgs-zfs.inputName = "nixpkgs-zfs";
+      provision.enable = true;
+      provision.enableDefaults = true;
+    };
 }

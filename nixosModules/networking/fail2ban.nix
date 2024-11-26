@@ -1,17 +1,19 @@
-{self, ...}: {
+{ self, ... }:
+{
   lib,
   config,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     mapAttrs
     mkIf
     mkEnableOption
     mkOverride
     ;
   cfg = config.provision.networking.fail2ban;
-in {
+in
+{
   options.provision.networking.fail2ban = {
     enable = mkEnableOption "enable fail2ban defaults";
   };

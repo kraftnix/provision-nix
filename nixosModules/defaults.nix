@@ -1,14 +1,17 @@
-{self, ...}: {
+{ self, ... }:
+{
   config,
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf types mkDefault;
   opts = self.lib.options;
   cfg = config.provision.defaults;
   enable = cfg.enable;
-in {
+in
+{
   options.provision.defaults = {
     enable = opts.enable "Enable defaults to be set. Setting to false overrides all enables in this module.";
 
@@ -58,7 +61,7 @@ in {
       doas = {
         enable = opts.enableTrue "enable doas";
         extraRules = lib.mkOption {
-          default = [];
+          default = [ ];
           description = "extra doas rules";
           type = with types; listOf raw;
         };
@@ -78,7 +81,7 @@ in {
     debug = {
       systemImportPackages = opts.enable "enable to add all debug packages to `systemPackages`";
       packages = opts.mk {
-        default = [];
+        default = [ ];
         description = "large list of debug packages";
         type = with types; listOf package;
       };
@@ -87,7 +90,7 @@ in {
   config = lib.mkMerge [
     (mkIf enable {
       # shouldn't affect when actually used, but prevents error in nix-repl when previewing `config`
-      passthru = lib.mkDefault {};
+      passthru = lib.mkDefault { };
     })
 
     ## Inotify / sysctl
@@ -100,23 +103,21 @@ in {
     })
 
     ## Systemd
-    (
-      mkIf (enable && (cfg.systemd.defaultTimeoutSec != null))
-      (
-        let
-          timeout = "${toString cfg.systemd.defaultTimeoutSec}s";
-        in {
-          systemd.extraConfig = ''
-            DefaultTimeoutStartSec=${timeout}
-            DefaultTimeoutStopSec=${timeout}
-          '';
-          systemd.user.extraConfig = ''
-            DefaultTimeoutStartSec=${timeout}
-            DefaultTimeoutStopSec=${timeout}
-          '';
-        }
-      )
-    )
+    (mkIf (enable && (cfg.systemd.defaultTimeoutSec != null)) (
+      let
+        timeout = "${toString cfg.systemd.defaultTimeoutSec}s";
+      in
+      {
+        systemd.extraConfig = ''
+          DefaultTimeoutStartSec=${timeout}
+          DefaultTimeoutStopSec=${timeout}
+        '';
+        systemd.user.extraConfig = ''
+          DefaultTimeoutStartSec=${timeout}
+          DefaultTimeoutStopSec=${timeout}
+        '';
+      }
+    ))
 
     ## Security
     (mkIf (enable && cfg.security.doas.enable) {

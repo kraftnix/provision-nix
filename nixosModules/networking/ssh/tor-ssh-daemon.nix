@@ -3,10 +3,17 @@
   lib,
   pkgs,
   ...
-}: let
-  inherit (lib) mkEnableOption mkOption mkIf types;
+}:
+let
+  inherit (lib)
+    mkEnableOption
+    mkOption
+    mkIf
+    types
+    ;
   cfg = config.provision.networking.ssh.tor;
-in {
+in
+{
   # find the hostname in `/var/lib/tor/onion/sshd/hostname`
   # access with: torsocks ssh xyzxyzxyz.onion -p 29420
   options.provision.networking.ssh.tor = {
@@ -29,7 +36,7 @@ in {
   };
 
   config = mkIf (cfg.enable) {
-    environment.systemPackages = [pkgs.torsocks];
+    environment.systemPackages = [ pkgs.torsocks ];
     services.tor = {
       enable = true;
       enableGeoIP = false;

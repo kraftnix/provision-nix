@@ -1,24 +1,30 @@
-{self, ...}: {
+{ self, ... }:
+{
   config,
   lib,
   pkgs,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     mkIf
     optionalAttrs
     ;
   opts = self.lib.options;
   cfg = config.provision.networking.ssh;
-in {
-  imports = [./tor-ssh-daemon.nix];
+in
+{
+  imports = [ ./tor-ssh-daemon.nix ];
 
   options.provision.networking.ssh = {
     enable = opts.enable "enable SSH";
-    ports = opts.portList [22] "port for SSH (default: [22])";
-    openFirewallAll = opts.enable' (!cfg.hardened) "opens firewall on all interfaces at specified ports (default: 22), is ignored if `allowedInterfaces` is set";
-    allowedInterfaces = opts.stringList [] "opens firewall on allowed instances, overrides `openFirewallAll`";
+    ports = opts.portList [ 22 ] "port for SSH (default: [22])";
+    openFirewallAll =
+      opts.enable' (!cfg.hardened)
+        "opens firewall on all interfaces at specified ports (default: 22), is ignored if `allowedInterfaces` is set";
+    allowedInterfaces =
+      opts.stringList [ ]
+        "opens firewall on allowed instances, overrides `openFirewallAll`";
     hardened = opts.enable "enable hardened SSH opts";
     gpgAgentForwarding = opts.enable "enable gpg agent forwarding over SSH";
   };
@@ -30,10 +36,7 @@ in {
       inherit (cfg) ports;
       settings =
         {
-          PermitRootLogin =
-            if cfg.hardened
-            then "no"
-            else "prohibit-password";
+          PermitRootLogin = if cfg.hardened then "no" else "prohibit-password";
         }
         // (optionalAttrs cfg.hardened {
           PasswordAuthentication = false;

@@ -3,7 +3,8 @@
   lib,
   config,
   ...
-}: let
+}:
+let
   inherit (pkgs.lib.kserv.network) stripMask;
   dockerSubnet = "10.97.99";
   #dockerCidr = "${dockerSubnet}.0/24";
@@ -13,25 +14,32 @@
   hostVeth = "veth-${netns}-ns";
   dockerNsVeth = "veth-${netns}-br";
   dockerBridge = "${netns}-br";
-in {
+in
+{
   #virtualisation.podman.daemon.settings = {
   #  bip = dockerHostIP;
   #  default-gateway = stripMask dockerGateway;
   #  fixed-cidr = "${dockerSubnet}.0/25";
   #};
   systemd.services.podman = {
-    bindsTo = ["netns@${netns}.service"];
-    after = ["netns@${netns}.service"];
+    bindsTo = [ "netns@${netns}.service" ];
+    after = [ "netns@${netns}.service" ];
     serviceConfig.NetworkNamespacePath = "/var/run/netns/${netns}";
   };
   networking.nftables.firewall = {
-    zones.arion-in.interfaces = [dockerBridge];
-    zones.arion-out.interfaces = [dockerBridge config.networking.nat.externalInterface];
+    zones.arion-in.interfaces = [ dockerBridge ];
+    zones.arion-out.interfaces = [
+      dockerBridge
+      config.networking.nat.externalInterface
+    ];
     from.arion-in.to.arion-out.masquerade = true;
     from.arion-in.to.arion-out.policy = "accept";
   };
   systemd.services."netns@${netns}" = {
-    path = with pkgs; [iproute2 nftables];
+    path = with pkgs; [
+      iproute2
+      nftables
+    ];
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = "yes";

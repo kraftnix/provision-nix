@@ -3,9 +3,9 @@
   lib,
   name,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     concatStringsSep
     mkIf
     mkOption
@@ -14,64 +14,70 @@
     ;
   cfg = config;
 
-  makeMapType = {
-    lhs,
-    rhs ? null,
-    verdict ? null,
-    type ? null,
-    ...
-  }:
-    if (rhs == null) && (verdict == null)
-    then "${lhs}"
-    else if (rhs == null)
-    then "${lhs} : ${verdict}"
-    else if (verdict == null)
-    then "${lhs} : ${rhs}"
-    else if type == "vmapr"
-    then "${lhs} : ${rhs} . ${verdict}"
-    else "${lhs} . ${rhs} : ${verdict}";
+  makeMapType =
+    {
+      lhs,
+      rhs ? null,
+      verdict ? null,
+      type ? null,
+      ...
+    }:
+    if (rhs == null) && (verdict == null) then
+      "${lhs}"
+    else if (rhs == null) then
+      "${lhs} : ${verdict}"
+    else if (verdict == null) then
+      "${lhs} : ${rhs}"
+    else if type == "vmapr" then
+      "${lhs} : ${rhs} . ${verdict}"
+    else
+      "${lhs} . ${rhs} : ${verdict}";
 
-  makeMapMap = lhsType: rhsType: verdict:
-    if (rhsType == null) && (verdict == null)
-    then "${lhsType} @${config.name}"
-    else if (rhsType == null)
-    then "${lhsType} vmap @${config.name}"
-    else if (verdict == null)
-    then "${lhsType} vmap @${config.name}"
-    else if cfg.type == "vmapr"
-    then "<implement your own>"
-    else "${lhsType} . ${rhsType} vmap @${config.name}";
+  makeMapMap =
+    lhsType: rhsType: verdict:
+    if (rhsType == null) && (verdict == null) then
+      "${lhsType} @${config.name}"
+    else if (rhsType == null) then
+      "${lhsType} vmap @${config.name}"
+    else if (verdict == null) then
+      "${lhsType} vmap @${config.name}"
+    else if cfg.type == "vmapr" then
+      "<implement your own>"
+    else
+      "${lhsType} . ${rhsType} vmap @${config.name}";
 
-  mapType = {config, ...}: {
-    options = {
-      l = mkOption {
-        default = null;
-        description = "<lhs> of map element, required";
-        type = with types; nullOr str;
+  mapType =
+    { config, ... }:
+    {
+      options = {
+        l = mkOption {
+          default = null;
+          description = "<lhs> of map element, required";
+          type = with types; nullOr str;
+        };
+        r = mkOption {
+          default = null;
+          description = "<rhs> of map element";
+          type = with types; nullOr str;
+        };
+        v = mkOption {
+          default = null;
+          description = "<verdict> of map element";
+          type = with types; nullOr str;
+        };
+        __final = mkOption {
+          description = "end element str";
+          type = types.str;
+          default = "";
+        };
       };
-      r = mkOption {
-        default = null;
-        description = "<rhs> of map element";
-        type = with types; nullOr str;
-      };
-      v = mkOption {
-        default = null;
-        description = "<verdict> of map element";
-        type = with types; nullOr str;
-      };
-      __final = mkOption {
-        description = "end element str";
-        type = types.str;
-        default = "";
+      config.__final = makeMapType {
+        lhs = config.l;
+        rhs = config.r;
+        verdict = config.v;
+        type = cfg.type;
       };
     };
-    config.__final = makeMapType {
-      lhs = config.l;
-      rhs = config.r;
-      verdict = config.v;
-      type = cfg.type;
-    };
-  };
 
   typeMap = {
     oif = "iface_index";
@@ -85,7 +91,8 @@
     "udp dport" = "inet_service";
     "udp sport" = "inet_service";
   };
-in {
+in
+{
   options = {
     enable = mkOption {
       description = "Whether to include rule in final rendered chain.";
@@ -99,9 +106,10 @@ in {
     };
     lhs = mkOption {
       default =
-        if (config.lhsType != null) && (builtins.hasAttr config.lhsType typeMap)
-        then typeMap.${config.lhsType}
-        else "ipv4_addr";
+        if (config.lhsType != null) && (builtins.hasAttr config.lhsType typeMap) then
+          typeMap.${config.lhsType}
+        else
+          "ipv4_addr";
       type = types.str;
       description = "`lhs` in the map `<lhs> . <rhs>";
     };
@@ -113,9 +121,10 @@ in {
     };
     rhs = mkOption {
       default =
-        if (config.rhsType != null) && (builtins.hasAttr config.rhsType typeMap)
-        then typeMap.${config.rhsType}
-        else null;
+        if (config.rhsType != null) && (builtins.hasAttr config.rhsType typeMap) then
+          typeMap.${config.rhsType}
+        else
+          null;
       example = "ifname";
       description = "`rhs` in the map `<lhs> . <rhs>";
       type = with types; nullOr str;
@@ -132,8 +141,14 @@ in {
       type = with types; nullOr str;
     };
     flags = mkOption {
-      default = [];
-      type = with types; listOf (enum ["constant" "interval" "timeout"]);
+      default = [ ];
+      type =
+        with types;
+        listOf (enum [
+          "constant"
+          "interval"
+          "timeout"
+        ]);
       description = ''
         Available options:
           + constant - set content may not change while bound
@@ -143,11 +158,12 @@ in {
     };
     type = mkOption {
       default =
-        if (config.rhs == null) && (config.verdict == null)
-        then "set"
-        else if config.verdict != null
-        then "map"
-        else "vmap";
+        if (config.rhs == null) && (config.verdict == null) then
+          "set"
+        else if config.verdict != null then
+          "map"
+        else
+          "vmap";
       description = ''
         final type of set/map/vmap/natmap
           - set: list of elements [Nftables Sets](https://wiki.nftables.org/wiki-nftables/index.php/Sets)
@@ -159,26 +175,33 @@ in {
               -[vmapr]  match : match . match    ( lhs : rhs . verdict )
             example usage of vmapr [Nfatbles examples](https://wiki.nftables.org/wiki-nftables/index.php/Multiple_NATs_using_nftables_maps)
       '';
-      type = types.enum ["set" "map" "vmap" "vmapr"];
+      type = types.enum [
+        "set"
+        "map"
+        "vmap"
+        "vmapr"
+      ];
     };
     typeDef = mkOption {
       default = makeMapType {
-        inherit (config) lhs rhs verdict type;
+        inherit (config)
+          lhs
+          rhs
+          verdict
+          type
+          ;
       };
       # default = "type ${makeMapType config.lhs config.rhs config.verdict}";
       description = "final type of set/map/vmap";
       type = types.str;
     };
     typeName = mkOption {
-      default =
-        if config.type == "vmap" || config.type == "vmapr"
-        then "map"
-        else config.type;
+      default = if config.type == "vmap" || config.type == "vmapr" then "map" else config.type;
       type = types.str;
       description = "type name to set when defining named map/set/vamp";
     };
     elements = mkOption {
-      default = [];
+      default = [ ];
       description = "element for map, can be a verdict ";
       type = with types; listOf (submodule mapType);
     };
@@ -204,13 +227,15 @@ in {
     __final = lib.mkDefault ''
       ${config.typeName} ${config.name} {
           type ${config.typeDef}
-          ${optionalString (config.flags != []) "flags ${(concatStringsSep ", " config.flags)}"}
+          ${optionalString (config.flags != [ ]) "flags ${(concatStringsSep ", " config.flags)}"}
           ${config.extraConfig}
-          ${optionalString (config.elements != []) ''
-        elements = {
-              ${concatStringsSep ",\n      " (map (e: e.__final) config.elements)}
-            }
-      ''}
+          ${
+            optionalString (config.elements != [ ]) ''
+              elements = {
+                    ${concatStringsSep ",\n      " (map (e: e.__final) config.elements)}
+                  }
+            ''
+          }
         }
     '';
   };

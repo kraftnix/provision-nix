@@ -3,12 +3,13 @@
   inputs,
   lib,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     mapAttrs
     ;
-in {
+in
+{
   # For basic basic unencrypted installs
   flake.nixosConfigurations.vpsBasicInstall = inputs.nixpkgs.lib.nixosSystem {
     system = "x86_64-linux";
@@ -16,7 +17,7 @@ in {
       nixosAnywhereInstall
       testRootUser
       # (import ../../disko/ext4-simple-bios-uefi.nix)
-      (import ./vps-disk.nix {device = "/dev/vda";})
+      (import ./vps-disk.nix { device = "/dev/vda"; })
     ];
   };
 
@@ -26,7 +27,7 @@ in {
     modules = with self.profiles.install; [
       nixosAnywhereInstall
       testRootUser
-      (import ./vps-disk.nix {device = "/dev/vda";})
+      (import ./vps-disk.nix { device = "/dev/vda"; })
       initrdNetwork
     ];
   };
@@ -58,7 +59,7 @@ in {
     modules = with self.profiles.install; [
       nixosAnywhereInstall
       testRootUser
-      (import ./vps-disk.nix {device = "/dev/vda";})
+      (import ./vps-disk.nix { device = "/dev/vda"; })
       initrdNetwork
       (self.lib.initrdStaticIp {
         address = "45.133.117.40";
@@ -77,12 +78,18 @@ in {
       nixosAnywhereInstall
       uefiSystemdBoot
       testRootUser
-      (import self.disko.btrfs-simple-uefi {device = "/dev/nvme0n1";})
+      (import self.disko.btrfs-simple-uefi { device = "/dev/nvme0n1"; })
       {
         # boot.initrd.systemd.enable = lib.mkForce false;
         # boot.loader.systemd-boot.enable = lib.mkForce false;
-        boot.initrd.availableKernelModules = ["nvme" "dwc3_pci" "xhci_pci" "usbhid" "sdhci_pci"];
-        boot.kernelModules = ["kvm-amd"];
+        boot.initrd.availableKernelModules = [
+          "nvme"
+          "dwc3_pci"
+          "xhci_pci"
+          "usbhid"
+          "sdhci_pci"
+        ];
+        boot.kernelModules = [ "kvm-amd" ];
         networking.useDHCP = true;
         hardware.cpu.amd.updateMicrocode = true;
       }
@@ -90,32 +97,35 @@ in {
   };
 
   # Generate isos for hosts in `flake.internal.generateIsos`
-  flake.isos =
-    mapAttrs
-    (host: cfg:
-      inputs.nixos-generators.nixosGenerate {
-        inherit (cfg.config.nixpkgs) system;
-        inherit (cfg._module) specialArgs;
-        modules =
-          cfg._module.args.modules
-          ++ [
-            ({
-              pkgs,
-              modulesPath,
-              ...
-            }: {
-              imports = [(modulesPath + "/installer/scan/not-detected.nix")];
-              nixpkgs.pkgs = cfg._module.args.pkgs;
-              boot.loader.grub.enable = lib.mkForce false;
-              boot.initrd.secrets = lib.mkForce {};
-              boot.supportedFilesystems = ["zfs" "btrfs"];
-              # disable fileSystem config for iso
-              disko.enableConfig = false;
-              # live.nixos.passwd = "nixos-iso-password";
-              documentation.enable = lib.mkForce false;
-            })
-          ];
-        format = "install-iso";
-      })
-    self.internal.generateIsos;
+  flake.isos = mapAttrs (
+    host: cfg:
+    inputs.nixos-generators.nixosGenerate {
+      inherit (cfg.config.nixpkgs) system;
+      inherit (cfg._module) specialArgs;
+      modules = cfg._module.args.modules ++ [
+        (
+          {
+            pkgs,
+            modulesPath,
+            ...
+          }:
+          {
+            imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
+            nixpkgs.pkgs = cfg._module.args.pkgs;
+            boot.loader.grub.enable = lib.mkForce false;
+            boot.initrd.secrets = lib.mkForce { };
+            boot.supportedFilesystems = [
+              "zfs"
+              "btrfs"
+            ];
+            # disable fileSystem config for iso
+            disko.enableConfig = false;
+            # live.nixos.passwd = "nixos-iso-password";
+            documentation.enable = lib.mkForce false;
+          }
+        )
+      ];
+      format = "install-iso";
+    }
+  ) self.internal.generateIsos;
 }

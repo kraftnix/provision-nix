@@ -1,15 +1,16 @@
-{self, ...}: {
+{ self, ... }:
+{
   config,
   options,
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   toplevel = config;
   cfg = config.provision.virt.microvm.vm;
   opts = self.lib.options;
-  inherit
-    (lib)
+  inherit (lib)
     hasAttr
     filterAttrs
     flatten
@@ -22,29 +23,34 @@
   # n:
   # - cloud-hypervisor: 2
   # - nspawn: 3
-  mkVolume = {
-    image,
-    size,
-    mountpoint,
-    ...
-  }: {
-    inherit image size;
-    mountPoint = mountpoint;
-    # image = "var.img";
-  };
-  mkShare = {
-    hostPath,
-    mountpoint,
-    tag,
-    proto,
-    socket,
-    ...
-  }: {
-    inherit proto tag socket;
-    source = hostPath;
-    mountPoint = mountpoint;
-  };
-in {
+  mkVolume =
+    {
+      image,
+      size,
+      mountpoint,
+      ...
+    }:
+    {
+      inherit image size;
+      mountPoint = mountpoint;
+      # image = "var.img";
+    };
+  mkShare =
+    {
+      hostPath,
+      mountpoint,
+      tag,
+      proto,
+      socket,
+      ...
+    }:
+    {
+      inherit proto tag socket;
+      source = hostPath;
+      mountPoint = mountpoint;
+    };
+in
+{
   options.provision.virt.microvm.vm = {
     enable = opts.enable ''
       Enables microvm vm extensions.
@@ -58,7 +64,12 @@ in {
     hypervisor = lib.mkOption {
       default = "cloud-hypervisor";
       description = "sets `microvm.hypervisor`";
-      type = types.enum ["cloud-hypervisor" "qemu" "firecracker" "crosvm"];
+      type = types.enum [
+        "cloud-hypervisor"
+        "qemu"
+        "firecracker"
+        "crosvm"
+      ];
     };
 
     network = {
@@ -72,7 +83,7 @@ in {
           Virto-io tag name
         '';
         type = lib.mkOption {
-          type = lib.types.enum ["tap"];
+          type = lib.types.enum [ "tap" ];
           default = "tap";
           description = "interface type";
         };
@@ -80,44 +91,54 @@ in {
     };
 
     mounts = lib.mkOption {
-      type = types.attrsOf (types.submodule ({
-        config,
-        name,
-        ...
-      }: {
-        options = {
-          enable = opts.enable "enable mount, overrides volume + share enablement, volume is default";
-          name = opts.string name "mount name";
-          mountpoint = opts.string "/var/lib/${config.name}" "vm internal mountpoint";
-          volume = {
-            enable = opts.enable' (!config.share.enable) "enable volume";
-            sizeGB = opts.int 3 "size (in GB of volumes)";
-            size = opts.int (config.volume.sizeGB * 1000) "size (in MB) of volume";
-            mountpoint = opts.string config.mountpoint "volume mountpoint in VM";
-            image = opts.string "${config.name}.img" "image name";
-          };
-          share = {
-            enable = opts.enable "share for mount in VM";
-            hostPath = opts.string "/var/lib/microvms/${toplevel.networking.hostName}/${config.name}" ''
-              Host path of share
-            '';
-            mountpoint = opts.string config.mountpoint "share mountpoint in VM";
-            tag = opts.string config.name "share mountpoint in VM";
-            socket = opts.string "${config.share.tag}.sock" "share mountpoint in VM";
-            proto = lib.mkOption {
-              default = "virtiofs";
-              description = "mount / share protocol";
-              type = types.enum ["virtiofs" "9p"];
+      type = types.attrsOf (
+        types.submodule (
+          {
+            config,
+            name,
+            ...
+          }:
+          {
+            options = {
+              enable = opts.enable "enable mount, overrides volume + share enablement, volume is default";
+              name = opts.string name "mount name";
+              mountpoint = opts.string "/var/lib/${config.name}" "vm internal mountpoint";
+              volume = {
+                enable = opts.enable' (!config.share.enable) "enable volume";
+                sizeGB = opts.int 3 "size (in GB of volumes)";
+                size = opts.int (config.volume.sizeGB * 1000) "size (in MB) of volume";
+                mountpoint = opts.string config.mountpoint "volume mountpoint in VM";
+                image = opts.string "${config.name}.img" "image name";
+              };
+              share = {
+                enable = opts.enable "share for mount in VM";
+                hostPath = opts.string "/var/lib/microvms/${toplevel.networking.hostName}/${config.name}" ''
+                  Host path of share
+                '';
+                mountpoint = opts.string config.mountpoint "share mountpoint in VM";
+                tag = opts.string config.name "share mountpoint in VM";
+                socket = opts.string "${config.share.tag}.sock" "share mountpoint in VM";
+                proto = lib.mkOption {
+                  default = "virtiofs";
+                  description = "mount / share protocol";
+                  type = types.enum [
+                    "virtiofs"
+                    "9p"
+                  ];
+                };
+              };
             };
-          };
-        };
-      }));
-      default = {};
+          }
+        )
+      );
+      default = { };
       description = "combined share/volume wrapper around microvm shares/volumes";
     };
 
     __enabledMounts = lib.mkOption {
-      default = filterAttrs (_: mount: mount.enable && (mount.share.enable || mount.volume.enable)) cfg.mounts;
+      default = filterAttrs (
+        _: mount: mount.enable && (mount.share.enable || mount.volume.enable)
+      ) cfg.mounts;
       description = "enabled mounts";
       readOnly = true;
     };
@@ -184,15 +205,15 @@ in {
         socket = cfg.socket;
         shares = lib.pipe cfg.mounts [
           (lib.filterAttrs (_: mount: mount.enable && mount.share.enable))
-          (lib.mapAttrsToList (_: mount: [(mkShare mount.share)]))
+          (lib.mapAttrsToList (_: mount: [ (mkShare mount.share) ]))
           lib.flatten
         ];
         volumes = lib.pipe cfg.mounts [
           (lib.filterAttrs (_: mount: mount.enable && mount.volume.enable))
-          (lib.mapAttrsToList (_: mount: [(mkVolume mount.volume)]))
+          (lib.mapAttrsToList (_: mount: [ (mkVolume mount.volume) ]))
           lib.flatten
         ];
-        interfaces = mkIf cfg.network.base.enable [{inherit (cfg.network.base) id mac type;}];
+        interfaces = mkIf cfg.network.base.enable [ { inherit (cfg.network.base) id mac type; } ];
       };
     })
   ]);

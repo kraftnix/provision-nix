@@ -1,13 +1,16 @@
-{self, ...}: {
+{ self, ... }:
+{
   config,
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf mkOption types;
   opts = self.lib.options;
   cfg = config.provision.networking;
-in {
+in
+{
   options.provision.networking = {
     wifi = {
       enable = opts.enable "enable wifi";
@@ -50,18 +53,18 @@ in {
         wireguard-tools
       ];
       /*
-      networking.nftables = {
-        enable = false;
-        ruleset = ''
-          table inet customDnsServers {
-              chain permitDnsTraffic {
-                type filter hook output priority -30; policy accept;
-                 udp dport 53 ip daddr 192.168.1.1 ct mark set 0x00000f41;
-                 tcp dport 53 ip daddr 192.168.1.1 ct mark set 0x00000f41;
-              }
-          }
-        '';
-      };
+        networking.nftables = {
+          enable = false;
+          ruleset = ''
+            table inet customDnsServers {
+                chain permitDnsTraffic {
+                  type filter hook output priority -30; policy accept;
+                   udp dport 53 ip daddr 192.168.1.1 ct mark set 0x00000f41;
+                   tcp dport 53 ip daddr 192.168.1.1 ct mark set 0x00000f41;
+                }
+            }
+          '';
+        };
       */
     })
     (mkIf cfg.firewall.iptables.enable {

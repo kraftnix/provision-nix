@@ -5,7 +5,7 @@
   ...
 }:
 lib.mkIf config.provision.fs.btrfs.legacy.root-bios {
-  boot.supportedFilesystems = ["btrfs"];
+  boot.supportedFilesystems = [ "btrfs" ];
   boot.loader.grub = {
     enable = true;
     device = lib.mkDefault "/dev/vda";

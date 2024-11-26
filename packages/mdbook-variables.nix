@@ -27,7 +27,7 @@ rustPlatform.buildRustPackage rec {
     description = "Preprocessor for mdbook to add replace values in double brackets with ENV or book.toml set variables.";
     homepage = "https://gitlab.com/tglman/mdbook-variables";
     license = lib.licenses.mpl20;
-    maintainers = ["kraftnix"];
+    maintainers = [ "kraftnix" ];
     mainProgram = "mdbook-variables";
   };
 }

@@ -4,7 +4,8 @@
   profiles,
   inputs,
   ...
-}: {
+}:
+{
   imports = [
     self.auto-import.nixos.modules.virt.microvm.vm
     inputs.microvm.nixosModules.microvm
@@ -13,7 +14,10 @@
   ];
 
   provision = {
-    nix.trustedUsers = ["test-deploy" "test-operator"];
+    nix.trustedUsers = [
+      "test-deploy"
+      "test-operator"
+    ];
     nix.optimise.enable = lib.mkForce false;
     virt.microvm.vm = {
       enable = true;

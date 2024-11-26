@@ -4,7 +4,8 @@
   fetchurl,
   fetchFromGitHub,
   dockerTools,
-}: {
+}:
+{
   btrfs-list = {
     pname = "btrfs-list";
     version = "v2.2";

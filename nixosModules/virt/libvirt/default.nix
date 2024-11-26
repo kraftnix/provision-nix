@@ -2,16 +2,19 @@
   self,
   flake-parts-lib,
   ...
-}: {
+}:
+{
   config,
   lib,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf;
   inherit (flake-parts-lib) importApply;
   opts = self.lib.options;
   cfg = config.provision.virt.libvirt;
-in {
+in
+{
   imports = [
     (importApply ./legacy-legacy-networking.nix self)
     ./legacy-libvirt-networking.nix

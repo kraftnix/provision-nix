@@ -7,7 +7,8 @@
   key-size ? 512,
   cipher ? "aes-xts-plain64",
   ...
-}: let
+}:
+let
   root = {
     type = "filesystem";
     format = "ext4";
@@ -18,7 +19,7 @@
   crypted-root = {
     type = "luks";
     name = "crypted-root";
-    extraOpenArgs = ["--allow-discards"];
+    extraOpenArgs = [ "--allow-discards" ];
     # this is expected to be present at boot
     # settings.keyFile = "/tmp/root-luks.key";
     settings.allowDiscards = true;
@@ -33,7 +34,8 @@
     passwordFile = "/tmp/root-luks.key";
     content = root;
   };
-in {
+in
+{
   ## GPT Bios Compatible
   disko.devices.disk.${diskName} = {
     type = "disk";

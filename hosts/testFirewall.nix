@@ -3,7 +3,8 @@
   profiles,
   pkgs,
   ...
-}: let
+}:
+let
   genMapset = verdict: {
     verdict = "verdict";
     lhsType = "iifname";
@@ -21,7 +22,8 @@
       }
     ];
   };
-in {
+in
+{
   imports = with profiles; [
     users.test-operator
     users.test-deploy
@@ -31,16 +33,16 @@ in {
     enable = true;
 
     # override defaults in `default` profile
-    profiles = ["default"];
+    profiles = [ "default" ];
     tables.filter.input.finalCounter = false;
     tables.filter.input.rules.accept-to-local.enable = false;
 
     ## Example shared rule
     rules.allow-ssh = {
-      tcpDport = [22];
+      tcpDport = [ 22 ];
       comment = "allow SSH inbound";
     };
-    tables.filter.input.rules.allow-ssh.iifname = ["vpn"];
+    tables.filter.input.rules.allow-ssh.iifname = [ "vpn" ];
 
     ## Wireguard verdict map example
     tables.filter.mapsets.wireguard_inbound_udp = {
@@ -70,12 +72,18 @@ in {
     ## basic Set example
     tables.filter.mapsets.https_inbound = {
       lhsType = "ip daddr";
-      elements = map (ip: {l = ip;}) ["10.11.1.1" "10.11.22.33"];
+      elements = map (ip: { l = ip; }) [
+        "10.11.1.1"
+        "10.11.22.33"
+      ];
     };
     tables.filter.input.rules.testing = {
       log = true;
       counter = true;
-      tcpDport = [80 443];
+      tcpDport = [
+        80
+        443
+      ];
       mapset = "https_inbound";
     };
 
@@ -109,12 +117,12 @@ in {
       boot = {
         enable = true;
         device = "/dev/vda1";
-        grub.devices = ["/dev/vda"];
+        grub.devices = [ "/dev/vda" ];
         configurationLimit = 10;
       };
       initrd = {
         enable = true;
-        ssh.usersImportKeyFiles = ["test-operator"];
+        ssh.usersImportKeyFiles = [ "test-operator" ];
       };
       luks.devices.enc-root = "/dev/vda2";
       btrfs.enable = true;

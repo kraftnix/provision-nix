@@ -1,11 +1,14 @@
-{self, ...}: {
+{ self, ... }:
+{
   config,
   lib,
   ...
-}: let
+}:
+let
   opts = self.lib.options;
   cfg = config.provision.core.earlyoom;
-in {
+in
+{
   options.provision.core.earlyoom = {
     enable = opts.enable "enable earlyoom";
     enableDebug = opts.enable "enable debug info";
@@ -14,11 +17,9 @@ in {
       # "--avoid '(^|/)(init|Xorg|ssh|qemu)$'"
       # "--prefer '(^|/)(java|chromium|firefox)$'"
     ] "extra args to add to earlyoom";
-    settings =
-      opts.raw
-      {
-        reportInterval = 0; # disable reporting (so much log spam)
-      } "extra settings";
+    settings = opts.raw {
+      reportInterval = 0; # disable reporting (so much log spam)
+    } "extra settings";
   };
 
   config = lib.mkIf cfg.enable {

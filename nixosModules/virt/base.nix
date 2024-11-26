@@ -1,12 +1,15 @@
-{self, ...}: {
+{ self, ... }:
+{
   config,
   lib,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf mkMerge;
   opts = self.lib.options;
   cfg = config.provision.virt;
-in {
+in
+{
   options.provision.virt = {
     build.arm = opts.enable "add `aarch64-linux` to binfmt for cross-compilation";
   };
@@ -14,7 +17,7 @@ in {
   config = mkMerge [
     (mkIf cfg.build.arm {
       # emulation of ARM for building iso
-      boot.binfmt.emulatedSystems = ["aarch64-linux"];
+      boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
     })
   ];
 }

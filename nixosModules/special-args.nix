@@ -2,7 +2,9 @@
   self,
   lib,
   ...
-}: {config, ...}: {
+}:
+{ config, ... }:
+{
   # _module.args = {
   #   #inherit (self) nixosModules profiles hmProfiles hmModules;
   #   nixosModules = lib.optionalAttrs (self ? nixosModules) self.nixosModules;

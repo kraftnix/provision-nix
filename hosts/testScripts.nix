@@ -5,7 +5,8 @@
   pkgs,
   self,
   ...
-}: {
+}:
+{
   imports = [
     profiles.users.test-operator
     profiles.users.test-deploy
@@ -14,23 +15,21 @@
 
   provision.scripts.enable = true;
   provision.scripts.defaultLibDirs = self.scripts.${pkgs.system}.defaultLibDirs;
-  provision.scripts.scripts =
-    self.scripts.${pkgs.system}.__exportableScripts
-    // {
-      testing.inputs = [pkgs.afetch];
-      testing.text = ''
-        # test function
-        def main [ ] {
-          ^afetch
-        }
-      '';
-    };
+  provision.scripts.scripts = self.scripts.${pkgs.system}.__exportableScripts // {
+    testing.inputs = [ pkgs.afetch ];
+    testing.text = ''
+      # test function
+      def main [ ] {
+        ^afetch
+      }
+    '';
+  };
   provision = {
     defaults.enable = true;
     fs = {
       boot.enable = true;
       initrd.enable = true;
-      initrd.ssh.usersImportKeyFiles = ["test-operator"];
+      initrd.ssh.usersImportKeyFiles = [ "test-operator" ];
       btrfs.enable = true; # enable extra tools etc.
       disko.devices.root = {
         device = "/dev/vda";

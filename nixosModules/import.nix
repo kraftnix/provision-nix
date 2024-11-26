@@ -1,4 +1,6 @@
-{self, ...}: {...}: {
+{ self, ... }:
+{ ... }:
+{
   lib.provision = self.lib;
 
   nixpkgs.overlays = [

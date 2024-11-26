@@ -1,29 +1,27 @@
-{self, ...}: {
+{ self, ... }:
+{
   lib,
   config,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     mkIf
     mkDefault
     optionalAttrs
     ;
   cfg = config.provision.networking.static;
   opts = self.lib.options;
-in {
+in
+{
   options.provision.networking.static = {
     enable = opts.enable' (cfg.address != "") "enable static IP";
-    address =
-      opts.string "" "IPv4 address"
-      // {
-        example = "45.89.126.43";
-      };
-    gateway =
-      opts.string "" "IPv4 gateway"
-      // {
-        example = "45.89.126.1";
-      };
+    address = opts.string "" "IPv4 address" // {
+      example = "45.89.126.43";
+    };
+    gateway = opts.string "" "IPv4 gateway" // {
+      example = "45.89.126.1";
+    };
     netmask = opts.string "255.255.255.0" "IPv4 address";
     interface = opts.string "" "network interface";
     prefixLength = opts.int 24 "prefix length, must match netmask";
@@ -34,7 +32,7 @@ in {
 
   config = mkIf cfg.enable {
     networking.useDHCP = mkDefault true;
-    boot.kernelParams = [cfg.kernelArg];
+    boot.kernelParams = [ cfg.kernelArg ];
     networking.interfaces.${cfg.interface}.ipv4.addresses = [
       {
         inherit (cfg) address prefixLength;

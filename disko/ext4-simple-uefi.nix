@@ -3,7 +3,8 @@
   diskName ? "root",
   bootSize ? "1G",
   ...
-}: {
+}:
+{
   disko.devices.disk.${diskName} = {
     inherit device;
     type = "disk";

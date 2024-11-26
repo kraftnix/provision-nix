@@ -1,27 +1,31 @@
-{self, ...}: {
+{ self, ... }:
+{
   config,
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf mkDefault optionals;
   opts = self.lib.options;
   cfg = config.provision.networking.tools;
-in {
+in
+{
   options.provision.networking.tools = {
     basic = {
       enable = opts.enable "enable basic tools";
-      packages = opts.packageList [] "basic network debugging tools";
+      packages = opts.packageList [ ] "basic network debugging tools";
     };
     all = {
       enable = opts.enable "enable iptables";
-      packages = opts.packageList [] "all network debugging tools";
+      packages = opts.packageList [ ] "all network debugging tools";
     };
   };
 
   config = {
     provision.networking.tools = {
-      basic.packages = with pkgs;
+      basic.packages =
+        with pkgs;
         mkDefault [
           conntrack-tools # CLI: conntrack
           dnsx # CLI: dns parse + scripting tool
@@ -44,13 +48,15 @@ in {
           wireguard-tools # CLI: wireguard standard tools
           wuzz # TUI: inteactive http curl
         ];
-      all.packages = with pkgs;
-        mkDefault [
-        ];
+      all.packages =
+        with pkgs;
+        mkDefault
+          [
+          ];
     };
 
     environment.systemPackages =
-      []
+      [ ]
       ++ (optionals cfg.basic.enable cfg.basic.packages)
       ++ (optionals cfg.all.enable cfg.all.packages);
   };

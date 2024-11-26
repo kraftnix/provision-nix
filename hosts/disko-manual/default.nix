@@ -5,10 +5,12 @@
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   diskoLib = inputs.disko.lib;
-  diskoCfg = import self.disko.ext4-simple-bios-uefi {};
-in {
+  diskoCfg = import self.disko.ext4-simple-bios-uefi { };
+in
+{
   imports = with profiles; [
     (diskoLib.config diskoCfg)
     users.test-operator
@@ -19,7 +21,7 @@ in {
   boot.loader.systemd-boot.enable = true;
 
   services.openssh.enable = true;
-  networking.firewall.allowedTCPPorts = [22];
+  networking.firewall.allowedTCPPorts = [ 22 ];
 
   environment.systemPackages = with pkgs; [
     (writeScriptBin "tsp-create" (diskoLib.create diskoCfg))

@@ -4,10 +4,12 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (pkgs.lib.provision.users) operator deploy;
-in {
-  nix.settings.trusted-users = ["test-deploy"];
+in
+{
+  nix.settings.trusted-users = [ "test-deploy" ];
   users.users.test-deploy = deploy.mkUser {
     name = "test-deploy";
     # NOTE: password = asdasd
@@ -16,7 +18,7 @@ in {
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHKnXawzrDFuys2nodF9kQpbkspTWO5oAcG738AXOgP9 testvm key"
     ];
-    extraGroups = ["deploy"];
+    extraGroups = [ "deploy" ];
   };
   users.groups.deploy.gid = 9001;
   security.doas.extraRules = deploy.mkDoasRules "test-deploy";

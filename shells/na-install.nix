@@ -2,32 +2,32 @@
   self,
   inputs,
   ...
-}: {
+}:
+{
   config,
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   cfg = config.na-install;
-  inherit
-    (lib)
-    concatStringsSep
-    filterAttrs
-    hasAttr
-    mapAttrsToList
+  inherit (lib)
+    mkIf
     mkEnableOption
-    mkOption
-    optional
-    types
     ;
-in {
+in
+{
   options.na-install = {
     enable = mkEnableOption "Enable na-install integration";
-    enableLuksProvision = mkEnableOption "Enable LUKS provisioning for script by default" // {default = true;};
-    enableInitrdProvision = mkEnableOption "Enable initrd provisionig for script by default" // {default = true;};
+    enableLuksProvision = mkEnableOption "Enable LUKS provisioning for script by default" // {
+      default = true;
+    };
+    enableInitrdProvision = mkEnableOption "Enable initrd provisionig for script by default" // {
+      default = true;
+    };
   };
 
-  config = lib.mkIf cfg.enable {
+  config = mkIf cfg.enable {
     packages = [
       inputs.nixos-anywhere.packages.${pkgs.system}.default
       self.packages.${pkgs.system}.na-install

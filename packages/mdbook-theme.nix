@@ -37,8 +37,11 @@ rustPlatform.buildRustPackage rec {
     description = "A preprocessor and a backend to config themes for mdbook, especially creating a pagetoc on the right and setting full color themes from the offical ace editor";
     homepage = "https://github.com/zjp-CN/mdbook-theme";
     changelog = "https://github.com/zjp-CN/mdbook-theme/blob/${src.rev}/CHANGELOG.md";
-    license = with lib.licenses; [mit mpl20];
-    maintainers = ["kraftnix"];
+    license = with lib.licenses; [
+      mit
+      mpl20
+    ];
+    maintainers = [ "kraftnix" ];
     mainProgram = "mdbook-theme";
   };
 }

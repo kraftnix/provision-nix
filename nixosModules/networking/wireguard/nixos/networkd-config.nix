@@ -1,6 +1,9 @@
-{lib, ...}: {network, ...} @ config: let
+{ lib, ... }:
+{ network, ... }@config:
+let
   inherit (lib) optionals;
-in {
+in
+{
   netdev = {
     netdevConfig = {
       Kind = "wireguard";
@@ -26,7 +29,7 @@ in {
     # maybe this isnt needed
     # gateway = [ (stripMask network.gateway) ];
     # dns = [ (stripMask network.gateway) ] ++ (optional network.allowDNS upstreamDNS);
-    dns = [network.dns];
+    dns = [ network.dns ];
     networkConfig = {
       # IPForward = "yes";
       DHCP = "no";
@@ -35,7 +38,7 @@ in {
     routes = optionals (network.gateway != null) [
       {
         Gateway = network.gateway;
-        Destination = [network.route];
+        Destination = [ network.route ];
         GatewayOnLink = "yes";
       }
     ];

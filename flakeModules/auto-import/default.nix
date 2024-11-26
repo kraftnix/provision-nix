@@ -1,12 +1,13 @@
-localFlake: {
+localFlake:
+{
   self,
   lib,
   flake-parts-lib,
   moduleLocation,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     mkDefault
     mkIf
     mkEnableOption
@@ -14,12 +15,15 @@ localFlake: {
     types
     ;
   cfg = self.auto-import;
-  defaultOpts = (import ./options.nix {inherit lib;}).options;
+  defaultOpts = (import ./options.nix { inherit lib; }).options;
   genSpecialArgs = class: {
     inherit class localFlake moduleLocation;
-    defaults = {inherit (cfg) flakeArgs addTo;};
+    defaults = {
+      inherit (cfg) flakeArgs addTo;
+    };
   };
-in {
+in
+{
   options.flake = flake-parts-lib.mkSubmoduleOptions {
     auto-import = {
       enable = mkEnableOption "enable auto-importing modules";
@@ -34,9 +38,12 @@ in {
         '';
         type = types.submoduleWith {
           specialArgs = genSpecialArgs "nixos";
-          modules = [./submodule.nix ./options.nix];
+          modules = [
+            ./submodule.nix
+            ./options.nix
+          ];
         };
-        default = {};
+        default = { };
       };
       flake = mkOption {
         description = ''
@@ -44,9 +51,12 @@ in {
         '';
         type = types.submoduleWith {
           specialArgs = genSpecialArgs "flake";
-          modules = [./submodule.nix ./options.nix];
+          modules = [
+            ./submodule.nix
+            ./options.nix
+          ];
         };
-        default = {};
+        default = { };
       };
       homeManager = mkOption {
         description = ''
@@ -54,9 +64,12 @@ in {
         '';
         type = types.submoduleWith {
           specialArgs = genSpecialArgs "homeManager";
-          modules = [./submodule.nix ./options.nix];
+          modules = [
+            ./submodule.nix
+            ./options.nix
+          ];
         };
-        default = {};
+        default = { };
       };
     };
   };
@@ -65,14 +78,12 @@ in {
     homeManagerModules = mkIf (cfg.enable && cfg.homeManager.addTo.modules) cfg.homeManager.modules';
     nixosModules = mkIf (cfg.enable && cfg.nixos.addTo.modules) cfg.nixos.__flattened;
     flakeModules =
-      if (cfg.enable && cfg.flake.addTo.modules)
-      then cfg.flake.modules'
-      else mkDefault {};
+      if (cfg.enable && cfg.flake.addTo.modules) then cfg.flake.modules' else mkDefault { };
     auto-import.flake.genImport = n: c: {
       key = "${toString moduleLocation}#flakeModules.${n}";
       _file = "${toString moduleLocation}#flakeModules.${n}";
       _class = "flake";
-      imports = [c];
+      imports = [ c ];
     };
 
     modules = mkIf cfg.enable {

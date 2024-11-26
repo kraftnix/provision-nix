@@ -2,17 +2,20 @@
   self,
   flake-parts-lib,
   ...
-}: {
+}:
+{
   config,
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (flake-parts-lib) importApply;
   inherit (lib) mkIf optional;
   opts = self.lib.options;
   cfg = config.provision.virt.containers;
-in {
+in
+{
   imports = [
     (importApply ./netns.nix self)
   ];
@@ -40,7 +43,7 @@ in {
         "nixery.dev"
         # "docker.io"
       ] "registries to search";
-      block = opts.stringList [] "registries to block";
+      block = opts.stringList [ ] "registries to block";
     };
 
     legacy = {
@@ -49,11 +52,9 @@ in {
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages =
-      [
-        pkgs.docker-client
-      ]
-      ++ (optional cfg.podman.enable pkgs.podman-compose);
+    environment.systemPackages = [
+      pkgs.docker-client
+    ] ++ (optional cfg.podman.enable pkgs.podman-compose);
     security.unprivilegedUsernsClone = mkIf cfg.podman.allowRootless true;
 
     virtualisation = {
@@ -62,7 +63,7 @@ in {
         enable = cfg.docker.enable;
         storageDriver = lib.mkIF cfg.docker.zfs "zfs";
         daemon.settings = lib.mkIf cfg.docker.zfs {
-          storage-opts = ["zfs.fsname=${cfg.docker.zfsDataset}"];
+          storage-opts = [ "zfs.fsname=${cfg.docker.zfsDataset}" ];
         };
       };
 

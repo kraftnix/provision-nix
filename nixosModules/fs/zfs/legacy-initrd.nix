@@ -12,7 +12,7 @@ lib.mkIf config.provision.fs.zfs.legacy.initrd {
       enable = true;
       # access boot ssh via `ssh root@ip -p 6924 -i /path/to/authorizedKey.pub`
       port = lib.mkDefault 6924;
-      hostKeys = lib.mkDefault ["/etc/initrd/ssh_host_ed25519_key"];
+      hostKeys = lib.mkDefault [ "/etc/initrd/ssh_host_ed25519_key" ];
       # NOTE: make sure to add your own authorizedKeys
       # authorizedKeys = [ "<add_your_key_here>" ];
     };

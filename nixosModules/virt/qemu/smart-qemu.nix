@@ -3,9 +3,9 @@
   pkgs,
   lib,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     mkIf
     optional
     optionals
@@ -28,19 +28,24 @@
     mask = ''\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\x00\xff\xfe\xff\xff\xff'';
   };
 in
-  mkIf (cfg.enable && (cfg.arm || cfg.aarch64)) {
-    # nixpkgs = {
-    #   overlays = [ (import ./overlays-foo/qemu) ];
-    # };
-    boot.binfmt.registrations =
-      optionalAttrs cfg.arm {inherit arm;}
-      // optionalAttrs cfg.aarch64 {inherit aarch64;}
-      // optionalAttrs cfg.riscv64 {inherit riscv64;};
-    provision.virt.qemu.smart.supportedPlatforms =
-      (optionals cfg.arm ["armv6l-linux" "armv7l-linux"])
-      ++ (optional cfg.aarch64 "aarch64-linux");
-    nix.extraOptions = ''
-      extra-platforms = ${toString cfg.supportedPlatforms} i686-linux
-    '';
-    nix.sandboxPaths = ["/run/binfmt"] ++ (optional cfg.arm "${pkgs.qemu-user-arm}") ++ (optional cfg.aarch64 "${pkgs.qemu-user-arm64}");
-  }
+mkIf (cfg.enable && (cfg.arm || cfg.aarch64)) {
+  # nixpkgs = {
+  #   overlays = [ (import ./overlays-foo/qemu) ];
+  # };
+  boot.binfmt.registrations =
+    optionalAttrs cfg.arm { inherit arm; }
+    // optionalAttrs cfg.aarch64 { inherit aarch64; }
+    // optionalAttrs cfg.riscv64 { inherit riscv64; };
+  provision.virt.qemu.smart.supportedPlatforms =
+    (optionals cfg.arm [
+      "armv6l-linux"
+      "armv7l-linux"
+    ])
+    ++ (optional cfg.aarch64 "aarch64-linux");
+  nix.extraOptions = ''
+    extra-platforms = ${toString cfg.supportedPlatforms} i686-linux
+  '';
+  nix.sandboxPaths = [
+    "/run/binfmt"
+  ] ++ (optional cfg.arm "${pkgs.qemu-user-arm}") ++ (optional cfg.aarch64 "${pkgs.qemu-user-arm64}");
+}

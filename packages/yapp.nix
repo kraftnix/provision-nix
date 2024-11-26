@@ -27,7 +27,7 @@ rustPlatform.buildRustPackage rec {
     description = "Yet another preprocessor for mdBook";
     homepage = "https://github.com/EngosSoftware/yapp";
     license = lib.licenses.mit;
-    maintainers = ["kraftnix"];
+    maintainers = [ "kraftnix" ];
     mainProgram = "yapp";
   };
 }

@@ -25,7 +25,8 @@
   discard ? true,
   lib,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf optional;
   bootStart = "1M";
   root = {
@@ -38,7 +39,8 @@
       (lib.optionalString discard "--discard")
     ];
   };
-in {
+in
+{
   ## GPT Bios Compatible UEFI
   disko.devices.disk.${diskName} = {
     type = "disk";
@@ -70,14 +72,12 @@ in {
             # this is expected to be present at boot
             settings.keyFile = mkIf (keyFile != "") keyFile;
             settings.allowDiscards = mkIf discard true;
-            extraFormatArgs =
-              [
-                "--iter-time ${toString iterTime}"
-                "--hash ${hash}"
-                "--cipher ${cipher}"
-                "--key-size ${toString keySize}"
-              ]
-              ++ (optional useRandom "--use-random");
+            extraFormatArgs = [
+              "--iter-time ${toString iterTime}"
+              "--hash ${hash}"
+              "--cipher ${cipher}"
+              "--key-size ${toString keySize}"
+            ] ++ (optional useRandom "--use-random");
             # required using na-install script during nixos-anywhere installation
             # when using luks
             passwordFile = mkIf (passwordFile != "") passwordFile;

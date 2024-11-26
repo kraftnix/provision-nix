@@ -3,7 +3,8 @@
   profiles,
   inputs,
   ...
-}: {
+}:
+{
   imports = with profiles.users; [
     test-operator
     test-deploy
@@ -15,7 +16,7 @@
     fs = {
       boot.enable = true;
       initrd.enable = true;
-      initrd.ssh.usersImportKeyFiles = ["test-operator"];
+      initrd.ssh.usersImportKeyFiles = [ "test-operator" ];
       bcachefs.enable = true; # enable extra tools etc.
       disko.devices.root = {
         device = "/dev/vda";

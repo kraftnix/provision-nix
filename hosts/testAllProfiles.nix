@@ -4,7 +4,8 @@
   inputs,
   profiles,
   ...
-}: {
+}:
+{
   imports = with profiles.users; [
     inputs.microvm.nixosModules.host
     test-operator
@@ -28,7 +29,7 @@
     my-test-script-bash-test.text = ''
       ls -la
     '';
-    my-test-script-env-has.inputs = [pkgs.afetch];
+    my-test-script-env-has.inputs = [ pkgs.afetch ];
     my-test-script-env-has.text = ''
       source ${../scripts/nu/from.nu}
 
@@ -76,7 +77,7 @@
         timeZone = "Europe/London";
       };
       fonts = {
-        packages = [pkgs.hack-font];
+        packages = [ pkgs.hack-font ];
         name = "Hack";
       };
     };
@@ -87,7 +88,7 @@
     builder = true;
     optimise.enable = true;
     optimise.gc = true;
-    trustedUsers = ["test-deploy"];
+    trustedUsers = [ "test-deploy" ];
     substituters = {
       nix-community = {
         substituter = "https://nix-community.cachix.org";
@@ -140,7 +141,7 @@
     };
     initrd = {
       enable = true;
-      ssh.usersImportKeyFiles = ["test-operator"];
+      ssh.usersImportKeyFiles = [ "test-operator" ];
     };
     luks.devices.enc-root = "/dev/vda2";
     btrfs = {
@@ -148,12 +149,15 @@
       gen.enc-root = {
         # otherwise set to "/dev/mapper/enc-root"
         # devicePath = "/dev/disk/by-uuid/my-luks-decrupted-uuid";
-        defaultOptions = ["compress=zstd"];
+        defaultOptions = [ "compress=zstd" ];
         # mntBase = "/";
         subvolumes = {
           root.mnt = "/";
-          home = {};
-          nix.opts = ["compress=zstd" "noatime"];
+          home = { };
+          nix.opts = [
+            "compress=zstd"
+            "noatime"
+          ];
           log.mnt = "/var/log";
         };
       };

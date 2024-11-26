@@ -2,7 +2,8 @@
   lib,
   profiles,
   ...
-}: {
+}:
+{
   imports = with profiles; [
     users.test-operator
     users.test-deploy
@@ -15,12 +16,12 @@
       boot = {
         enable = true;
         device = "/dev/vda1";
-        grub.devices = ["/dev/vda"];
+        grub.devices = [ "/dev/vda" ];
         configurationLimit = 10;
       };
       initrd = {
         enable = true;
-        ssh.usersImportKeyFiles = ["test-operator"];
+        ssh.usersImportKeyFiles = [ "test-operator" ];
       };
       luks.devices.enc-root = "/dev/vda2";
       btrfs.enable = true;

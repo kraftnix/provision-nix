@@ -1,4 +1,8 @@
-{device ? "/dev/vda", ...}: let
+{
+  device ? "/dev/vda",
+  ...
+}:
+let
   bootStart = "1M";
   bootEnd = "350M";
   luksEnd = "100%";
@@ -13,7 +17,7 @@
   crypted-root = {
     type = "luks";
     name = "crypted-root";
-    extraOpenArgs = ["--allow-discards"];
+    extraOpenArgs = [ "--allow-discards" ];
     # this is expected to be present at boot
     # settings.keyFile = "/tmp/root-luks.key";
     settings.allowDiscards = true;
@@ -28,7 +32,8 @@
     passwordFile = "/tmp/root-luks.key";
     content = root;
   };
-in {
+in
+{
   ## GPT Bios Compatible
   disko.devices.disk.root = {
     type = "disk";

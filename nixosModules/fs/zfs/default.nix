@@ -1,13 +1,22 @@
-{self, ...}: {
+{ self, ... }:
+{
   config,
   lib,
   pkgs,
   ...
-}: let
-  inherit (lib) literalExpression mkDefault mkIf mkOption types;
+}:
+let
+  inherit (lib)
+    literalExpression
+    mkDefault
+    mkIf
+    mkOption
+    types
+    ;
   opts = self.lib.options;
   cfg = config.provision.fs.zfs;
-in {
+in
+{
   imports = [
     ./legacy-initrd.nix
     ./legacy-root-uefi.nix
@@ -51,7 +60,7 @@ in {
   config = mkIf cfg.enable {
     networking.hostId = mkIf (cfg.hostId != null) cfg.hostId;
 
-    boot.supportedFilesystems = ["zfs"];
+    boot.supportedFilesystems = [ "zfs" ];
     boot.kernelPackages = mkIf cfg.kernel.enable cfg.kernel.latest;
 
     boot.zfs.requestEncryptionCredentials = mkDefault cfg.nativeEncryption;
@@ -66,8 +75,7 @@ in {
       autoScrub.enable = cfg.scrub.auto;
       autoSnapshot = mkIf cfg.snapshot.auto {
         enable = true;
-        inherit
-          (cfg.snapshot)
+        inherit (cfg.snapshot)
           frequent
           daily
           weekly

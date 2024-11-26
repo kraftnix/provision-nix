@@ -5,9 +5,9 @@
   colmena,
   self,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     literalExpression
     mkOption
     recursiveUpdate
@@ -19,7 +19,8 @@
     check = lib.isFunction;
     merge = lib.mergeOneOption;
   };
-in {
+in
+{
   options = {
     system = mkOption {
       description = "system for host.";
@@ -42,19 +43,22 @@ in {
 
         By default uses `nixpkgs` channel in `channels` option.
       '';
-      type = with types; oneOf [str pkgs];
+      type =
+        with types;
+        oneOf [
+          str
+          pkgs
+        ];
       default = "nixpkgs";
-      apply = val:
-        if builtins.typeOf val == "string"
-        then self.channels.${config.system}.${val}.pkgs
-        else val;
+      apply =
+        val: if builtins.typeOf val == "string" then self.channels.${config.system}.${val}.pkgs else val;
       example = "nixpkgs-stable";
     };
 
     modules = mkOption {
       description = "extra nixos modules to eval for host.";
       type = types.listOf types.raw;
-      default = [];
+      default = [ ];
       example = literalExpression ''
         [
           inputs.provision.nixosModules.provision-scripts
@@ -65,7 +69,7 @@ in {
     overlays = mkOption {
       description = "extra overlays to add for host";
       type = types.listOf overlayType;
-      default = [];
+      default = [ ];
       example = literalExpression ''
         [
           inputs.provision-nix.overlays.lnav
@@ -75,7 +79,7 @@ in {
     specialArgs = mkOption {
       description = "extra arguments to add to `specialArgs` in `eval-config.nix`";
       type = with types; lazyAttrsOf raw;
-      default = {};
+      default = { };
       example = literalExpression ''
         {
           inherit self inputs;
@@ -85,8 +89,8 @@ in {
     colmena = mkOption {
       description = "extra arguments to add in flake `colmena.<host>.deployment`";
       type = with types; attrsOf anything;
-      default = {};
-      apply = recursiveUpdate (colmena // {targetHost = name;});
+      default = { };
+      apply = recursiveUpdate (colmena // { targetHost = name; });
       example = literalExpression ''
         {
           targetPort = 22;
@@ -97,7 +101,7 @@ in {
     deploy = mkOption {
       description = "extra arguments to add in flake `deploy.nodes.<host>`";
       type = with types; attrsOf anything;
-      default = {};
+      default = { };
       apply = recursiveUpdate {
         hostname = config.colmena.targetHost;
       };

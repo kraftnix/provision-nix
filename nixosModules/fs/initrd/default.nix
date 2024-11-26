@@ -1,13 +1,18 @@
-{self, ...}: {
+{ self, ... }:
+{
   config,
   lib,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf mkDefault flatten;
   opts = self.lib.options;
   cfg = config.provision.fs.initrd;
-  userKeyFiles = flatten (map (user: config.users.users.${user}.openssh.authorizedKeys.keyFiles) cfg.ssh.usersImportKeyFiles);
-in {
+  userKeyFiles = flatten (
+    map (user: config.users.users.${user}.openssh.authorizedKeys.keyFiles) cfg.ssh.usersImportKeyFiles
+  );
+in
+{
   imports = [
     ./legacy-network.nix
     ./legacy-test-keys.nix
@@ -18,17 +23,17 @@ in {
     ssh = {
       enable = opts.enableTrue "enable SSH based auth";
       port = opts.int 9797 "SSH port sshd listens at during stage-1 boot";
-      hostKeys = opts.stringList ["/etc/initrd/ssh_host_ed25519_key"] ''
+      hostKeys = opts.stringList [ "/etc/initrd/ssh_host_ed25519_key" ] ''
         Caution: Host SSH private key used for sshd during stage-1 boot only.
 
         This key exists _unencrypted on the system's boot drive_. **Only use this key for this purpose!**
       '';
-      authorizedKeyFiles = opts.stringList [] ''
+      authorizedKeyFiles = opts.stringList [ ] ''
         Authorized keys to access host during stage-1 boot.
 
         These pubkey files exist _unencrypted on the system's boot drive_.
       '';
-      usersImportKeyFiles = opts.stringList [] ''
+      usersImportKeyFiles = opts.stringList [ ] ''
         Users to import keyfiles from to allow unlocking encrypted disk.
 
         Imports keys from `config.users.users.openssh.authorizedKeys.keyFiles`.
@@ -49,7 +54,7 @@ in {
       '';
     };
     netModules =
-      opts.stringList [] ''
+      opts.stringList [ ] ''
         extra network modules to add to `boot.initrd.availableKernelModules`
 
         for network unlock you will likely need to add the kernel modules for
@@ -62,7 +67,13 @@ in {
         ```
       ''
       // {
-        example = ["e1000e" "i40e" "igc" "8021q" "r8169"];
+        example = [
+          "e1000e"
+          "i40e"
+          "igc"
+          "8021q"
+          "r8169"
+        ];
       };
 
     legacy = {
@@ -79,10 +90,7 @@ in {
         enable = true;
         inherit (cfg.ssh) hostKeys;
         port = mkDefault cfg.ssh.port;
-        authorizedKeyFiles = lib.unique (
-          cfg.ssh.authorizedKeyFiles
-          ++ userKeyFiles
-        );
+        authorizedKeyFiles = lib.unique (cfg.ssh.authorizedKeyFiles ++ userKeyFiles);
       };
       postCommands = lib.mkIf cfg.postCommands.enable cfg.postCommands.command;
     };

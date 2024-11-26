@@ -1,16 +1,18 @@
-localFlake: {
+localFlake:
+{
   self,
   flake-parts-lib,
   ...
-}: let
-  inherit
-    (localFlake.lib)
+}:
+let
+  inherit (localFlake.lib)
     literalExpression
     mkEnableOption
     mkOption
     types
     ;
-in {
+in
+{
   imports = [
     (import ./perSystem.nix localFlake)
     (import ./shell.nix localFlake)
@@ -20,9 +22,9 @@ in {
       enable = mkEnableOption "enable docs integration";
       defaults = mkOption {
         description = "default values to pass into sites";
-        default = {};
+        default = { };
         type = types.submoduleWith {
-          modules = [(import ./defaults.nix localFlake)];
+          modules = [ (import ./defaults.nix localFlake) ];
         };
       };
       sites = mkOption {
@@ -39,13 +41,15 @@ in {
           Additionally, in order to use options generated from `docgen`, you must include them in your mdbook SUMMARY.md
           or else mdbook won't include it during its build.
         '';
-        type = types.attrsOf (types.submoduleWith {
-          specialArgs = {
-            inherit self localFlake;
-          };
-          modules = [./site.nix];
-        });
-        default = {};
+        type = types.attrsOf (
+          types.submoduleWith {
+            specialArgs = {
+              inherit self localFlake;
+            };
+            modules = [ ./site.nix ];
+          }
+        );
+        default = { };
         example = literalExpression ''
           {
             provision-nix-docs-local = {

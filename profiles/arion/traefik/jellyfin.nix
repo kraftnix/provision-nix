@@ -1,7 +1,10 @@
-toplevel: {config, ...}: let
+toplevel:
+{ config, ... }:
+let
   currJellyfinDir = "/docker/jellyfin";
   domain = "jellyfin.${toplevel.networking.domain}";
-in {
+in
+{
   # is rootfull podman
   config.services = {
     jellyfin.service = {

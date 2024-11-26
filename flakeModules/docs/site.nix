@@ -4,17 +4,20 @@
   config,
   lib,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     literalExpression
     mkEnableOption
     mkOption
     types
     ;
-in {
+in
+{
   options = {
-    enable = mkEnableOption "enable docs integration" // {default = true;};
+    enable = mkEnableOption "enable docs integration" // {
+      default = true;
+    };
     name = mkOption {
       description = "site name";
       type = types.str;
@@ -55,7 +58,7 @@ in {
         }
       '';
       type = types.submoduleWith {
-        modules = [(import ./defaults.nix localFlake)];
+        modules = [ (import ./defaults.nix localFlake) ];
       };
     };
     docgen = mkOption {
@@ -65,11 +68,15 @@ in {
         Options from a host, or `evalModules` can be provided, and custom
         filters can be applied to generate only specific options.
       '';
-      type = types.attrsOf (types.submoduleWith {
-        specialArgs = {inherit (config) defaults;};
-        modules = [./options.nix];
-      });
-      default = {};
+      type = types.attrsOf (
+        types.submoduleWith {
+          specialArgs = {
+            inherit (config) defaults;
+          };
+          modules = [ ./options.nix ];
+        }
+      );
+      default = { };
       example = lib.literalExpression ''
         {
           filter = option:

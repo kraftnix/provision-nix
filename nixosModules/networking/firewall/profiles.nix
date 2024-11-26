@@ -2,12 +2,14 @@
   config,
   lib,
   ...
-}: let
+}:
+let
   inherit (lib) mkDefault mkIf;
 
   cfg = config.networking.nftables.gen;
   fCfg = config.networking.firewall;
-in {
+in
+{
   config = mkIf cfg.enable {
     networking.nftables.gen.tables = mkIf (builtins.elem "default" cfg.profiles) {
       filter = {
@@ -15,14 +17,14 @@ in {
         all-input-handle.rules = {
           nixos-allowed-udp = {
             comment = "nixos `allowedUDPPorts` handling";
-            enable = fCfg.allowedUDPPorts != [];
+            enable = fCfg.allowedUDPPorts != [ ];
             udpDport = fCfg.allowedUDPPorts;
             counter = mkDefault true;
             verdict = "accept";
           };
           nixos-allowed-tcp = {
             comment = "nixos `allowedTCPPorts` handling";
-            enable = fCfg.allowedTCPPorts != [];
+            enable = fCfg.allowedTCPPorts != [ ];
             tcpDport = fCfg.allowedTCPPorts;
             counter = mkDefault true;
             verdict = "accept";
@@ -34,12 +36,12 @@ in {
           defaults.counter = true;
           defaults.verdict = "accept";
           rules = {
-            accept-to-local = {};
-            icmp-default = {};
-            ct-related-accept = {};
-            ct-dnat-trace = {};
-            ct-drop-invalid = {};
-            ipv6-accept-link-local-dhcp = {};
+            accept-to-local = { };
+            icmp-default = { };
+            ct-related-accept = { };
+            ct-dnat-trace = { };
+            ct-drop-invalid = { };
+            ipv6-accept-link-local-dhcp = { };
 
             all-input-handle = {
               n = 95;
@@ -55,13 +57,13 @@ in {
           defaults.verdict = "accept";
           rules = {
             # { rule = "icmp-default"; } # allows ping across vlans
-            ct-related-accept = {};
-            ct-dnat-trace = {};
-            ct-drop-invalid = {};
+            ct-related-accept = { };
+            ct-dnat-trace = { };
+            ct-drop-invalid = { };
 
             all-input-handle = {
               n = 95;
-              oifname = ["lo"];
+              oifname = [ "lo" ];
               verdict = "jump all-input-handle";
             };
           };

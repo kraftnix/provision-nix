@@ -1,28 +1,36 @@
-args: {
+args:
+{
   config,
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   cfg = config.provision.hardware.amdgpu;
-  inherit
-    (lib)
+  inherit (lib)
     mkDefault
     mkEnableOption
     mkIf
     ;
-in {
+in
+{
   options.provision.hardware.amdgpu = {
     enable = mkEnableOption "enable amdgpu";
     headless = mkEnableOption "headless only amdgpu";
-    addTools = mkEnableOption "add rocm/amd tools to system packages" // {default = true;};
-    opencl = mkEnableOption "enable opencl" // {default = true;};
-    vulkan = mkEnableOption "enable amd vulkan" // {default = true;};
+    addTools = mkEnableOption "add rocm/amd tools to system packages" // {
+      default = true;
+    };
+    opencl = mkEnableOption "enable opencl" // {
+      default = true;
+    };
+    vulkan = mkEnableOption "enable amd vulkan" // {
+      default = true;
+    };
   };
 
   config = mkIf cfg.enable {
     services.xserver = mkIf (!cfg.headless) {
-      videoDrivers = ["amdgpu"];
+      videoDrivers = [ "amdgpu" ];
     };
     environment = mkIf cfg.addTools {
       systemPackages = with pkgs; [

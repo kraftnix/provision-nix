@@ -2,11 +2,11 @@
   config,
   lib,
   ...
-}: let
-  wgOptions = import ./wireguardOptions.nix {inherit lib;};
+}:
+let
+  wgOptions = import ./wireguardOptions.nix { inherit lib; };
 
-  inherit
-    (config._module.args)
+  inherit (config._module.args)
     listenPort
     privateKeyFile
     hubId
@@ -15,8 +15,7 @@
     v4subnet
     ;
 
-  inherit
-    (lib)
+  inherit (lib)
     elemAt
     mapAttrsToList
     mkOption
@@ -24,8 +23,7 @@
     splitString
     ;
 
-  inherit
-    (lib.types)
+  inherit (lib.types)
     attrsOf
     bool
     int
@@ -37,7 +35,8 @@
     ;
 
   genIPv4 = subnet: id: "${subnet}.${toString id}";
-in {
+in
+{
   options = {
     enable = mkOption {
       type = bool;
@@ -51,7 +50,7 @@ in {
     listenPort = wgOptions.listenPort listenPort;
     publicKey = wgOptions.publicKey "";
     privateKeyFile = wgOptions.privateKeyFile privateKeyFile;
-    allowedIPs = wgOptions.allowedIPs [];
+    allowedIPs = wgOptions.allowedIPs [ ];
     endpointIP = wgOptions.endpointIP null;
     ipv4 = mkOption {
       description = "Wireguard interal IPv4 Address (for information purposes only).";
@@ -73,10 +72,7 @@ in {
       dns = mkOption {
         type = str;
         description = "Internal DNS for wireguard network.";
-        default =
-          if config.network.gateway != null
-          then ""
-          else config.network.gateway;
+        default = if config.network.gateway != null then "" else config.network.gateway;
       };
       mtu = wgOptions.mtu mtu;
       v4subnet = wgOptions.subnet v4subnet;
@@ -100,12 +96,12 @@ in {
       addresses = mkOption {
         type = listOf str;
         description = "Peer name";
-        default = [config.ipv4];
+        default = [ config.ipv4 ];
       };
     };
 
     __systemdNetwork = mkOption {
-      default = {};
+      default = { };
       description = "systemd units to configure wireguard";
       type = raw;
     };

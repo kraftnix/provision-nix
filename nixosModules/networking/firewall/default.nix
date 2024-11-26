@@ -1,11 +1,12 @@
-localFlake: {
+localFlake:
+{
   config,
   lib,
   pkgs,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     mapAttrsToList
     mkEnableOption
     mkIf
@@ -22,18 +23,27 @@ localFlake: {
       inherit pkgs lib;
     })
     ++ [
-      ({
-        config,
-        name,
-        ...
-      }: {config.rule = name;})
+      (
+        {
+          config,
+          name,
+          ...
+        }:
+        {
+          config.rule = name;
+        }
+      )
     ];
 
   tableModule = types.submoduleWith {
     modules = [
       ./table.nix
-      {config._module.args = {inherit pkgs lib localFlake;};}
-      {config._module.args.rules = cfg.rules;}
+      {
+        config._module.args = {
+          inherit pkgs lib localFlake;
+        };
+      }
+      { config._module.args.rules = cfg.rules; }
     ];
   };
 
@@ -47,24 +57,29 @@ localFlake: {
   # these are attempts to nicely capture each dot separated value
   checkStr3 = ".*<-((?:[[:alnum:]_-]+\.)*[[:alnum:]_-]+)->.*";
   matches = builtins.match checkStr cfg.__rendered;
-in {
-  imports = [./profiles.nix];
+in
+{
+  imports = [ ./profiles.nix ];
   options.networking.nftables.gen = {
     enable = mkEnableOption "whether to enable these nftables rules";
     rules = mkOption {
       description = "shared/reusable rules";
-      type = with types; attrsOf (submoduleWith {modules = rulesModule;});
-      default = {};
+      type =
+        with types;
+        attrsOf (submoduleWith {
+          modules = rulesModule;
+        });
+      default = { };
     };
     tables = mkOption {
       description = "tables to generate";
       type = types.attrsOf tableModule;
-      default = {};
+      default = { };
     };
     profiles = mkOption {
       description = "profiles to enable";
-      type = with types; listOf (enum ["default"]);
-      default = ["default"];
+      type = with types; listOf (enum [ "default" ]);
+      default = [ "default" ];
     };
     ignoreRegexSanityCheck = mkEnableOption "enable this to skip the sanity check which looks for re-replaced firewall rules like `<-dmz-internal.rockpro->`";
     __rendered = mkOption {

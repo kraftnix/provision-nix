@@ -1,13 +1,16 @@
-{self, ...}: {
+{ self, ... }:
+{
   config,
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (lib) mkMerge;
   opts = self.lib.options;
   cfg = config.provision.fs.smartd;
-in {
+in
+{
   options.provision.fs.smartd = {
     enable = opts.enable "enable smartd (smartmontools) hard drive monitoring/testing";
     autodetect = {
@@ -20,7 +23,7 @@ in {
                        sunday at 3am.
       '';
     };
-    settings = opts.raw {} "extra settings to add to `services.smartd`";
+    settings = opts.raw { } "extra settings to add to `services.smartd`";
   };
 
   config = lib.mkIf cfg.enable {

@@ -1,12 +1,21 @@
-localFlake: {
+localFlake:
+{
   config,
   lib,
   pkgs,
   ...
-}: let
-  inherit (lib) literalExpression mapAttrsToList mkIf mkOption types;
+}:
+let
+  inherit (lib)
+    literalExpression
+    mapAttrsToList
+    mkIf
+    mkOption
+    types
+    ;
   cfg = config.provision.scripts;
-in {
+in
+{
   options.provision.scripts = mkOption {
     description = ''
       Generate scripts from different shells from string snippets, files, or nushell modules.
@@ -15,9 +24,9 @@ in {
     '';
     type = types.submoduleWith {
       specialArgs.pkgs = pkgs;
-      modules = [(import ./submodule.nix localFlake)];
+      modules = [ (import ./submodule.nix localFlake) ];
     };
-    default = {};
+    default = { };
     example = literalExpression ''
       {
         provision.scripts = {
@@ -38,6 +47,8 @@ in {
 
   config = {
     provision.scripts.pkgs = pkgs;
-    environment.systemPackages = mkIf (cfg.enable && cfg.addToPackages) (mapAttrsToList (_: c: c.package) cfg.__enabledScripts);
+    environment.systemPackages = mkIf (cfg.enable && cfg.addToPackages) (
+      mapAttrsToList (_: c: c.package) cfg.__enabledScripts
+    );
   };
 }

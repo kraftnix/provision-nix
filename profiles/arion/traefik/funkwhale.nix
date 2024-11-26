@@ -1,9 +1,12 @@
-toplevel: {config, ...}: let
+toplevel:
+{ config, ... }:
+let
   container = "funkwhale";
   #currDir = "/docker/${container}";
   currDir = "/docker/${container}";
   domain = "${container}.${toplevel.networking.domain}";
-in {
+in
+{
   # is rootfull podman
   config.services = {
     #funkwhale.image = {

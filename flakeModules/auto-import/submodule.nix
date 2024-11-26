@@ -5,9 +5,9 @@
   localFlake,
   moduleLocation,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     attrValues
     collect
     concatStringsSep
@@ -32,7 +32,7 @@
   nixosModuleNameFilters = pipe cfg.filterByPath [
     (map (concatStringsSep "-"))
   ];
-  filterNixosModules = filterAttrs (name: cfg: ! (elem name nixosModuleNameFilters));
+  filterNixosModules = filterAttrs (name: cfg: !(elem name nixosModuleNameFilters));
   flattenedNixosModules = lib.pipe cfg.modules [
     (lib.filterAttrsRecursive cfg.filterModules)
     (mapAttrsRecursiveCond builtins.isAttrs genPath)
@@ -40,7 +40,8 @@
     flatten
     lib.listToAttrs
   ];
-in {
+in
+{
   options = {
     dir = mkOption {
       description = "If set, modules are raked and imported into `modules.nixos`";
@@ -55,25 +56,20 @@ in {
         Optionally add entries _(unfiltered)_ to `${class}Modules` or `modules.${class}` (flake-parts extra module).
       '';
       type = types.lazyAttrsOf types.raw;
-      default = {};
-      apply = mapAttrsRecursive (
-        k: v:
-          if cfg.flakeArgs == null
-          then v
-          else import v cfg.flakeArgs
-      );
+      default = { };
+      apply = mapAttrsRecursive (k: v: if cfg.flakeArgs == null then v else import v cfg.flakeArgs);
     };
     modules' = mkOption {
       description = ''
         Ready-to-import modules, extra args like `_file` set (using {genImport})
       '';
       type = types.lazyAttrsOf types.raw;
-      default = {};
+      default = { };
     };
     filterByPath = mkOption {
       description = "list of attr path lists in `modules'` to remove from {all}";
       type = with types; listOf (listOf str);
-      default = [];
+      default = [ ];
       example = literalExpression ''
         [
           ["virt" "microvm" "vm"]
@@ -99,7 +95,7 @@ in {
       default = n: c: {
         _file = "${toString moduleLocation}#${class}Modules.${n}";
         _class = class;
-        imports = [c];
+        imports = [ c ];
       };
       defaultText = ''
         n: c: {
@@ -138,10 +134,7 @@ in {
   };
 
   config = {
-    modules =
-      mkIf
-      (cfg.dir != null)
-      (localFlake.inputs.extra-lib.lib.nix.rakeLeaves cfg.dir);
+    modules = mkIf (cfg.dir != null) (localFlake.inputs.extra-lib.lib.nix.rakeLeaves cfg.dir);
     modules' = mapAttrs cfg.genImport cfg.__flattened;
   };
 }

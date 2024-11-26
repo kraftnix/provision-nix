@@ -3,7 +3,8 @@
   inputs,
   lib,
   ...
-}: {
+}:
+{
   flake.hosts = {
     hostsDir = ./.;
 
@@ -21,69 +22,89 @@
       rpi-image = {
         system = "aarch64-linux";
         modules = [
-          ({lib, ...}: {
-            provision.defaults.enable = true;
-            services.openssh.enable = true;
-            networking.firewall.allowedTCPPorts = [22];
+          (
+            { lib, ... }:
+            {
+              provision.defaults.enable = true;
+              services.openssh.enable = true;
+              networking.firewall.allowedTCPPorts = [ 22 ];
 
-            # grub not needed on RPi (uboot is used)
-            boot.loader.grub.enable = false;
-            # default label from upstream `sd-aarch64-installer`
-            fileSystems."/" = {
-              device = "/dev/disk/by-label/NIXOS_SD";
-              fsType = "ext4";
-            };
-            system.stateVersion = lib.mkDefault "23.05";
-          })
+              # grub not needed on RPi (uboot is used)
+              boot.loader.grub.enable = false;
+              # default label from upstream `sd-aarch64-installer`
+              fileSystems."/" = {
+                device = "/dev/disk/by-label/NIXOS_SD";
+                fsType = "ext4";
+              };
+              system.stateVersion = lib.mkDefault "23.05";
+            }
+          )
         ];
       };
       testOverlays.modules = [
         ./basic.nix
-        ({pkgs, ...}: {
-          networking.firewall.enable = true;
-          environment.systemPackages = [
-            pkgs.btrfs-list
-          ];
-        })
+        (
+          { pkgs, ... }:
+          {
+            networking.firewall.enable = true;
+            environment.systemPackages = [
+              pkgs.btrfs-list
+            ];
+          }
+        )
       ];
-      bcachefs-iso.modules =
-        [
-          ({
+      bcachefs-iso.modules = [
+        (
+          {
             pkgs,
             lib,
             modulesPath,
             ...
-          }: {
-            imports = [(modulesPath + "/installer/cd-dvd/installation-cd-minimal-new-kernel-no-zfs.nix")];
-            boot.supportedFilesystems = ["btrfs" "bcachefs"];
+          }:
+          {
+            imports = [ (modulesPath + "/installer/cd-dvd/installation-cd-minimal-new-kernel-no-zfs.nix") ];
+            boot.supportedFilesystems = [
+              "btrfs"
+              "bcachefs"
+            ];
             networking.hostName = lib.mkForce "bcachefs-iso";
             networking.hostId = lib.mkOverride 123 "deadbeef";
             # disable fileSystem config for iso
             disko.enableConfig = false;
-            environment.systemPackages = with pkgs; [iwd networkmanager];
+            environment.systemPackages = with pkgs; [
+              iwd
+              networkmanager
+            ];
             provision.fs.bcachefs.enable = true;
             users.users.root.initialHashedPassword = lib.mkForce null;
-          })
-        ]
-        ++ self.nixosConfigurations.basic._module.args.modules;
-      basic-iso.modules =
-        [
-          ({
+          }
+        )
+      ] ++ self.nixosConfigurations.basic._module.args.modules;
+      basic-iso.modules = [
+        (
+          {
             pkgs,
             lib,
             modulesPath,
             ...
-          }: {
-            imports = [(modulesPath + "/installer/scan/not-detected.nix")];
-            boot.supportedFilesystems = ["zfs" "btrfs"];
+          }:
+          {
+            imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
+            boot.supportedFilesystems = [
+              "zfs"
+              "btrfs"
+            ];
             networking.hostName = lib.mkForce "basic-iso";
             networking.hostId = lib.mkOverride 123 "deadbeef";
             # disable fileSystem config for iso
             disko.enableConfig = false;
-            environment.systemPackages = with pkgs; [iwd networkmanager];
-          })
-        ]
-        ++ self.nixosConfigurations.basic._module.args.modules;
+            environment.systemPackages = with pkgs; [
+              iwd
+              networkmanager
+            ];
+          }
+        )
+      ] ++ self.nixosConfigurations.basic._module.args.modules;
     };
 
     colmena.targetPort = 22;

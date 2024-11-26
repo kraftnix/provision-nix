@@ -12,9 +12,11 @@
   discard ? true,
   lib,
   ...
-}: let
+}:
+let
   bootStart = "1MiB";
-in {
+in
+{
   disko.devices.disk.${diskName} = {
     type = "disk";
     inherit device;

@@ -1,16 +1,18 @@
-{self, ...}: {
+{ self, ... }:
+{
   config,
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   cfg = config.provision.virt.microvm.host;
   opts = self.lib.options;
-  inherit
-    (lib)
+  inherit (lib)
     mkIf
     ;
-in {
+in
+{
   options.provision.virt.microvm.host = {
     enable = opts.enable ''
       Enables microvm.host extensions
@@ -33,9 +35,9 @@ in {
   config = mkIf cfg.enable {
     # Otherwise
     /*
-    Failed assertions:
-    - The security.wrappers.qemu-bridge-helper wrapper is not valid:
-    setuid/setgid and capabilities are mutually exclusive.
+      Failed assertions:
+      - The security.wrappers.qemu-bridge-helper wrapper is not valid:
+      setuid/setgid and capabilities are mutually exclusive.
     */
     # also conflict with nixpkgs `virtualisation/libvirtd.nix`
     security.wrappers.qemu-bridge-helper = mkIf cfg.qemu-bridge-fix {
@@ -43,17 +45,18 @@ in {
       source = lib.mkForce "${pkgs.qemu}/libexec/qemu-bridge-helper";
     };
 
-    networking.firewall.interfaces.${cfg.network.basic.name}.allowedUDPPorts = [67];
+    networking.firewall.interfaces.${cfg.network.basic.name}.allowedUDPPorts = [ 67 ];
 
     networking.nat = mkIf cfg.network.nat.enable {
       enable = true;
       enableIPv6 = true;
-      internalInterfaces = [cfg.network.basic.name];
+      internalInterfaces = [ cfg.network.basic.name ];
     };
 
-    systemd.network = let
-      basic = cfg.network.basic;
-    in
+    systemd.network =
+      let
+        basic = cfg.network.basic;
+      in
       mkIf basic.enable {
         netdevs."10-${basic.name}".netdevConfig = {
           Kind = "bridge";
@@ -66,11 +69,11 @@ in {
             IPv6SendRA = true;
           };
           addresses = [
-            {Address = basic.ipv4Subnet;}
-            {Address = "${basic.ipv6Prefix}1/64";}
+            { Address = basic.ipv4Subnet; }
+            { Address = "${basic.ipv6Prefix}1/64"; }
           ];
           ipv6Prefixes = [
-            {Prefix = "${basic.ipv6Prefix}/64";}
+            { Prefix = "${basic.ipv6Prefix}/64"; }
           ];
         };
         networks."11-${basic.name}" = {

@@ -3,7 +3,8 @@
   profiles,
   inputs,
   ...
-}: {
+}:
+{
   imports = [
     profiles.users.test-operator
     profiles.users.test-deploy
@@ -18,7 +19,7 @@
         doas.enable = true;
         doas.extraRules = [
           {
-            users = ["test-operator"];
+            users = [ "test-operator" ];
             noPass = true;
           }
         ];
@@ -30,7 +31,7 @@
       boot.enable = true;
       boot.systemd.initrd.enable = true;
       initrd.enable = true;
-      initrd.ssh.usersImportKeyFiles = ["test-operator"];
+      initrd.ssh.usersImportKeyFiles = [ "test-operator" ];
       btrfs.enable = true; # enable extra tools etc.
       disko.devices.root = {
         device = "/dev/vda";

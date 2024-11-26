@@ -1,15 +1,17 @@
-{self, ...}: {
+{ self, ... }:
+{
   lib,
   config,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     mkIf
     mkEnableOption
     ;
   cfg = config.provision.hardware.zram;
-in {
+in
+{
   options.provision.hardware.zram = {
     enable = mkEnableOption "enable zram";
   };

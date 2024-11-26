@@ -89,12 +89,13 @@
   # inputs.drduh.url = "github:DrDuh/YubiKey-Guide";
   # inputs.drduh.inputs.nixpkgs.follows = "nixpkgs";
 
-  outputs = inputs @ {
-    self,
-    flake-parts,
-    ...
-  }:
-    flake-parts.lib.mkFlake {inherit inputs;} {
+  outputs =
+    inputs@{
+      self,
+      flake-parts,
+      ...
+    }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
       debug = true;
       imports = [
         flake-parts.flakeModules.modules
@@ -103,14 +104,19 @@
         ./install
         ./packages
         ./scripts
-        ./shells
         ./toplevel.nix
       ];
-      systems = ["x86_64-linux" "aarch64-linux"];
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
     };
 
   nixConfig = {
-    extra-experimental-features = ["nix-command" "flakes"];
+    extra-experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
     extra-substituters = [
       "https://nix-community.cachix.org"
       "https://colmena.cachix.org"

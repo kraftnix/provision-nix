@@ -1,10 +1,11 @@
-localFlake: {
+localFlake:
+{
   config,
   lib,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     filterAttrs
     literalExpression
     mapAttrs
@@ -13,13 +14,14 @@ localFlake: {
     types
     ;
   opts = localFlake.self.lib.options;
-in {
+in
+{
   options = {
     enable = opts.enableTrue "enable scripts integration";
     pkgs = mkOption {
       description = "Nixpkgs used to generate script. Influences shell runtime.";
       type = types.pkgs;
-      default = {};
+      default = { };
       defaultText = literalExpression "pkgs";
     };
     addToPackages = opts.enableTrue ''
@@ -35,14 +37,16 @@ in {
       default = null;
     };
     scripts = mkOption {
-      type = types.attrsOf (types.submoduleWith {
-        specialArgs = {
-          inherit (config) defaultShell defaultLibDirs pkgs;
-          inherit opts;
-        };
-        modules = [./script.nix];
-      });
-      default = {};
+      type = types.attrsOf (
+        types.submoduleWith {
+          specialArgs = {
+            inherit (config) defaultShell defaultLibDirs pkgs;
+            inherit opts;
+          };
+          modules = [ ./script.nix ];
+        }
+      );
+      default = { };
       description = ''
         Generate scripts from different shells from string snippets, files, or nushell modules.
 
@@ -69,7 +73,7 @@ in {
       readOnly = true;
     };
     __exportableScripts = mkOption {
-      default = mapAttrs (_: c: removeAttrs c ["package"]) config.__enabledScripts;
+      default = mapAttrs (_: c: removeAttrs c [ "package" ]) config.__enabledScripts;
       description = "enabled scripts, with some config removed, suitable for importing between scripts";
       readOnly = true;
     };

@@ -1,12 +1,15 @@
-{self, ...}: {
+{ self, ... }:
+{
   config,
   lib,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf mkDefault;
   opts = self.lib.options;
   cfg = config.provision.roles;
-in {
+in
+{
   options.provision.roles.edge = {
     enable = opts.enable ''
       Enable edge node default configuration.
@@ -22,9 +25,13 @@ in {
       When enabled, increases some base system limits.
       Can be required when running many containers or VMs.
     '';
-    initrdUnlockUsers = opts.stringList [] "users to add SSH keys into initrd ssh network root disk unlock";
-    initrdNetModules = opts.stringList [] "extra network modules to add to `boot.initrd.availableKernelModules`";
-    nixTrustedUsers = opts.stringList [] "trusted nix users (needed for deploy user at least)";
+    initrdUnlockUsers =
+      opts.stringList [ ]
+        "users to add SSH keys into initrd ssh network root disk unlock";
+    initrdNetModules =
+      opts.stringList [ ]
+        "extra network modules to add to `boot.initrd.availableKernelModules`";
+    nixTrustedUsers = opts.stringList [ ] "trusted nix users (needed for deploy user at least)";
   };
 
   config = mkIf cfg.edge.enable {

@@ -16,15 +16,16 @@
   hubId,
   firewall,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     mkDefault
     mkOption
     optionalString
     types
     ;
-in {
+in
+{
   options = {
     enable = opts.enable' (config.ip != "") "enable host";
     name = opts.string name "host name";
@@ -37,7 +38,7 @@ in {
     subnet = opts.string subnet "wireguard subnet";
     routes = mkOption {
       type = types.listOf types.raw;
-      default = [];
+      default = [ ];
       description = "list of systemd network routes";
     };
     gateway = {
@@ -49,13 +50,17 @@ in {
       type = with types; nullOr int;
       description = "wireguard sub ip, combined with subnet, 300 if unused";
     };
-    ip = opts.string (optionalString (config.subip != null) "${config.subnet}.${toString config.subip}") "wireguard ip address";
+    ip = opts.string (optionalString (
+      config.subip != null
+    ) "${config.subnet}.${toString config.subip}") "wireguard ip address";
     endpointIP = opts.string "" "optional endpoint ip address";
-    endpoint = opts.string (optionalString (config.endpointIP != "") "${config.endpointIP}:${toString config.listenPort}") "optional endpoint + listen port combo";
+    endpoint = opts.string (optionalString (
+      config.endpointIP != ""
+    ) "${config.endpointIP}:${toString config.listenPort}") "optional endpoint + listen port combo";
     persistentKeepAlive = opts.int persistentKeepAlive "persistent keep alive";
-    allowedIPs = opts.stringList (["${config.ip}/32"] ++ config.extraAllowedIPs) "allowed IPs list";
+    allowedIPs = opts.stringList ([ "${config.ip}/32" ] ++ config.extraAllowedIPs) "allowed IPs list";
     extraAllowedIPs = mkOption {
-      default = [];
+      default = [ ];
       type = with types; listOf str;
       description = ''
         extra allowed IPs

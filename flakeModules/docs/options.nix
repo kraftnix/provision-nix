@@ -3,17 +3,20 @@
   defaults,
   name,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     literalExpression
     mkEnableOption
     mkOption
     types
     ;
-in {
+in
+{
   options = {
-    enable = mkEnableOption "enable options docs generation" // {default = true;};
+    enable = mkEnableOption "enable options docs generation" // {
+      default = true;
+    };
     hostOptions = mkOption {
       description = "host to use for options evaluation";
       type = types.lazyAttrsOf types.raw;

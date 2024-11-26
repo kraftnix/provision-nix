@@ -1,21 +1,22 @@
-localFlake: {
+localFlake:
+{
   lib,
   flake-parts-lib,
   moduleLocation,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     concatStringsSep
     mapAttrsRecursive
     mkOption
     types
     ;
-  inherit
-    (flake-parts-lib)
+  inherit (flake-parts-lib)
     mkSubmoduleOptions
     ;
-in {
+in
+{
   options.flake = mkSubmoduleOptions {
     profiles = mkOption {
       description = ''
@@ -24,12 +25,14 @@ in {
         You may use this for reusable snippets pieces of pure configuration (i.e. without options).
       '';
       type = types.lazyAttrsOf types.unspecified;
-      default = {};
-      apply = mapAttrsRecursive (k: v: {
-        _file = "${toString moduleLocation}#profiles.${concatStringsSep "." k}";
-        imports = [v];
-        # passthru = v; # causes weird issues
-      });
+      default = { };
+      apply = mapAttrsRecursive (
+        k: v: {
+          _file = "${toString moduleLocation}#profiles.${concatStringsSep "." k}";
+          imports = [ v ];
+          # passthru = v; # causes weird issues
+        }
+      );
       example = lib.literalExpression ''
         {
           profiles = {

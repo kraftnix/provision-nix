@@ -1,11 +1,12 @@
-{self, ...}: {
+{ self, ... }:
+{
   config,
   lib,
   pkgs,
   ...
-}: let
-  inherit
-    (lib)
+}:
+let
+  inherit (lib)
     flatten
     mkDefault
     mkForce
@@ -16,11 +17,14 @@
     ;
   opts = self.lib.options;
   cfg = config.provision.networking.networkd;
-in {
+in
+{
   options.provision.networking.networkd = {
     enable = opts.enable "enable systemd-networkd";
     waitOnline = opts.enable "enable `systemd-networkd-wait-online`";
-    waitInterfaces = opts.stringList [] "interfaces to wait online for with `systemd-networkd-wait-online`";
+    waitInterfaces =
+      opts.stringList [ ]
+        "interfaces to wait online for with `systemd-networkd-wait-online`";
     ethernetUseDhcp = opts.enableTrue "add a basic unit which matches ethernet devices and enables DHCPv4";
   };
 
@@ -41,7 +45,10 @@ in {
         enable = cfg.waitOnline;
         extraArgs = pipe cfg.waitInterfaces [
           unique
-          (map (i: ["-i" i]))
+          (map (i: [
+            "-i"
+            i
+          ]))
           flatten
         ];
       };

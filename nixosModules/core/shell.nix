@@ -1,18 +1,21 @@
-{self, ...}: {
+{ self, ... }:
+{
   config,
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (lib) mkIf;
   opts = self.lib.options;
   cfg = config.provision.core.shell;
-in {
+in
+{
   options.provision.core.shell = {
     enable = opts.enable "enable basic shell integrations";
     starship = {
       enable = opts.enableTrue "enable starship integration";
-      settings = opts.raw {} "starship settings";
+      settings = opts.raw { } "starship settings";
     };
     direnv = {
       enable = opts.enableTrue "enable direnv on bash/zsh";
@@ -76,6 +79,6 @@ in {
     };
 
     # So zsh can autocmplete system installed cli
-    environment.pathsToLink = mkIf config.programs.zsh.enable ["/share/zsh"];
+    environment.pathsToLink = mkIf config.programs.zsh.enable [ "/share/zsh" ];
   };
 }

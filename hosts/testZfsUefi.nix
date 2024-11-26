@@ -2,7 +2,8 @@
   lib,
   profiles,
   ...
-}: {
+}:
+{
   imports = with profiles.users; [
     test-operator
     test-deploy
@@ -13,7 +14,7 @@
     fs = {
       boot.enable = true;
       initrd.enable = true;
-      initrd.ssh.usersImportKeyFiles = ["test-operator"];
+      initrd.ssh.usersImportKeyFiles = [ "test-operator" ];
       zfs = {
         enable = true;
         nativeEncryption = true;

@@ -1,13 +1,16 @@
-{self, ...}: {
+{ self, ... }:
+{
   config,
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   inherit (lib) optional mkOverride;
   opts = self.lib.options;
   cfg = config.provision.core.env;
-in {
+in
+{
   options.provision.core.env = {
     enable = opts.enable "whether to enable env configuration";
     editor = opts.string "vim" "whether to enable env configuration";
@@ -16,11 +19,11 @@ in {
       default = opts.string "en_GB.UTF-8" "default locale (`i18m.defaultLocale`)";
       timeZone = opts.string "Europe/Amsterdam" "time zone (`time.timeZone`)";
     };
-    packages = opts.packageList [] "systemPackages to import into environment";
+    packages = opts.packageList [ ] "systemPackages to import into environment";
     fonts = {
-      packages = opts.packageList [] "font packages to add";
+      packages = opts.packageList [ ] "font packages to add";
       name = opts.stringNull "if set, adds font name in fontconfig default fonts";
-      extraConfig = opts.raw {} "extra config to merge with `fonts`";
+      extraConfig = opts.raw { } "extra config to merge with `fonts`";
     };
   };
 
@@ -50,7 +53,7 @@ in {
       };
       # Selection of sysadmin tools that can come in handy
       systemPackages = with pkgs; [
-        vim #
+        vim
         nushell # best shell
         git # can be required for flake things
         curl # curl things

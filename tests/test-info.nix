@@ -64,32 +64,40 @@ rec {
     };
   };
 
-  defaultHostConfig = {
-    config,
-    lib,
-    pkgs,
-    ...
-  }: let
-    name = config.networking.hostName;
-    ip = hostips.${name};
-  in {
-    boot.loader.systemd-boot.enable = true;
-    systemd.network.enable = true;
-    networking.useNetworkd = true;
-    networking.useDHCP = false;
-    # networking.firewall.interfaces.eth1.allowedUDPPorts = lib.optionals (name == "gateway") [ 28600  28601 ];
-    networking.interfaces.eth1.ipv4.addresses = [
-      {
-        address = ip;
-        prefixLength = 24;
-      }
-    ];
-    fileSystems."/" = lib.mkDefault {device = "/dev/disk/by-label/One";};
-    environment.systemPackages = with pkgs; [fd ripgrep tmux vim];
-    users.users.root.hashedPassword = lib.mkDefault "$y$j9T$vMHW6Xt2v3axdGdkltO8e.$Lgr2IcIPoGasOSv8PE3RVIPFqSzQU.duhw8/xPI2uzD"; # empty
-    users.users.root.hashedPasswordFile = lib.mkForce null; # due to warning
-    virtualisation.memorySize = 500;
-    virtualisation.emptyDiskImages = [250];
-    system.stateVersion = "22.11";
-  };
+  defaultHostConfig =
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
+    let
+      name = config.networking.hostName;
+      ip = hostips.${name};
+    in
+    {
+      boot.loader.systemd-boot.enable = true;
+      systemd.network.enable = true;
+      networking.useNetworkd = true;
+      networking.useDHCP = false;
+      # networking.firewall.interfaces.eth1.allowedUDPPorts = lib.optionals (name == "gateway") [ 28600  28601 ];
+      networking.interfaces.eth1.ipv4.addresses = [
+        {
+          address = ip;
+          prefixLength = 24;
+        }
+      ];
+      fileSystems."/" = lib.mkDefault { device = "/dev/disk/by-label/One"; };
+      environment.systemPackages = with pkgs; [
+        fd
+        ripgrep
+        tmux
+        vim
+      ];
+      users.users.root.hashedPassword = lib.mkDefault "$y$j9T$vMHW6Xt2v3axdGdkltO8e.$Lgr2IcIPoGasOSv8PE3RVIPFqSzQU.duhw8/xPI2uzD"; # empty
+      users.users.root.hashedPasswordFile = lib.mkForce null; # due to warning
+      virtualisation.memorySize = 500;
+      virtualisation.emptyDiskImages = [ 250 ];
+      system.stateVersion = "22.11";
+    };
 }
