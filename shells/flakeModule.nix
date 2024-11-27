@@ -44,8 +44,27 @@ in
           '';
           type = types.submodule {
             options = {
-              enable = lib.mkEnableOption "enable provision-nix shell";
-              enableDefaults = lib.mkEnableOption "enables pre-commit hook + a default formatter";
+              enable = mkEnableOption "enable provision-nix shell";
+              enableDefaults = mkEnableOption "enables pre-commit hook + a default formatter";
+              deploy = mkOption {
+                default = { };
+                description = "Configure which deploy packages to add.";
+                type = types.submodule {
+                  options = {
+                    enable = mkEnableOption "enable adding deploy packages" // {
+                      default = true;
+                    };
+                    packages = mkOption {
+                      description = "packages to add to devshell";
+                      default = [ ];
+                      type = with types; listOf package;
+                      example = literalExpression ''
+                        [ inputs.colmena.packages.$\{pkgs.system}.colmena ]
+                      '';
+                    };
+                  };
+                };
+              };
               formatter = mkOption {
                 description = ''
                   Configure default formatter for flake, optionally add as a pre-commit hook.
@@ -135,6 +154,10 @@ in
         };
         formatter = mkIf (cfg.enable && fcfg.enable) fcfg.package;
         provision = {
+          deploy.packages = mkDefault [
+            localFlake.inputs.colmena.packages.${pkgs.system}.colmena
+            localFlake.inputs.deploy-rs.packages.${pkgs.system}.deploy-rs
+          ];
           formatter = {
             enablePreCommit = mkDefault cfg.enableDefaults;
             package =
@@ -165,7 +188,8 @@ in
             text = config.pre-commit.installationScript;
           };
           # na-install.enable = true;
-          packages = config.pre-commit.settings.enabledPackages;
+          packages =
+            config.pre-commit.settings.enabledPackages ++ (lib.optionals cfg.deploy.enable cfg.deploy.packages);
         };
       };
   };

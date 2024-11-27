@@ -10,9 +10,6 @@
   ...
 }:
 let
-  cfg = config.provision;
-  ncfg = config.provision.nvfetcher;
-  enabledSources = filterAttrs (_: c: c.enable) ncfg.sources;
   inherit (lib)
     concatStringsSep
     filterAttrs
@@ -23,69 +20,60 @@ let
     optional
     types
     ;
+  cfg = config.provision;
+  ncfg = config.provision.nvfetcher;
+  enabledSources = filterAttrs (_: c: c.enable) ncfg.sources;
+  nvfetcherModule =
+    { config, name, ... }:
+    {
+      options.enable = mkEnableOption "Enable nvfetcher integration for ${name}" // {
+        default = ncfg.enable;
+      };
+      options.name = mkOption {
+        default = name;
+        type = types.str;
+        description = "name of source";
+      };
+      options.baseDir = mkOption {
+        default = "./nix/packages";
+        type = types.str;
+        description = "path to sources base dir, used for setting default locations.";
+      };
+      options.sourcesToml = mkOption {
+        default = "${config.baseDir}/sources.toml";
+        type = types.str;
+        description = "path to `sources.toml`";
+      };
+      options.sourcesDir = mkOption {
+        default = "${config.baseDir}/_sources";
+        type = types.str;
+        description = "path to sources dir with `generated.{nix,json}`";
+      };
+      options.sourcesScript = mkOption {
+        default = ''
+          echo "Updating nvfetcher: ${config.name}, sourceFile: ${config.sourcesToml}, sourceDir: ${config.sourcesDir}"
+          nvfetcher -c ${config.sourcesToml} -o ${config.sourcesDir}
+        '';
+        type = types.str;
+        description = "script string to run for sourcing";
+      };
+    };
 in
 {
   options.provision = {
     enable = mkEnableOption "Enable default provision devshell.";
     nvfetcher = mkOption {
       default = { };
-      type = types.submodule (
-        { config, ... }:
-        let
-          nv = config;
-        in
-        {
-          options = {
-            enable = mkEnableOption "Enable nvfetcher integration";
-            sources = mkOption {
-              default = { };
-              description = "sources to pull from";
-              type = types.attrsOf (
-                types.submodule (
-                  {
-                    config,
-                    name,
-                    ...
-                  }:
-                  {
-                    options.enable = mkEnableOption "Enable nvfetcher integration for ${name}" // {
-                      default = nv.enable;
-                    };
-                    options.name = mkOption {
-                      default = name;
-                      type = types.str;
-                      description = "name of source";
-                    };
-                    options.baseDir = mkOption {
-                      default = "./nix/packages";
-                      type = types.str;
-                      description = "path to sources base dir, used for setting default locations.";
-                    };
-                    options.sourcesToml = mkOption {
-                      default = "${config.baseDir}/sources.toml";
-                      type = types.str;
-                      description = "path to `sources.toml`";
-                    };
-                    options.sourcesDir = mkOption {
-                      default = "${config.baseDir}/_sources";
-                      type = types.str;
-                      description = "path to sources dir with `generated.{nix,json}`";
-                    };
-                    options.sourcesScript = mkOption {
-                      default = ''
-                        echo "Updating nvfetcher: ${config.name}, sourceFile: ${config.sourcesToml}, sourceDir: ${config.sourcesDir}"
-                        nvfetcher -c ${config.sourcesToml} -o ${config.sourcesDir}
-                      '';
-                      type = types.str;
-                      description = "script string to run for sourcing";
-                    };
-                  }
-                )
-              );
-            };
+      type = types.submodule {
+        options = {
+          enable = mkEnableOption "Enable nvfetcher integration";
+          sources = mkOption {
+            default = { };
+            description = "sources to pull from";
+            type = types.attrsOf (types.submodule nvfetcherModule);
           };
-        }
-      );
+        };
+      };
     };
   };
 
