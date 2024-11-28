@@ -95,6 +95,7 @@ in
   flake.provisionOverlays = [
     self.overlays.lib
     self.overlays.lnav
+    self.overlays.nix-curl
   ];
   flake.overlays = {
     lib = final: prev: {
@@ -113,6 +114,36 @@ in
       #   buildInputs = self.buildInputs ++ [prev.tzdata];
       # });
     };
+    nix-curl =
+      final: prev:
+      let
+        # From: https://github.com/diogotcorreia/dotfiles/commit/b68234101b62b52226a6b8c286bda282602db24f
+        # Hot fix for curl in nix breaking with netrc
+        # https://github.com/NixOS/nixpkgs/pull/356133
+        patched-curl = prev.curl.overrideAttrs (oldAttrs: {
+          patches = (oldAttrs.patches or [ ]) ++ [
+            # https://github.com/curl/curl/issues/15496
+            (prev.fetchpatch {
+              url = "https://github.com/curl/curl/commit/f5c616930b5cf148b1b2632da4f5963ff48bdf88.patch";
+              hash = "sha256-FlsAlBxAzCmHBSP+opJVrZG8XxWJ+VP2ro4RAl3g0pQ=";
+            })
+            # https://github.com/curl/curl/issues/15513
+            (prev.fetchpatch {
+              url = "https://github.com/curl/curl/commit/0cdde0fdfbeb8c35420f6d03fa4b77ed73497694.patch";
+              hash = "sha256-WP0zahMQIx9PtLmIDyNSJICeIJvN60VzJGN2IhiEYv0=";
+            })
+          ];
+        });
+      in
+      {
+        nix = prev.nix.override (old: {
+          curl = patched-curl;
+        });
+        nixVersions = prev.nixVersions // {
+          nix_2_24 = final.nix;
+        };
+      };
+
   };
 
   perSystem =
