@@ -8,13 +8,10 @@ let
   rakedLib = lib.mapAttrs (_: v: import v args) (
     lib.filterAttrs (n: _: n != "default") (rakeLeaves ./.)
   );
-  mkPDefault = lib.mkOverride 990;
 in
 rakedLib
 // extra-lib
 // {
-  inherit mkPDefault;
-  mkDefaults = lib.mapAttrs (_: val: mkPDefault val);
   getScriptsFromHost =
     flake: host:
     lib.mapAttrs (
