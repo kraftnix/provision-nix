@@ -1,8 +1,3 @@
-when:
-  - branch: master
-    event: push
-  - event: pull_request
-
 steps:
   - name: fast-build devshells
     image: bash
@@ -37,5 +32,3 @@ steps:
     commands:
       - set -e
       - nix-fast-build -f .#hosts.toplevels --no-nom
-    when:
-      event: [pull_request, push]
