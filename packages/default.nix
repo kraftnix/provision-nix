@@ -13,7 +13,6 @@
         inherit (config.packages) btrfs-list;
       };
       packages = {
-        tmux_3_3a = pkgs.callPackage (import ./tmux.nix) { };
         btrfs-list = pkgs.callPackage (import ./btrfs-list.nix sources.btrfs-list) { };
         # https://github.com/rust-lang/mdBook/pull/1802
         mdbook-linkfix = pkgs.mdbook.overrideAttrs (old: rec {

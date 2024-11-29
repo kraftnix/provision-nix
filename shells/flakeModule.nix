@@ -157,6 +157,7 @@ in
           deploy.packages = mkDefault [
             localFlake.inputs.colmena.packages.${pkgs.system}.colmena
             localFlake.inputs.deploy-rs.packages.${pkgs.system}.deploy-rs
+            pkgs.nix-fast-build
           ];
           formatter = {
             enablePreCommit = mkDefault cfg.enableDefaults;
