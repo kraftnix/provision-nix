@@ -52,7 +52,7 @@ let
       options.sourcesScript = mkOption {
         default = ''
           echo "Updating nvfetcher: ${config.name}, sourceFile: ${config.sourcesToml}, sourceDir: ${config.sourcesDir}"
-          nvfetcher -c ${config.sourcesToml} -o ${config.sourcesDir}
+          nvfetcher -c ${config.sourcesToml} -o ${config.sourcesDir} "$@"
         '';
         type = types.str;
         description = "script string to run for sourcing";

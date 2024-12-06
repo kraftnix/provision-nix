@@ -13,7 +13,6 @@
       self.overlays.lib
       self.overlays.lnav
       self.overlays.default
-      self.overlays.nix-curl
     ];
 
     # configs.basic.nixpkgs = "stable";
