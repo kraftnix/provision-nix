@@ -82,15 +82,13 @@ in
       ## Table ${name}
       table ${config.__type} ${name} {
         ${concatStringsSep "\n  " (mapAttrsToList (_: c: c.__final) config.mapsets)}
-        ${
-          concatStringsSep "\n  " (
-            mapAttrsToList (chain: chainCfg: ''
-              counter chain_final_${chain} {
-                  comment "${chain} default policy"
-                }
-            '') (filterAttrs (_: c: (builtins.typeOf c != "string") && c.finalCounter) config.__chains)
-          )
-        }
+        ${concatStringsSep "\n  " (
+          mapAttrsToList (chain: chainCfg: ''
+            counter chain_final_${chain} {
+                comment "${chain} default policy"
+              }
+          '') (filterAttrs (_: c: (builtins.typeOf c != "string") && c.finalCounter) config.__chains)
+        )}
         ${config.__chainsStr}
       }
     '';

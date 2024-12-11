@@ -41,11 +41,9 @@ let
     pkgs: keyfile: disks:
     (writeNu pkgs) "nushell-unlock-pool.nu" ''
       $env.disks = [
-        ${
-          lib.concatStringsSep "\n" (
-            map (disk: "{ device : \"${disk.device}\",  label : \"${disk.label}\" }") disks
-          )
-        }
+        ${lib.concatStringsSep "\n" (
+          map (disk: "{ device : \"${disk.device}\",  label : \"${disk.label}\" }") disks
+        )}
       ]
       $env.keyfile = "${keyfile}"
       ${builtins.readFile ./unlock-pool.nu}

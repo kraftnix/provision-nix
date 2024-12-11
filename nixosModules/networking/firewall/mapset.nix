@@ -229,13 +229,11 @@ in
           type ${config.typeDef}
           ${optionalString (config.flags != [ ]) "flags ${(concatStringsSep ", " config.flags)}"}
           ${config.extraConfig}
-          ${
-            optionalString (config.elements != [ ]) ''
-              elements = {
-                    ${concatStringsSep ",\n      " (map (e: e.__final) config.elements)}
-                  }
-            ''
-          }
+          ${optionalString (config.elements != [ ]) ''
+            elements = {
+                  ${concatStringsSep ",\n      " (map (e: e.__final) config.elements)}
+                }
+          ''}
         }
     '';
   };

@@ -50,9 +50,8 @@ in
         ];
       all.packages =
         with pkgs;
-        mkDefault
-          [
-          ];
+        mkDefault [
+        ];
     };
 
     environment.systemPackages =
