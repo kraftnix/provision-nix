@@ -21,7 +21,7 @@ let
   inherit (flake-parts-lib)
     mkSubmoduleOptions
     ;
-  inherit (inputs.extra-lib.lib.std-compat) rakeLeaves;
+  inherit (localFlake.inputs.extra-lib.lib.std-compat) rakeLeaves;
 
   rakedHosts = rakeLeaves cfg.hostsDir;
   filterDefault = filterAttrs (n: _: n != "default");
@@ -301,7 +301,9 @@ in
     colmenaHive = inputs.colmena.lib.makeHive self.outputs.colmena;
     colmena = {
       meta = {
-        nixpkgs = self.channels.x86_64-linux.nixpkgs.pkgs;
+        nixpkgs =
+          self.channels.x86_64-linux.nixpkgs.pkgs or hostDefaults.pkgs
+            or inputs.nixpkgs.legacyPackages.x86_64-linux;
         specialArgs = hostDefaults.specialArgs;
         nodeNixpkgs = mapAttrs (_: cfg: cfg.nixpkgs) hosts;
       };
