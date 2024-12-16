@@ -30,8 +30,7 @@ in
       latest = mkOption {
         description = "latest linux kernel version that works with zfs";
         type = types.raw;
-        # FIX(zfs): move back to regular channel when 6_11 supported by ZFS, 6_10 deprecated from unstable
-        default = self.channels.${pkgs.system}.nixpkgs-zfs.pkgs.linuxKernel.packages.linux_6_10;
+        default = pkgs.linuxKernel.packages.linux_6_12;
         defaultText = literalExpression "self.channels.$\{pkgs.system}.nixpkgs-zfs.pkgs.linuxKernel.packages.linux_6_10";
       };
     };

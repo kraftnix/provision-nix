@@ -105,6 +105,14 @@ in
         }
       );
     };
+    nix-fast-build = final: prev: {
+      # https://github.com/tstack/lnav/issues/1291
+      nix-fast-build = localFlake.self.packages.${final.system}.nix-fast-build;
+      # lnav = prev.lnav.overrideAttrs (self: {
+      #   nativeBuildInputs = self.nativeBuildInputs ++ [prev.tzdata];
+      #   buildInputs = self.buildInputs ++ [prev.tzdata];
+      # });
+    };
     lnav = final: prev: {
       # https://github.com/tstack/lnav/issues/1291
       lnav = final.channels.stable.lnav;

@@ -12,6 +12,7 @@
     defaults.overlays = [
       self.overlays.lib
       self.overlays.lnav
+      self.overlays.nix-fast-build
       self.overlays.default
     ];
 
