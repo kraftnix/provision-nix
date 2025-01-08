@@ -47,8 +47,7 @@
 
   # deploy
   inputs = {
-    # https://github.com/zhaofengli/colmena/pull/256
-    colmena.url = "github:pks-t/colmena/pks-nix-eval-job-fix-patch";
+    colmena.url = "github:zhaofengli/colmena";
     colmena.inputs = {
       nixpkgs.follows = "nixpkgs";
       stable.follows = "nixpkgs-stable";
