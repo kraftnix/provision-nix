@@ -24,7 +24,7 @@
           };
           cargoDeps = old.cargoDeps.overrideAttrs {
             inherit src;
-            outputHash = "sha256-3GVFRwKCvtZoqW4nktBLBdS5OEqM8tfoAct2JRHYmTw=";
+            outputHash = "sha256-56oxHXR4u/8yWjU+rSg5kpowfyev0ECSjneo27EdgQo=";
           };
         });
         mdbook-theme = pkgs.callPackage (import ./mdbook-theme.nix) { };
