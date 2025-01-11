@@ -182,7 +182,7 @@ in
                     load-env (open ${pkgs.writeText "${config.name}-env.json" (builtins.toJSON config.env)})
                   ''}
                   ${optionalString (config.inputs != [ ]) ''
-                    $env.PATH = ($env.PATH | append ${lib.makeBinPath config.inputs})
+                    $env.path ++= "${lib.makeBinPath config.inputs}" | split row :
                   ''}
                   ${optionalString (config.nuLibDirs != null) ''
                     $env.NU_LIB_DIRS = ($env.NU_LIB_DIRS | append ${config.nuLibDirs})
