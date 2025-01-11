@@ -220,7 +220,7 @@ in
                       if [[ -n "$HOMEPAGE_URL" ]]; then
                         local search='<!--HACKY_HOMEPAGE_REPLACE-->'
                         local replace="<ol class=\"chapter\"><li class=\"part-title homepage-url\"><a href=\"$HOMEPAGE_URL\">$HOMEPAGE_BODY</a></li></ol>"
-                        simple-replace $search "$replace" .
+                        simple-replace "$search" "$replace" .
                       fi
 
                       simple-replace '<--DOCSITE_BASE-->' "$DOCSITE_BASE" .

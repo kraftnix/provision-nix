@@ -16,4 +16,5 @@ def main [
         $str | save -f $path
       }
     }
+  exit 0
 }
