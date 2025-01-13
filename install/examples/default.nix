@@ -97,35 +97,5 @@ in
   };
 
   # Generate isos for hosts in `flake.internal.generateIsos`
-  flake.isos = mapAttrs (
-    host: cfg:
-    inputs.nixos-generators.nixosGenerate {
-      inherit (cfg.config.nixpkgs) system;
-      inherit (cfg._module) specialArgs;
-      modules = cfg._module.args.modules ++ [
-        (
-          {
-            pkgs,
-            modulesPath,
-            ...
-          }:
-          {
-            imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
-            nixpkgs.pkgs = cfg._module.args.pkgs;
-            boot.loader.grub.enable = lib.mkForce false;
-            boot.initrd.secrets = lib.mkForce { };
-            boot.supportedFilesystems = [
-              "zfs"
-              "btrfs"
-            ];
-            # disable fileSystem config for iso
-            disko.enableConfig = false;
-            # live.nixos.passwd = "nixos-iso-password";
-            documentation.enable = lib.mkForce false;
-          }
-        )
-      ];
-      format = "install-iso";
-    }
-  ) self.internal.generateIsos;
+  flake.isos = mapAttrs (host: cfg: cfg.config.formats.iso) self.internal.generateIsos;
 }

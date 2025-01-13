@@ -44,6 +44,7 @@ in
           { config, ... }:
           {
             options = {
+              enable = opts.enableTrue "enable disko device";
               diskName = opts.string config._module.args.name "disk name to apply to profile";
               device = opts.string "" "device to apple disko profile to";
               profile = opts.string "" "profile to apply from `provision.fs.disko.profiles`";
@@ -88,6 +89,7 @@ in
     if diskoEnabled then
       (mkIf cfg.enable {
         disko = pipe cfg.devices [
+          (filterAttrs (_: d: d.enable))
           (mapAttrsToList (_: device: device.generated.disko))
           mkMerge
         ];
