@@ -31,7 +31,8 @@ in
         description = "latest linux kernel version that works with zfs";
         type = types.raw;
         default = pkgs.linuxKernel.packages.linux_6_12;
-        defaultText = literalExpression "self.channels.$\{pkgs.system}.nixpkgs-zfs.pkgs.linuxKernel.packages.linux_6_10";
+        defaultText = literalExpression "self.channels.$\{pkgs.system}.nixpkgs-zfs.pkgs.linuxKernel.packages.linux_6_12";
+        example = literalExpression "pkgs.linuxKernel.packages.linux_6_11";
       };
     };
     trim = opts.enableTrue "enable trim";
