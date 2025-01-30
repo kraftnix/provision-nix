@@ -43,9 +43,9 @@ The following example generates a simple nftables firewall which allows inbound 
 The `default` profile generates a single table (type `inet`) with two chains `input` and `forward`.
 
 ```nix
-networking.nftabes.gen.enable = true;
-networking.nftabes.gen.profiles = ["default"];
-networking.nftabes.gen.tables.filter = {
+networking.nftables.gen.enable = true;
+networking.nftables.gen.profiles = ["default"];
+networking.nftables.gen.tables.filter = {
   input.rules.testing = {
     log = true;
     counter = true;
@@ -65,7 +65,7 @@ It also populates both with some sane `default` rules enabled:
 
 These rules can be selectively disabled (or reordered) with:
 ```nix
-networking.nftabes.gen.tables.filter = {
+networking.nftables.gen.tables.filter = {
   input.finalCounter = false; # removes named counter before `finalRule` (if set) / chain policy
   input.rules.accept-to-local.enable = false;
 };

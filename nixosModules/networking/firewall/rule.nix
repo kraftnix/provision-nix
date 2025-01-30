@@ -23,6 +23,7 @@ let
     nameValuePair
     optional
     pipe
+    unique
     ;
   inherit (lib.types)
     attrsOf
@@ -92,8 +93,8 @@ in
 {
   options = {
     ruleReplaceMap = mkOption {
-      default = { };
       description = "a list of string replacements to run to create final rule";
+      default = { };
       type = attrsOf (submodule {
         options = {
           enable = mkEnableOption "enable string replacement" // {
@@ -113,6 +114,7 @@ in
       });
     };
     rewriteLists = mkOption {
+      description = "string replacements run on rule to generate __final";
       type = attrsOf (listOf str);
       default = {
         match =
@@ -138,7 +140,6 @@ in
             (getString config "daddr")
           ];
       };
-      description = "string replacements run on rule to generate __final";
     };
     n = mkOption {
       description = ''
@@ -146,13 +147,13 @@ in
 
         Default is: ${toString defaults.n}.
       '';
-      type = int;
       default = defaults.n;
+      type = int;
     };
     enable = mkOption {
       description = "Whether to include rule in final rendered chain.";
-      type = bool;
       default = defaults.enable;
+      type = bool;
     };
     rule = mkOption {
       description = ''
@@ -178,6 +179,7 @@ in
         53
         67
       ];
+      apply = unique;
     };
     udpSport = mkOption {
       description = "Filter by `udp sport`";
@@ -187,6 +189,7 @@ in
         53
         67
       ];
+      apply = unique;
     };
     tcpDport = mkOption {
       description = "Filter by `tcp dport`";
@@ -196,6 +199,7 @@ in
         53
         67
       ];
+      apply = unique;
     };
     tcpSport = mkOption {
       description = "Filter by `tcp sport`";
@@ -205,42 +209,49 @@ in
         53
         67
       ];
+      apply = unique;
     };
     oifname = mkOption {
       description = "Filter by oifname";
       type = listOf str;
       default = defaults.oifname; # [];
       example = [ "wan" ];
+      apply = unique;
     };
     iifname = mkOption {
       description = "Filter by iifname";
       type = listOf str;
       default = defaults.iifname; # [];
       example = [ "lan" ];
+      apply = unique;
     };
     oif = mkOption {
       description = "Filter by oif";
       type = listOf str;
       default = defaults.oif; # [];
       example = [ "wan" ];
+      apply = unique;
     };
     iif = mkOption {
       description = "Filter by iif";
       type = listOf str;
       default = defaults.iif; # [];
       example = [ "lan" ];
+      apply = unique;
     };
     saddr = mkOption {
       description = "Filter by saddr";
       type = listOf str;
       default = defaults.saddr; # [];
       example = [ "10.11.0.0/24" ];
+      apply = unique;
     };
     daddr = mkOption {
       description = "Filter by daddr";
       type = listOf str;
       default = defaults.daddr; # [];
       example = [ "10.1.1.1" ];
+      apply = unique;
     };
     main = mkOption {
       description = ''
