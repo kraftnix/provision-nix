@@ -6,9 +6,10 @@
   ...
 }:
 let
-  inherit (lib) optional mkOverride;
+  inherit (lib) optional mkIf mkOverride;
   opts = self.lib.options;
   cfg = config.provision.core.env;
+  mkOv = mkOverride 900;
 in
 {
   options.provision.core.env = {
@@ -16,8 +17,10 @@ in
     editor = opts.string "vim" "whether to enable env configuration";
     locale = {
       keyMap = opts.string "uk" "keyboard layout (`console.keyMap`)";
+      xkbLayout = opts.string "gb" "xserver xkb layout";
       default = opts.string "en_GB.UTF-8" "default locale (`i18m.defaultLocale`)";
       timeZone = opts.string "Europe/Amsterdam" "time zone (`time.timeZone`)";
+      swapEscape = opts.enableTrue "swap escape and capslock in console + xserver settings";
     };
     packages = opts.packageList [ ] "systemPackages to import into environment";
     fonts = {
@@ -27,10 +30,13 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    console.keyMap = mkOverride 900 cfg.locale.keyMap;
-    i18n.defaultLocale = mkOverride 900 cfg.locale.default;
-    time.timeZone = mkOverride 900 cfg.locale.timeZone;
+  config = mkIf cfg.enable {
+    services.xserver.xkb.options = mkIf cfg.locale.swapEscape "caps:escape";
+    services.xserver.xkb.layout = mkOv cfg.locale.xkbLayout;
+    console.keyMap = mkOv cfg.locale.keyMap;
+    console.useXkbConfig = mkIf cfg.locale.swapEscape (mkOv true);
+    i18n.defaultLocale = mkOv cfg.locale.default;
+    time.timeZone = mkOv cfg.locale.timeZone;
 
     fonts = lib.mkMerge [
       cfg.fonts.extraConfig
