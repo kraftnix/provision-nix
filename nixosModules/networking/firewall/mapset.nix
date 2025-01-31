@@ -22,29 +22,46 @@ let
       type ? null,
       ...
     }:
-    if (rhs == null) && (verdict == null) then
-      "${lhs}"
-    else if (rhs == null) then
-      "${lhs} : ${verdict}"
-    else if (verdict == null) then
+    if type == "set" then
+      if rhs == null then
+        lhs
+      else if verdict == null then
+        "${lhs} . ${rhs}"
+      else
+        "${lhs} . ${rhs} . ${verdict}"
+    else if type == "map" then
       "${lhs} : ${rhs}"
+    else if rhs == null then
+      "${lhs} : ${verdict}"
     else if type == "vmapr" then
       "${lhs} : ${rhs} . ${verdict}"
     else
       "${lhs} . ${rhs} : ${verdict}";
 
   makeMapMap =
-    lhsType: rhsType: verdict:
-    if (rhsType == null) && (verdict == null) then
-      "${lhsType} @${config.name}"
-    else if (rhsType == null) then
-      "${lhsType} vmap @${config.name}"
-    else if (verdict == null) then
-      "${lhsType} vmap @${config.name}"
-    else if cfg.type == "vmapr" then
+    {
+      name,
+      type,
+      lhsType,
+      rhsType ? null,
+      verdictType ? null,
+      ...
+    }:
+    if type == "set" then
+      if rhsType == null then
+        "${lhsType} @${name}"
+      else if verdictType == null then
+        "${lhsType} . ${rhsType} @${name}"
+      else
+        "${lhsType} . ${rhsType} . ${verdictType} @${name}"
+    else if type == "map" then
+      "${lhsType} ${rhsType} map @${name}"
+    else if rhsType == null then
+      "${lhsType} vmap @${name}"
+    else if type == "vmapr" then
       "<implement your own>"
     else
-      "${lhsType} . ${rhsType} vmap @${config.name}";
+      "${lhsType} ${rhsType} vmap @${name}";
 
   mapType =
     { config, ... }:
@@ -100,47 +117,59 @@ in
       default = true;
     };
     name = mkOption {
+      description = "name of map/set/vmap";
       default = name;
       type = types.str;
-      description = "name of map/set/vmap";
     };
     lhs = mkOption {
+      description = "`lhs` in the map `<lhs> . <rhs>";
       default =
         if (config.lhsType != null) && (builtins.hasAttr config.lhsType typeMap) then
           typeMap.${config.lhsType}
         else
           "ipv4_addr";
       type = types.str;
-      description = "`lhs` in the map `<lhs> . <rhs>";
     };
     lhsType = mkOption {
-      default = null;
-      example = "iifname";
-      type = with types; nullOr str;
       description = "type to be used for generating `__map` verdict";
+      default = null;
+      type = with types; nullOr str;
+      example = "iifname";
     };
     rhs = mkOption {
+      description = "`rhs` in the map `<lhs> . <rhs>";
       default =
         if (config.rhsType != null) && (builtins.hasAttr config.rhsType typeMap) then
           typeMap.${config.rhsType}
         else
           null;
-      example = "ifname";
-      description = "`rhs` in the map `<lhs> . <rhs>";
       type = with types; nullOr str;
+      example = "ifname";
     };
     rhsType = mkOption {
-      default = null;
-      example = "oifname";
-      type = with types; nullOr str;
       description = "type to be used for generating `__map` verdict";
+      default = null;
+      type = with types; nullOr str;
+      example = "oifname";
     };
     verdict = mkOption {
-      default = null;
       description = "optional `verdict` in the map `<lhs> : <verdict>` or `<lhs> . <rhs> : <verdict>`";
+      default = null;
       type = with types; nullOr str;
     };
+    verdictType = mkOption {
+      description = "**weird naming**, only used for `set` type where 3 elements are concatenationed together, used to generate `typeDef`";
+      default = null;
+      type = with types; nullOr str;
+      example = "oifname";
+    };
     flags = mkOption {
+      description = ''
+        Available options:
+          + constant - set content may not change while bound
+          + interval - set contains intervals
+          + timeout - elements can be added with a timeout
+      '';
       default = [ ];
       type =
         with types;
@@ -149,32 +178,28 @@ in
           "interval"
           "timeout"
         ]);
-      description = ''
-        Available options:
-          + constant - set content may not change while bound
-          + interval - set contains intervals
-          + timeout - elements can be added with a timeout
-      '';
     };
     type = mkOption {
-      default =
-        if (config.rhs == null) && (config.verdict == null) then
-          "set"
-        else if config.verdict != null then
-          "map"
-        else
-          "vmap";
       description = ''
         final type of set/map/vmap/natmap
-          - set: list of elements [Nftables Sets](https://wiki.nftables.org/wiki-nftables/index.php/Sets)
+          - set: list or [generic sets](https://wiki.nftables.org/wiki-nftables/index.php/Sets) of elements [Nftables Sets](https://wiki.nftables.org/wiki-nftables/index.php/Concatenations)
+            - list or generic sets
           - map: hashmap/attrs of elements [Nftables maps](https://wiki.nftables.org/wiki-nftables/index.php/Sets)
+            - often used with `dnat to`, `snat to`, will never be selected by default
           - vmap(r): verdict maps [Nftables verdict maps](https://wiki.nftables.org/wiki-nftables/index.php/Verdict_Maps_(vmaps))
             can be a `vmap` or `vmapr`, `vmapr` reverses the mapping
               -[both]   match         : verdict  ( lhs : verdict )
               -[vmap]   match . match : verdict  ( lhs . rhs : verdict )
               -[vmapr]  match : match . match    ( lhs : rhs . verdict )
-            example usage of vmapr [Nfatbles examples](https://wiki.nftables.org/wiki-nftables/index.php/Multiple_NATs_using_nftables_maps)
+            example usage of vmapr [Nftables examples](https://wiki.nftables.org/wiki-nftables/index.php/Multiple_NATs_using_nftables_maps)
       '';
+      default =
+        if config.verdict == null then
+          "set"
+        # else if config.rhs == null && config.verdict != null then
+        #   "map"
+        else
+          "vmap";
       type = types.enum [
         "set"
         "map"
@@ -183,6 +208,7 @@ in
       ];
     };
     typeDef = mkOption {
+      description = "final type of set/map/vmap";
       default = makeMapType {
         inherit (config)
           lhs
@@ -192,18 +218,22 @@ in
           ;
       };
       # default = "type ${makeMapType config.lhs config.rhs config.verdict}";
-      description = "final type of set/map/vmap";
       type = types.str;
     };
     typeName = mkOption {
+      description = "type name to set when defining named map/set/vamp";
       default = if config.type == "vmap" || config.type == "vmapr" then "map" else config.type;
       type = types.str;
-      description = "type name to set when defining named map/set/vamp";
     };
     elements = mkOption {
-      default = [ ];
       description = "element for map, can be a verdict ";
+      default = [ ];
       type = with types; listOf (submodule mapType);
+    };
+    counter = mkOption {
+      description = "adds a counter to each element, only applicable to `set` type";
+      default = false;
+      type = types.bool;
     };
     extraConfig = mkOption {
       description = "extra config to add";
@@ -222,11 +252,12 @@ in
     };
   };
   config = mkIf config.enable {
-    __map = makeMapMap config.lhsType config.rhsType config.verdict;
+    __map = makeMapMap config;
     # NOTE: weird spacing is so the toplevel nftables ruleset is aligned and easier to debug/preview
     __final = lib.mkDefault ''
       ${config.typeName} ${config.name} {
           type ${config.typeDef}
+          ${optionalString config.counter "counter"}
           ${optionalString (config.flags != [ ]) "flags ${(concatStringsSep ", " config.flags)}"}
           ${config.extraConfig}
           ${optionalString (config.elements != [ ]) ''

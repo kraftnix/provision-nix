@@ -88,6 +88,7 @@ in
       "testZfsUefi"
     ] (name: self.nixosConfigurations.${name}.config.system.build.toplevel))
     // {
+      nftables-basic = import ./tests/nftables/basic.nix self;
       wireguard-basic = import ./tests/wireguard-basic.nix self;
       wireguard-firewall = import ./tests/wireguard-firewall.nix self;
     };

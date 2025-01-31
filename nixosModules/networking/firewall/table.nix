@@ -41,11 +41,12 @@ in
     ]);
   options.mapsets = mkOption {
     description = "define custom set/map/vmap";
-    type = with types; attrsOf (submodule (import ./mapset.nix));
     default = { };
+    type = with types; attrsOf (submodule (import ./mapset.nix));
   };
   options.__type = mkOption {
     description = "Table Module.";
+    default = "inet";
     type = types.enum [
       "inet"
       "ip"
@@ -54,7 +55,6 @@ in
       "netdev"
       "arp"
     ];
-    default = "inet";
   };
   options.__chains = mkOption {
     description = "Chains objects";
@@ -62,10 +62,30 @@ in
       filterUnderscores
       (filterAttrs (n: _: n != "mapsets"))
     ];
+    internal = true;
+  };
+  options.__mapsetsStr = mkOption {
+    description = "Mapsets rendered into a string";
+    type = types.lines;
+    internal = true;
+    default = lib.concatStringsSep "\n  " (mapAttrsToList (_: c: c.__final) config.mapsets);
+  };
+  options.__countersStr = mkOption {
+    description = "Named counters for chains with `finalCounter` set.";
+    type = types.lines;
+    internal = true;
+    default = concatStringsSep "\n  " (
+      mapAttrsToList (chain: chainCfg: ''
+        counter chain_final_${chain} {
+            comment "${chain} default policy"
+          }
+      '') (filterAttrs (_: c: (builtins.typeOf c != "string") && c.finalCounter) config.__chains)
+    );
   };
   options.__chainsStr = mkOption {
     description = "Chains rendered into a string";
     type = types.lines;
+    internal = true;
     default = lib.concatStringsSep "\n  " (
       mapAttrsToList (name: chain: ''
         chain ${name} {
@@ -81,14 +101,8 @@ in
     default = ''
       ## Table ${name}
       table ${config.__type} ${name} {
-        ${concatStringsSep "\n  " (mapAttrsToList (_: c: c.__final) config.mapsets)}
-        ${concatStringsSep "\n  " (
-          mapAttrsToList (chain: chainCfg: ''
-            counter chain_final_${chain} {
-                comment "${chain} default policy"
-              }
-          '') (filterAttrs (_: c: (builtins.typeOf c != "string") && c.finalCounter) config.__chains)
-        )}
+        ${config.__mapsetsStr}
+        ${config.__countersStr}
         ${config.__chainsStr}
       }
     '';

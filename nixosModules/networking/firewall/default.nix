@@ -7,6 +7,7 @@ localFlake:
 }:
 let
   inherit (lib)
+    mapAttrs
     mapAttrsToList
     mkEnableOption
     mkIf
@@ -62,6 +63,11 @@ in
   imports = [ ./profiles.nix ];
   options.networking.nftables.gen = {
     enable = mkEnableOption "whether to enable these nftables rules";
+    overrideNixosNftables =
+      mkEnableOption "remove nixos defined `networking.nftables.tables` and sets `ruleset` to generated rules from `gen`"
+      // {
+        default = true;
+      };
     rules = mkOption {
       description = "shared/reusable rules";
       type =
@@ -106,7 +112,20 @@ in
     ];
 
     networking.nftables.enable = mkIf cfg.enable true;
-    networking.nftables.ruleset = mkIf cfg.enable cfg.__rendered;
+    networking.nftables.tables =
+      if cfg.overrideNixosNftables then
+        lib.mkForce { }
+      else
+        mapAttrs (name: t: {
+          inherit name;
+          family = t.__type;
+          content = ''
+            ${t.__mapsetsStr}
+            ${t.__countersStr}
+            ${t.__chainsStr}
+          '';
+        }) cfg.tables;
+    networking.nftables.ruleset = mkIf cfg.overrideNixosNftables cfg.__rendered;
     networking.nftables.gen.rules = import ./default-rules.nix;
   };
 }
