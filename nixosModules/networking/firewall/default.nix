@@ -112,6 +112,9 @@ in
     ];
 
     networking.nftables.enable = mkIf cfg.enable true;
+    # checkRuleset doesn't work with bridge filter tables due to uses of lklWithFirewall lib to run check
+    networking.nftables.checkRuleset =
+      (lib.filterAttrs (name: v: v.__type == "bridge") cfg.tables) == { };
     networking.nftables.tables =
       if cfg.overrideNixosNftables then
         lib.mkForce { }

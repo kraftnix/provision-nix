@@ -265,23 +265,23 @@ in
     };
     counter = mkOption {
       description = "Whether to add a counter before the verdict.";
+      default = if config.mapset == "" then false else defaults.counter;
       type = bool;
-      default = defaults.counter;
     };
     trace = mkOption {
       description = "Whether to set an nftrace before the verdict. `nftrace set 1`";
-      type = bool;
       default = defaults.trace;
+      type = bool;
     };
     log = mkOption {
       description = "Whether to add a log before the verdict.";
-      type = bool;
       default = defaults.log;
+      type = bool;
     };
     mapset = mkOption {
       description = "Mapset in table `mapsets` to match";
-      type = str;
       default = "";
+      type = str;
     };
     verdict = mkOption {
       description = ''
@@ -333,6 +333,7 @@ in
     __final =
       lib.pipe
         [
+          (optional (config.pre != "") config.pre)
           (maybeList config "iif")
           (maybeList config "iifname")
           (maybePortList config "tcpSport")

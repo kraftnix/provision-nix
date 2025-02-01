@@ -89,6 +89,7 @@ in
     ] (name: self.nixosConfigurations.${name}.config.system.build.toplevel))
     // {
       nftables-basic = import ./tests/nftables/basic.nix self;
+      nftables-nat-and-bridge-filter = import ./tests/nftables/nat-and-bridge-filter.nix self;
       wireguard-basic = import ./tests/wireguard-basic.nix self;
       wireguard-firewall = import ./tests/wireguard-firewall.nix self;
     };

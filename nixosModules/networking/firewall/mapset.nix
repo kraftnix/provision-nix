@@ -7,6 +7,7 @@
 let
   inherit (lib)
     concatStringsSep
+    mkDefault
     mkIf
     mkOption
     optionalString
@@ -30,7 +31,7 @@ let
       else
         "${lhs} . ${rhs} . ${verdict}"
     else if type == "map" then
-      "${lhs} : ${rhs}"
+      if verdict == null then "${lhs} : ${rhs}" else "${lhs} : ${rhs} . ${verdict}"
     else if rhs == null then
       "${lhs} : ${verdict}"
     else if type == "vmapr" then
@@ -55,33 +56,37 @@ let
       else
         "${lhsType} . ${rhsType} . ${verdictType} @${name}"
     else if type == "map" then
-      "${lhsType} ${rhsType} map @${name}"
+      if verdictType != null then
+        "${lhsType} . ${rhsType} to ${verdictType} map @${name}"
+      else
+        "${lhsType} . ${rhsType} map @${name}"
     else if rhsType == null then
       "${lhsType} vmap @${name}"
     else if type == "vmapr" then
       "<implement your own>"
     else
-      "${lhsType} ${rhsType} vmap @${name}";
+      "${lhsType} . ${rhsType} vmap @${name}";
 
+  mkNullableStringInt =
+    description:
+    mkOption {
+      inherit description;
+      default = null;
+      type =
+        with types;
+        nullOr (oneOf [
+          str
+          int
+        ]);
+      apply = x: if x == null then null else toString x;
+    };
   mapType =
     { config, ... }:
     {
       options = {
-        l = mkOption {
-          default = null;
-          description = "<lhs> of map element, required";
-          type = with types; nullOr str;
-        };
-        r = mkOption {
-          default = null;
-          description = "<rhs> of map element";
-          type = with types; nullOr str;
-        };
-        v = mkOption {
-          default = null;
-          description = "<verdict> of map element";
-          type = with types; nullOr str;
-        };
+        l = mkNullableStringInt "<lhs> of map element, required";
+        r = mkNullableStringInt "<rhs> of map element";
+        v = mkNullableStringInt "<verdict> of map element";
         __final = mkOption {
           description = "end element str";
           type = types.str;
@@ -107,6 +112,9 @@ let
     "tcp sport" = "inet_service";
     "udp dport" = "inet_service";
     "udp sport" = "inet_service";
+    # used with map in dnat usecases
+    port = "inet_service";
+    "ip addr" = "ipv4_addr";
   };
 in
 {
@@ -154,7 +162,11 @@ in
     };
     verdict = mkOption {
       description = "optional `verdict` in the map `<lhs> : <verdict>` or `<lhs> . <rhs> : <verdict>`";
-      default = null;
+      default =
+        if (config.verdictType != null) && (builtins.hasAttr config.verdictType typeMap) then
+          typeMap.${config.verdictType}
+        else
+          null;
       type = with types; nullOr str;
     };
     verdictType = mkOption {
@@ -252,9 +264,9 @@ in
     };
   };
   config = mkIf config.enable {
-    __map = makeMapMap config;
+    __map = mkDefault (makeMapMap config);
     # NOTE: weird spacing is so the toplevel nftables ruleset is aligned and easier to debug/preview
-    __final = lib.mkDefault ''
+    __final = mkDefault ''
       ${config.typeName} ${config.name} {
           type ${config.typeDef}
           ${optionalString config.counter "counter"}
