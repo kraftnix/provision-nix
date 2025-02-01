@@ -60,7 +60,11 @@ let
   matches = builtins.match checkStr cfg.__rendered;
 in
 {
-  imports = [ ./profiles.nix ];
+  imports = [
+    ./bridge.nix
+    ./nat.nix
+    ./profiles.nix
+  ];
   options.networking.nftables.gen = {
     enable = mkEnableOption "whether to enable these nftables rules";
     overrideNixosNftables =

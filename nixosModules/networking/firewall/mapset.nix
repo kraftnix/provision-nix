@@ -18,9 +18,9 @@ let
   makeMapType =
     {
       lhs,
-      rhs ? null,
-      verdict ? null,
-      type ? null,
+      rhs,
+      verdict,
+      type,
       ...
     }:
     if type == "set" then
@@ -115,6 +115,8 @@ let
     # used with map in dnat usecases
     port = "inet_service";
     "ip addr" = "ipv4_addr";
+    "ip saddr" = "ipv4_addr";
+    "ip daddr" = "ipv4_addr";
   };
 in
 {
@@ -221,14 +223,7 @@ in
     };
     typeDef = mkOption {
       description = "final type of set/map/vmap";
-      default = makeMapType {
-        inherit (config)
-          lhs
-          rhs
-          verdict
-          type
-          ;
-      };
+      default = "";
       # default = "type ${makeMapType config.lhs config.rhs config.verdict}";
       type = types.str;
     };
@@ -264,6 +259,7 @@ in
     };
   };
   config = mkIf config.enable {
+    typeDef = makeMapType config;
     __map = mkDefault (makeMapMap config);
     # NOTE: weird spacing is so the toplevel nftables ruleset is aligned and easier to debug/preview
     __final = mkDefault ''
