@@ -93,7 +93,7 @@ export def listCustomCommands [ module ] {
       let description = (if ($custom | length) == 0 {
         $"Run `--help` for more info"
       } else {
-        $custom | first | get usage
+        $custom | first | get -i usage | default ""
       })
       {
         command: $name

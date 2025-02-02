@@ -8,20 +8,20 @@ export module sanu {
   # (default) all agents in `/tmp/` or provided path
   export def "get agents" [
     location : path = "/tmp/"   # path to search for agents (`/tmp/` by default)
-  ] -> list<string> {
+  ]: any -> list<string> {
     ls /tmp/ | where name =~ "ssh-" | sort-by modified -r
   }
 
   # gets the most recently created ssh agent
   export def "get latest" [
     location : path = "/tmp/"   # path to search for agents (`/tmp/` by default)
-  ] -> string {
+  ]: any -> string {
     get agents $location | first | get name
   }
 
   # take a base dir/path and returns the ssh auth sock in it
   # input: basePath : path   # base path like `/tmp/ssh-XXXXXXHvXKja`
-  def getAgentFromBasePath [ ]: {
+  def getAgentFromBasePath [ ] {
     $in | first | get name
   }
 
