@@ -149,6 +149,7 @@ in
         fcfg = config.provision.formatter;
       in
       {
+        packages.na-install = pkgs.writeShellScriptBin "na-install" (builtins.readFile ./na-install.sh);
         pre-commit = mkIf (cfg.enable && pcfg.enable) {
           settings.hooks = pcfg.hooks;
         };

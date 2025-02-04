@@ -13,11 +13,11 @@ localFlake:
         packages = [
           pkgs.caddy
           pkgs.ripgrep
+          pkgs.mdbook
           pkgs.mdbook-linkcheck
           pkgs.mdbook-variables
           # pkgs.mdbook-cmdrun
           # localFlake.self.packages.${pkgs.system}.yapp
-          # localFlake.self.packages.${pkgs.system}.mdbook-linkfix
           # config.packages.mdbook-theme
         ];
 

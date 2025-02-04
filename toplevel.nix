@@ -93,7 +93,8 @@ in
       nftables-nat-and-bridge-filter-integration = import ./tests/nftables/nat-and-bridge-filter-integration.nix self;
       wireguard-basic = import ./tests/wireguard-basic.nix self;
       wireguard-firewall = import ./tests/wireguard-firewall.nix self;
-    };
+    }
+    // self.packages.x86_64-linux;
 
   flake.provisionOverlays = [
     self.overlays.lib

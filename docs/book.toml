@@ -4,6 +4,7 @@ language = "en"
 multilingual = false
 src = "."
 title = "provision-nix Documentation"
+site-url = "/"
 
 [output.html]
 # theme = "my-theme"
@@ -16,7 +17,7 @@ no-section-label = false
 git-repository-url = "https://github.com/kraftnix/provision-nix"
 git-repository-icon = "fa-github"
 edit-url-template = "https://github.com/kraftnix/provision-nix/_edit/main/docs/{path}"
-use-site-url-as-root = true
+# use-site-url-as-root = true
 additional-css = ["theme/pagetoc.css"]
 additional-js  = ["theme/pagetoc.js"]
 

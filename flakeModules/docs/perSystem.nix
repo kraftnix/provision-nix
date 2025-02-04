@@ -192,11 +192,11 @@ in
                     name = "docs-mdbook-${site.name}";
                     buildInputs = [
                       pkgs.ripgrep
+                      pkgs.mdbook
                       pkgs.mdbook-linkcheck
                       pkgs.mdbook-variables
                       # pkgs.mdbook-cmdrun
                       pkgs.nushell
-                      localFlake.self.packages.${pkgs.system}.mdbook-linkfix
                       localFlake.self.packages.${pkgs.system}.yapp
                       localFlake.self.packages.${pkgs.system}.simple-replace
                       # config.packages.mdbook-theme

@@ -14,19 +14,6 @@
       };
       packages = {
         btrfs-list = pkgs.callPackage (import ./btrfs-list.nix sources.btrfs-list) { };
-        # https://github.com/rust-lang/mdBook/pull/1802
-        mdbook-linkfix = pkgs.mdbook.overrideAttrs (old: rec {
-          src = pkgs.fetchFromGitHub {
-            owner = "JesusPerez";
-            repo = "mdBook";
-            rev = "master";
-            hash = "sha256-1UI+HRUz8ImG+ZfIw+k8LlKV5XxIKfMbG/O0BEwh6nQ=";
-          };
-          cargoDeps = old.cargoDeps.overrideAttrs {
-            inherit src;
-            outputHash = "sha256-56oxHXR4u/8yWjU+rSg5kpowfyev0ECSjneo27EdgQo=";
-          };
-        });
         mdbook-theme = pkgs.callPackage (import ./mdbook-theme.nix) { };
         # TODO(remove): has been upstreamed
         # mdbook-variables = pkgs.callPackage (import ./mdbook-variables.nix) {};
