@@ -83,6 +83,8 @@ in
   config = lib.mkMerge [
     ## Profiles
     (mkIf cfg.basic {
+      # auto-geneate manpage caches docs when first switching to a new generation
+      documentation.man.generateCaches = true;
       nix.daemonCPUSchedPolicy = mkDefault "batch";
       nix.daemonIOSchedClass = mkDefault "idle";
       nix.daemonIOSchedPriority = mkDefault 7;

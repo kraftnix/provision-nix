@@ -6,6 +6,7 @@ export def main [
   --disableStdout(-s)       # whether to disable stdOut
   --forceLocal(-l)          # don't ssh at all
 ] {
+  print $"Running on (ansi green)($storeLink)(ansi reset)"
   let host = (if $host == "" { $env.REMOTE_HOST | default "localhost" } else { $host })
   let hasWezterm = ((which wezterm | length) > 0)
   # base case (no wezterm / old)

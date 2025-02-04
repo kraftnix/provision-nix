@@ -38,21 +38,25 @@ let
           description = "list of interfaces to apply dnat from on host (optional)";
           type = with types; listOf str;
           default = [ ];
+          example = [ "eth0" ];
         };
         to = mkOption {
           description = "IP address to redirect to";
           type = types.str;
           example = "192.168.0.7";
+          defaultText = "10.1.1.1";
         };
         port = mkOption {
           description = "port to DNAT from";
           type = types.port;
           example = 8080;
+          defaultText = lib.literalExpression "8080";
         };
         toPort = mkOption {
           description = "port to DNAT to";
           type = types.port;
-          example = config.port;
+          example = 8080;
+          defaultText = "8080";
         };
         protocols = mkOption {
           description = "protocols to DNAT";
@@ -139,7 +143,7 @@ in
       };
       defaultEgress = mkOption {
         description = "default egress interfaces for snat interfaces";
-        default = config.networking.nat.externalInterface or [ ];
+        default = with config.networking.nat; if externalInterface == null then [ ] else externalInterface;
         type =
           with types;
           oneOf [
