@@ -127,7 +127,7 @@ in
               (filterAttrs (_: v: (length v) == 1))
             ]) != { };
           message = ''
-            Clashing listen ports between some networks
+            Clashing listen ports between some wireguard networks at `provision.networking.wireguard.p2p`
             ${pipe cfg.networks [
               (filterAttrs (_: n: n.enable))
               attrValues
