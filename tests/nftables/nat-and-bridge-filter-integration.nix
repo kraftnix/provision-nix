@@ -14,13 +14,13 @@ let
   test = {
     name = "nftables-nat-and-bridge-filter-integration";
     hostPkgs = pkgs;
-    node.specialArgs.pkgs = pkgs;
     nodes = shared.nodes // {
       gateway.imports = [
         shared.nodes.gateway
         (
           { lib, ... }:
           {
+            nixpkgs.pkgs = pkgs;
             networking.nat.enable = true;
             networking.nat.externalInterface = lib.mkForce "internet";
             networking.nftables.gen.dnat.enable = true;

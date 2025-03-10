@@ -47,7 +47,6 @@ let
   test = {
     name = "nftables-basic";
     hostPkgs = pkgs;
-    node.specialArgs.pkgs = pkgs;
     inherit nodes;
     testScript = ''
 

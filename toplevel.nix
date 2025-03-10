@@ -35,10 +35,7 @@ in
     devshellModules.provision = importApply ./shells/provision.nix localFlake;
     devshellModules.na-install = importApply ./shells/na-install.nix localFlake;
     nixd.options.nixos = self.nixosConfigurations.testAllProfiles.options;
-    lib = import ./lib {
-      inherit lib;
-      extra-lib = inputs.extra-lib.lib;
-    };
+    lib = import ./lib { inherit lib localFlake; };
     auto-import = {
       enable = true;
       flakeArgs = localFlake;

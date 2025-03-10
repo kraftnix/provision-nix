@@ -98,7 +98,6 @@ let
   test = {
     name = "wireguard-basic";
     hostPkgs = pkgs;
-    node.specialArgs.pkgs = pkgs;
     nodes.gateway = defaultHostConfig;
     nodes.peer2 = defaultHostConfig;
     nodes.peer3 = defaultHostConfig;

@@ -1,9 +1,10 @@
 {
   lib,
-  extra-lib,
+  localFlake,
   ...
 }@args:
 let
+  extra-lib = localFlake.inputs.extra-lib.lib;
   inherit (extra-lib.std-compat) rakeLeaves;
   rakedLib = lib.mapAttrs (_: v: import v args) (
     lib.filterAttrs (n: _: n != "default") (rakeLeaves ./.)

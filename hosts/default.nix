@@ -20,7 +20,6 @@
 
     # configs.basic.nixpkgs = "stable";
     # configs.basic.modules = [ ./basic.nix ];
-    # configs.disko-manual.modules = [ ./disko-manual.nix ];
     configs = {
       rpi-image = {
         system = "aarch64-linux";

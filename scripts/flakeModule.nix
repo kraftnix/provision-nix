@@ -11,8 +11,8 @@ let
     mkOption
     types
     ;
-  opts = localFlake.self.lib.options;
 in
+# opts = localFlake.self.lib.options;
 {
   options = {
     perSystem = flake-parts-lib.mkPerSystemOption (

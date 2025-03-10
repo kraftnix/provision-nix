@@ -62,7 +62,6 @@ let
     {
       config,
       lib,
-      pkgs,
       ...
     }:
     let
@@ -105,7 +104,6 @@ let
   test = {
     name = "wireguard-firewall";
     hostPkgs = pkgs;
-    node.specialArgs.pkgs = pkgs;
     nodes.gateway = defaultHostConfig;
     nodes.peer2 = defaultHostConfig;
     nodes.peer3 = defaultHostConfig;

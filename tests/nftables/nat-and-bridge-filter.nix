@@ -15,13 +15,13 @@ let
   test = {
     name = "nftables-nat-and-bridge-filter";
     hostPkgs = pkgs;
-    node.specialArgs.pkgs = pkgs;
     nodes = shared.nodes // {
       gateway.imports = [
         shared.nodes.gateway
         (
           { ... }:
           {
+            nixpkgs.pkgs = pkgs;
             networking.nat.enable = true;
             ## nat example
             networking.nftables.gen.tables.filter = {
