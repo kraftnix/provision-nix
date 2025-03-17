@@ -70,6 +70,7 @@ let
             || (loc1 "auto-import")
             || (loc1 "scripts")
             || (loc1 "__provision")
+            || ((loc1 "disko") && (builtins.elemAt option.loc 2 != "_config"))
           )
         )
         || (
