@@ -68,7 +68,12 @@ in
         (mapAttrs (
           _: w: {
             netdev = config.systemd.network.netdevs."40-${w.name}";
-            network = config.systemd.network.networks."40-${w.name}";
+            network = lib.removeAttrs config.systemd.network.networks."40-${w.name}" [
+              # remove deprecated options to fix eval due to option type
+              "dhcpConfig"
+              "dhcpV6PrefixDelegationConfig"
+              "ipv6PrefixDelegationConfig"
+            ];
             netdevUnit = config.systemd.network.units."40-${w.name}.netdev".text;
             networkUnit = config.systemd.network.units."40-${w.name}.network".text;
           }
