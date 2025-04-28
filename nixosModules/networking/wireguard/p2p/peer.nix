@@ -74,6 +74,16 @@ in
     #     else ["${config.ip}/32"]
     # ) "allowed IPs list";
     privateKeyFile = opts.string privateKeyFile "private key file location, not set if empty";
+    addAgenixToHost =
+      opts.enable ''
+        Adds agenix secret named `wg-<network>` expecting the private wireguard key for peer.
+        This is only relevant when evaluated on the actual peer for generating wireguard configuration files.
+
+        This is can be modified on the peer at {currHost.networks.<network>.addAgenixToHost}
+      ''
+      // {
+        default = lib.hasPrefix "/run/agenix" config.privateKeyFile;
+      };
     firewall = {
       allowedHosts = mkOption {
         default = firewall.allowedHosts;
