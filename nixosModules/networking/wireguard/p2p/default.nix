@@ -48,6 +48,14 @@ let
       }
     ))
   ];
+  mkAnyOption =
+    description:
+    mkOption {
+      inherit description;
+      default = { };
+      # these are just generally useful for merging, they are actually json files
+      type = (pkgs.formats.json { }).type;
+    };
 in
 {
   imports = [
@@ -66,13 +74,13 @@ in
             { config, ... }:
             {
               options = {
-                info = opts.raw { } "(read-only) core information";
-                wgQuick = opts.raw { } "(read-only) wg-quick connection information";
-                wgQuickFile = opts.string "" "(read-only) wg-quick connection information";
-                netdev = opts.raw { } "(read-only) nixos netdev link";
-                network = opts.raw { } "(read-only) nixos network";
+                info = mkAnyOption "(read-only) core information";
+                netdev = mkAnyOption "(read-only) nixos netdev link";
                 netdevUnit = opts.string "" "(read-only) nixos netdev unit file";
+                network = mkAnyOption "(read-only) nixos network";
                 networkUnit = opts.string "" "(read-only) nixos network unit file";
+                wgQuick = mkAnyOption "(read-only) wg-quick connection information";
+                wgQuickFile = opts.string "" "(read-only) wg-quick connection information";
               };
             }
           )

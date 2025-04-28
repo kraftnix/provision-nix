@@ -72,7 +72,7 @@ let
     in
     {
       imports = [
-        self.nixosModules.networking-wireguard-network
+        self.nixosModules.networking-wireguard-p2p
         self.nixosModules.networking-firewall
         info.defaultHostConfig
       ];

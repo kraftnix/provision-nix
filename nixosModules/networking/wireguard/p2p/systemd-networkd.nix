@@ -94,7 +94,7 @@ in
               };
               wireguardConfig = {
                 ListenPort = h.listenPort;
-                PrivateKeyFile = mkIf (w.privateKeyFile != "") w.privateKeyFile;
+                PrivateKeyFile = mkIf (h.privateKeyFile != "") h.privateKeyFile;
               };
               wireguardPeers = mapAttrsToList (_: p: {
                 PublicKey = p.pubkey;

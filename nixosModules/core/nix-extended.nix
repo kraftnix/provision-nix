@@ -99,6 +99,7 @@ in
           "flakes"
         ];
         connect-timeout = mkDefault 5; # timeout for substituters
+        download-buffer-size = mkDefault 524288000; # increase to 500MB (default: 64MB)
       };
       environment.systemPackages = with pkgs; [
         nix-du # A tool to determine which gc-roots take space in your nix store
