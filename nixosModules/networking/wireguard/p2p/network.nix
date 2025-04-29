@@ -17,33 +17,42 @@ let
     mkOption
     pipe
     types
+    unique
     ;
   mkPeersP2P =
-    peers:
+    host: peers:
     pipe peers [
       (filterAttrs (_: p: p.enable))
       # (filterAttrs (_: p: p.endpoint != ""))
     ];
   getGateways =
-    peers:
+    host: peers:
     pipe peers [
       (filterAttrs (_: p: p.enable))
       (filterAttrs (_: p: p.gateway.enable))
     ];
-  getSelfPeer = peers: peers.${host};
+  getSelfPeer = host: peers: peers.${host};
   isGateway =
-    peers:
+    host: peers:
     pipe peers [
-      getGateways
+      (getGateways host)
       (gateways: head (attrValues gateways))
       (gateway: gateway.name == host)
     ];
   mkPeersHubAndSpoke =
-    peers:
-    if isGateway peers then
+    host: peers:
+    if isGateway host peers then
       peers
     else
-      mapAttrs (_: p: p // { allowedIPs = [ "${p.subnet}.0/${toString p.mask}" ]; }) (getGateways peers);
+      # NOTE: potentially move this to a check inside peer config checking if mode == hub-and-spoke
+      mapAttrs (
+        _: p:
+        p
+        // {
+          allowedIPs = unique ([ "${p.subnet}.0/${toString p.mask}" ] ++ config.peers.${host}.allowedIPs);
+          extraAllowedIPs = unique (p.extraAllowedIPs ++ config.peers.${host}.extraAllowedIPs);
+        }
+      ) (getGateways host peers);
 in
 {
   options = {
@@ -56,7 +65,7 @@ in
     listenPort = opts.int 51819 "wireguard listen port";
     firewall = {
       enable = opts.enable' (
-        config.peers != { } && (getSelfPeer config.peers).endpoint != ""
+        config.peers != { } && (getSelfPeer host config.peers).endpoint != ""
       ) "enable firewall";
       interface = mkOption {
         type = with types; nullOr str;
@@ -80,7 +89,7 @@ in
       };
     };
     mtu = opts.int 1420 "wireguard interface MTU bytes";
-    allowAll = opts.enable' false "allow all IPs / forward all traffic";
+    allowAll = opts.enable' false "allow all IPs / forward all traffic (adds 0.0.0.0/0 to {extraAllowedIPs})";
     persistentKeepAlive = opts.int 0 "persistent keep alive";
     privateKeyFile = opts.string "" "private key file location, must be set";
     mask = opts.int 24 "subnet mask";
@@ -123,14 +132,27 @@ in
       default = { };
       description = "wireguard network module, contains peers";
     };
+    __allRendered = mkOption {
+      default = { };
+      description = "wireguard network module, contains peers";
+    };
   };
   config = {
     __renderedPeers =
       if config.mode == "hub-and-spoke" then
-        mkPeersHubAndSpoke config.peers
+        mkPeersHubAndSpoke host config.peers
       else if config.mode == "p2p" then
-        mkPeersP2P config.peers
+        mkPeersP2P host config.peers
       else
         throw "unimplemented wireguard mode set: ${config.mode}";
+    __allRendered = mapAttrs (
+      host: _:
+      if config.mode == "hub-and-spoke" then
+        mkPeersHubAndSpoke host config.peers
+      else if config.mode == "p2p" then
+        mkPeersP2P host config.peers
+      else
+        throw "unimplemented wireguard mode set: ${config.mode}"
+    ) config.peers;
   };
 }

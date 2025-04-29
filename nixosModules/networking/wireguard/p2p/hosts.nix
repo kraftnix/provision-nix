@@ -36,6 +36,7 @@ in
             endpointIP = opts.string "" "optional endpoint ip";
             subip = opts.int 300 "subip";
             mtu = opts.int 1420 "mtu bytes";
+            allowAll = opts.enable' false "allow all IPs / forward all traffic (adds 0.0.0.0/0 to {extraAllowedIPs})";
             extraAllowedIPs = mkOption {
               default = [ ];
               type = with types; listOf str;
@@ -63,6 +64,7 @@ in
                         description = "force set gateway option, if enabled";
                       };
                       endpointIP = opts.string config.endpointIP "optional endpoint ip";
+                      allowAll = opts.enable' config.allowAll "allow all IPs / forward all traffic (adds 0.0.0.0/0 to {extraAllowedIPs})";
                       extraAllowedIPs = mkOption {
                         default = config.extraAllowedIPs;
                         type = with types; listOf str;
@@ -95,6 +97,7 @@ in
               mtu
               endpointIP
               extraAllowedIPs
+              allowAll
               ;
             gateway = lib.mkIf (network.gateway.enable != null) network.gateway;
           };

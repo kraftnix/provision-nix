@@ -20,6 +20,7 @@
 let
   inherit (lib)
     mkDefault
+    mkIf
     mkOption
     optionalString
     types
@@ -27,7 +28,7 @@ let
 in
 {
   options = {
-    enable = opts.enable' (config.ip != "") "enable host";
+    enable = opts.enableTrue "enable host";
     name = opts.string name "host name";
     network = opts.string networkName "wireguard network name";
     listenPort = opts.int listenPort "wireguard listen port";
@@ -50,15 +51,11 @@ in
       type = with types; nullOr int;
       description = "wireguard sub ip, combined with subnet, 300 if unused";
     };
-    ip = opts.string (optionalString (
-      config.subip != null
-    ) "${config.subnet}.${toString config.subip}") "wireguard ip address";
+    ip = opts.string "" "wireguard ip address";
     endpointIP = opts.string "" "optional endpoint ip address";
-    endpoint = opts.string (optionalString (
-      config.endpointIP != ""
-    ) "${config.endpointIP}:${toString config.listenPort}") "optional endpoint + listen port combo";
+    endpoint = opts.string "" "optional endpoint + listen port combo";
     persistentKeepAlive = opts.int persistentKeepAlive "persistent keep alive";
-    allowedIPs = opts.stringList ([ "${config.ip}/32" ] ++ config.extraAllowedIPs) "allowed IPs list";
+    allowedIPs = opts.stringList [ "${config.ip}/32" ] "allowed IPs list";
     extraAllowedIPs = mkOption {
       default = [ ];
       type = with types; listOf str;
@@ -94,5 +91,12 @@ in
       };
     };
   };
-  config.gateway.enable = mkDefault (mode == "hub-and-spoke" && hubId == config.subip);
+  config = mkIf config.enable {
+    gateway.enable = mkDefault (mode == "hub-and-spoke" && hubId == config.subip);
+    # allowedIPs = [ "${config.ip}/32" ] ++ config.extraAllowedIPs;
+    allowedIPs = [ "${config.ip}/32" ];
+    endpoint = mkIf (config.endpointIP != "") "${config.endpointIP}:${toString config.listenPort}";
+    ip = mkIf (config.subip != null) "${config.subnet}.${toString config.subip}";
+    extraAllowedIPs = mkIf config.allowAll [ "0.0.0.0/0" ];
+  };
 }
