@@ -160,10 +160,11 @@ in
           }
         );
         default = { };
-        example = {
-          eth0 = { };
-          eth1.fromIP = "10.1.1.1";
-        };
+        example = lib.literalExpression ''
+          {
+                    eth0 = { };
+                    eth1.fromIP = "10.1.1.1";
+                  }'';
       };
     };
   };
