@@ -46,7 +46,9 @@ in
       flake = {
         dir = ./flakeModules;
         modules.scripts = ./scripts/flakeModule.nix;
+        modulesFlat.scripts.module = ./scripts/flakeModule.nix;
         modules.provision-shells = ./shells/flakeModule.nix;
+        modulesFlat."provision.shells".module = ./shells/flakeModule.nix;
       };
       nixos = {
         dir = ./nixosModules;
@@ -59,8 +61,10 @@ in
           # [ "provision" "scripts" ]
         ];
         modules.provision.scripts = ./scripts/nixosModule.nix;
+        modulesFlat."provision.scripts".module = ./scripts/nixosModule.nix;
       };
       homeManager.modules.provision.scripts = ./scripts/homeModule.nix;
+      homeManager.modulesFlat."provision.scripts".module = ./scripts/homeModule.nix;
     };
 
     profiles = lib.recursiveUpdate (self.lib.nix.rakeLeaves ./profiles) {

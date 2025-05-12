@@ -22,6 +22,7 @@ let
       inherit (cfg) flakeArgs addTo;
     };
   };
+  flattenModules = lib.mapAttrs' (_: m: lib.nameValuePair m.nameDashed m.__final);
 in
 {
   options.flake = flake-parts-lib.mkSubmoduleOptions {
@@ -75,21 +76,26 @@ in
   };
 
   config.flake = {
-    homeManagerModules = mkIf (cfg.enable && cfg.homeManager.addTo.modules) cfg.homeManager.modules';
-    nixosModules = mkIf (cfg.enable && cfg.nixos.addTo.modules) cfg.nixos.__flattened;
+    homeManagerModules = mkIf (cfg.enable && cfg.homeManager.addTo.modules) (
+      flattenModules cfg.homeManager.modulesFlat
+    );
+    nixosModules = mkIf (cfg.enable && cfg.nixos.addTo.modules) (flattenModules cfg.nixos.modulesFlat);
     flakeModules =
-      if (cfg.enable && cfg.flake.addTo.modules) then cfg.flake.modules' else mkDefault { };
+      if (cfg.enable && cfg.flake.addTo.modules) then
+        flattenModules cfg.flake.modulesFlat
+      else
+        mkDefault { };
     auto-import.flake.genImport = n: c: {
       key = "${toString moduleLocation}#flakeModules.${n}";
-      _file = "${toString moduleLocation}#flakeModules.${n}";
+      _file = "${c}";
       _class = "flake";
       imports = [ c ];
     };
 
     modules = mkIf cfg.enable {
-      nixos = mkIf cfg.nixos.addTo.flakeParts cfg.nixos.__flattened;
-      flake = mkIf cfg.flake.addTo.flakeParts cfg.flake.__flattened;
-      homeManager = mkIf cfg.homeManager.addTo.flakeParts cfg.homeManager.__flattened;
+      nixos = mkIf cfg.nixos.addTo.flakeParts (flattenModules cfg.nixos.modulesFlat);
+      flake = mkIf cfg.flake.addTo.flakeParts (flattenModules cfg.flake.modulesFlat);
+      homeManager = mkIf cfg.homeManager.addTo.flakeParts (flattenModules cfg.homeManager.modulesFlat);
     };
   };
 }

@@ -30,7 +30,7 @@ let
       && builtins.elemAt option.loc 1 == "scripts";
     docgen.scripts-flake.hostOptions =
       (localFlake.flake-parts-lib.evalFlakeModule { inputs.self = localFlake.self; } {
-        imports = [ localFlake.self.flakeModules.scripts ];
+        imports = [ localFlake.self.auto-import.flake.modulesNew.scripts ];
         systems = [
           (throw "The `systems` option value is not available when generating documentation. This is generally caused by a missing `defaultText` on one or more options in the trace. Please run this evaluation with `--show-trace`, look for `while evaluating the default value of option` and add a `defaultText` to the one or more of the options involved.")
         ];
@@ -50,16 +50,16 @@ let
       hostOptions =
         (localFlake.flake-parts-lib.evalFlakeModule { inputs.self = localFlake.self; } {
           imports = [
-            localFlake.self.auto-import.flake.modules.auto-import
-            localFlake.self.auto-import.flake.modules.channels
-            localFlake.self.auto-import.flake.modules.docs
-            localFlake.self.auto-import.flake.modules.hosts
-            localFlake.self.auto-import.flake.modules.lib
-            localFlake.self.auto-import.flake.modules.nuscht-search
-            localFlake.self.auto-import.flake.modules.packagesGroups
-            localFlake.self.auto-import.flake.modules.profiles
-            localFlake.self.auto-import.flake.modules.scripts
-            localFlake.self.auto-import.flake.modules.provision-shells
+            localFlake.self.auto-import.flake.modulesNew.auto-import
+            localFlake.self.auto-import.flake.modulesNew.channels
+            localFlake.self.auto-import.flake.modulesNew.docs
+            localFlake.self.auto-import.flake.modulesNew.hosts
+            localFlake.self.auto-import.flake.modulesNew.lib
+            localFlake.self.auto-import.flake.modulesNew.nuscht-search
+            localFlake.self.auto-import.flake.modulesNew.packagesGroups
+            localFlake.self.auto-import.flake.modulesNew.profiles
+            localFlake.self.auto-import.flake.modulesNew.scripts
+            localFlake.self.auto-import.flake.modulesNew.provision.shells
           ];
           systems = [
             (throw "The `systems` option value is not available when generating documentation. This is generally caused by a missing `defaultText` on one or more options in the trace. Please run this evaluation with `--show-trace`, look for `while evaluating the default value of option` and add a `defaultText` to the one or more of the options involved.")
