@@ -47,8 +47,9 @@ in
     substitution = {
       outPath = mkOption {
         description = "outPath of the flake, used for rewriting /nix/store/ hardlinks in generated output from mkOptionsDoc";
-        type = types.pathInStore;
+        type = types.path;
         default = defaults.substitution.outPath;
+        apply = toString;
         example = literalExpression "self.outPath";
       };
       gitRepoUrl = mkOption {

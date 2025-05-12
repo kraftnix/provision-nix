@@ -124,7 +124,10 @@ in
             body = "Homepage";
             siteBase = "/projects/provision-nix/";
           };
-          defaults.substitution.gitRepoUrl = lib.mkForce "https://github.com/kraftnix/provision-nix";
+          defaults.substitution = {
+            gitRepoUrl = lib.mkForce "https://github.com/kraftnix/provision-nix";
+            gitRepoFilePath = lib.mkForce "https://github.com/kraftnix/provision-nix/tree/master/";
+          };
         }
       ];
     };

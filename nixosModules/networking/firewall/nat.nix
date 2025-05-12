@@ -129,7 +129,7 @@ in
             port = 443;
             toPort = 8443;
             to = "127.0.0.1";
-            protocls = [
+            protocols = [
               "udp"
               "tcp"
             ];
