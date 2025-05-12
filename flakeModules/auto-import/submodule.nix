@@ -8,17 +8,16 @@
 }:
 let
   inherit (lib)
-    attrValues
     collect
     concatStringsSep
     elem
-    hasPrefix
-    filterAttrs
+    filter
+    filterAttrsRecursive
     flatten
+    hasPrefix
     isList
+    listToAttrs
     literalExpression
-    mapAttrs
-    mapAttrsRecursive
     mapAttrsRecursiveCond
     mkIf
     mkOption
@@ -26,34 +25,10 @@ let
     pipe
     singleton
     types
+    updateManyAttrsByPath
     ;
   cfg = config;
-  genPath = path: c: singleton (nameValuePair (concatStringsSep "-" path) c);
-  originalPath = path: c: singleton (nameValuePair (concatStringsSep "." path) c);
-  nixosModuleNameFilters = pipe cfg.filterByPath [
-    (map (concatStringsSep "-"))
-  ];
-  filterNixosModules = filterAttrs (name: cfg: !(elem name nixosModuleNameFilters));
-  flattenedNixosModules = lib.pipe cfg.modules [
-    (lib.filterAttrsRecursive cfg.filterModules)
-    (mapAttrsRecursiveCond builtins.isAttrs genPath)
-    (collect isList)
-    flatten
-    lib.listToAttrs
-  ];
-  flattenedNixosModules' = lib.pipe cfg.moduleFiles [
-    (lib.filterAttrsRecursive cfg.filterModules)
-    (mapAttrsRecursiveCond builtins.isAttrs (
-      path: file:
-      originalPath path {
-        inherit path;
-        module = file;
-      }
-    ))
-    (collect isList)
-    flatten
-    lib.listToAttrs
-  ];
+  genPath = path: c: singleton (nameValuePair (concatStringsSep "." path) c);
 in
 {
   options = {
@@ -63,27 +38,25 @@ in
       default = null;
       example = literalExpression "./nixosModules";
     };
-    moduleFiles = mkOption {
+    files = mkOption {
       description = ''
-        Nix files raked from {dir}
+        A recursive attrSet of file paths containing ${class} modules
       '';
       type = types.lazyAttrsOf types.raw;
       default = { };
     };
     modules = mkOption {
       description = ''
-        Auto-imported ${class} modules from `./dir`
-
-        Optionally add entries _(unfiltered)_ to `${class}Modules` or `modules.${class}` (flake-parts extra module).
+        Ready-to-import modules
       '';
       type = types.lazyAttrsOf types.raw;
       default = { };
-      apply = mapAttrsRecursive (k: v: if cfg.flakeArgs == null then v else import v cfg.flakeArgs);
     };
-    modulesFlat = mkOption {
+    flattened = mkOption {
       description = ''
-        Ready-to-import modules, extra args like `_file` set (using {genImport})
+        attrSet containing all imported module definitions.
       '';
+      default = { };
       type = types.attrsOf (
         types.submodule (
           { config, name, ... }:
@@ -180,24 +153,9 @@ in
           }
         )
       );
-      default = { };
-    };
-    modulesNew = mkOption {
-      description = ''
-        Ready-to-import modules, extra args like `_file` set (using {genImport})
-      '';
-      type = types.lazyAttrsOf types.raw;
-      default = { };
-    };
-    modules' = mkOption {
-      description = ''
-        Ready-to-import modules, extra args like `_file` set (using {genImport})
-      '';
-      type = types.lazyAttrsOf types.raw;
-      default = { };
     };
     filterByPath = mkOption {
-      description = "list of attr path lists in `modules'` to remove from {all}";
+      description = "list of attr path lists in `modules` to remove from {all}";
       type = with types; listOf (listOf str);
       default = [ ];
       example = literalExpression ''
@@ -219,65 +177,41 @@ in
       default = class;
       example = "homeManager";
     };
-    genImport = mkOption {
-      description = "";
-      type = with types; functionTo (functionTo raw);
-      default = n: c: {
-        key = "${toString moduleLocation}#${class}Modules.${n}";
-        _file = c;
-        _class = class;
-        imports = [ c ];
-      };
-      defaultText = ''
-        n: c: {
-          _file = "$\{toString moduleLocation}#$\{class}Modules.$\{n}";
-          _class = class;
-          imports = [c];
-        }
-      '';
-    };
     all = mkOption {
-      description = "all nixos modules from `nixosModules'` after being filtered by `filterAll`";
+      description = "all nixos modules from `modules` after being filtered by `filterAll`";
       type = with types; listOf raw;
       default = [ ];
       defaultText = literalExpression "[]";
       # readOnly = true;
     };
-    __all = mkOption {
-      description = "all nixos modules from `nixosModules'` before being filtered by `filterAll`";
-      type = with types; listOf raw;
-      default = lib.attrValues cfg.modules';
-      defaultText = literalExpression "[]";
-      readOnly = true;
-      internal = true;
-    };
-    __flattened = mkOption {
-      description = "all nixos modules from `nixosModules'` before being filtered by `filterAll`";
-      type = with types; lazyAttrsOf raw;
-      default = flattenedNixosModules;
-      defaultText = literalExpression "{}";
-      readOnly = true;
-      internal = true;
-    };
   };
 
   config = {
-    # modules = mkIf (cfg.dir != null) (localFlake.inputs.extra-lib.lib.nix.rakeLeaves cfg.dir);
-    modules = mkIf (cfg.dir != null) (localFlake.inputs.extra-lib.lib.nix.rakeLeaves cfg.dir);
-    moduleFiles = mkIf (cfg.dir != null) (localFlake.inputs.extra-lib.lib.nix.rakeLeaves cfg.dir);
-    modules' = mapAttrs cfg.genImport cfg.__flattened;
-    modulesFlat = flattenedNixosModules';
-    modulesNew = lib.pipe cfg.modulesFlat [
+    files = mkIf (cfg.dir != null) (localFlake.inputs.extra-lib.lib.nix.rakeLeaves cfg.dir);
+    flattened = pipe cfg.files [
+      (filterAttrsRecursive cfg.filterModules)
+      (mapAttrsRecursiveCond builtins.isAttrs (
+        path: file:
+        genPath path {
+          inherit path;
+          module = file;
+        }
+      ))
+      (collect isList)
+      flatten
+      listToAttrs
+    ];
+    modules = lib.pipe cfg.flattened [
       builtins.attrValues
       (map (mod: {
         inherit (mod) path;
         update = _: mod.__final;
       }))
-      (mods: lib.updateManyAttrsByPath mods { })
+      (mods: updateManyAttrsByPath mods { })
     ];
-    all = lib.pipe cfg.modulesFlat [
+    all = lib.pipe cfg.flattened [
       builtins.attrValues
-      (lib.filter (m: !(elem m.path cfg.filterByPath)))
+      (filter (m: !(elem m.path cfg.filterByPath)))
       (map (mod: mod.__final))
     ];
   };

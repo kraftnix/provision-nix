@@ -77,25 +77,19 @@ in
 
   config.flake = {
     homeManagerModules = mkIf (cfg.enable && cfg.homeManager.addTo.modules) (
-      flattenModules cfg.homeManager.modulesFlat
+      flattenModules cfg.homeManager.flattened
     );
-    nixosModules = mkIf (cfg.enable && cfg.nixos.addTo.modules) (flattenModules cfg.nixos.modulesFlat);
+    nixosModules = mkIf (cfg.enable && cfg.nixos.addTo.modules) (flattenModules cfg.nixos.flattened);
     flakeModules =
       if (cfg.enable && cfg.flake.addTo.modules) then
-        flattenModules cfg.flake.modulesFlat
+        flattenModules cfg.flake.flattened
       else
         mkDefault { };
-    auto-import.flake.genImport = n: c: {
-      key = "${toString moduleLocation}#flakeModules.${n}";
-      _file = "${c}";
-      _class = "flake";
-      imports = [ c ];
-    };
 
     modules = mkIf cfg.enable {
-      nixos = mkIf cfg.nixos.addTo.flakeParts (flattenModules cfg.nixos.modulesFlat);
-      flake = mkIf cfg.flake.addTo.flakeParts (flattenModules cfg.flake.modulesFlat);
-      homeManager = mkIf cfg.homeManager.addTo.flakeParts (flattenModules cfg.homeManager.modulesFlat);
+      nixos = mkIf cfg.nixos.addTo.flakeParts (flattenModules cfg.nixos.flattened);
+      flake = mkIf cfg.flake.addTo.flakeParts (flattenModules cfg.flake.flattened);
+      homeManager = mkIf cfg.homeManager.addTo.flakeParts (flattenModules cfg.homeManager.flattened);
     };
   };
 }

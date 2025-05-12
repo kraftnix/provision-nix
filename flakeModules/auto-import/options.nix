@@ -15,8 +15,8 @@ in
 {
   options = {
     addTo = {
-      modules = enable "add {modules'} entries to toplevel flake output (i.e. nixosModules, flakeModules)" defaults.addTo.modules;
-      flakeParts = enable "add {modules'} entries to {modules.{class}} (flake-parts extra module)" defaults.addTo.flakeParts;
+      modules = enable "add {modules} entries to toplevel flake output (i.e. nixosModules, flakeModules)" defaults.addTo.modules;
+      flakeParts = enable "add {modules} entries to {modules.{class}} (flake-parts extra module)" defaults.addTo.flakeParts;
     };
     flakeArgs = lib.mkOption {
       description = ''
