@@ -56,6 +56,7 @@ localFlake:
                     caddyfile = pkgs.writeText "Caddyfile.dev" ''
                       {
                         debug
+                        admin off
                       }
                       :8937 {
 

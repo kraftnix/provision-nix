@@ -1,8 +1,20 @@
 localFlake:
 let
   lib = localFlake.lib;
+  defaults = {
+    nuscht-search.baseHref = "/search/";
+    nuscht-search.title = "Provision Nix Options Search";
+    nuscht-search.customTheme = ./docs/theme/css/nuscht-search.css;
+    hostOptions = localFlake.self.nixosConfigurations.basic.options;
+    substitution.outPath = localFlake.self.outPath;
+    # substitution.gitRepoFilePath = "https://github.com/kraftnix/provision-nix";
+    substitution.gitRepoUrl = "https://gitea.home.lan/kraftnix/provision-nix";
+    # substitution.gitRepoFilePath = "https://github.com/kraftnix/provision-nix/tree/master/";
+    substitution.gitRepoFilePath = "https://gitea.home.lan/kraftnix/provision-nix/src/branch/master/";
+  };
   provision-nix-local = {
     mdbook.src = ./.;
+    inherit defaults;
     homepage = {
       url = "http://localhost:8937";
       body = "Homepage";
@@ -103,17 +115,7 @@ in
 {
   flake.docs = {
     enable = true;
-    defaults = {
-      nuscht-search.baseHref = "/search/";
-      nuscht-search.title = "Provision Nix Options Search";
-      nuscht-search.customTheme = ./docs/theme/css/nuscht-search.css;
-      hostOptions = localFlake.self.nixosConfigurations.basic.options;
-      substitution.outPath = localFlake.self.outPath;
-      # substitution.gitRepoFilePath = "https://github.com/kraftnix/provision-nix";
-      substitution.gitRepoUrl = "https://gitea.home.lan/kraftnix/provision-nix";
-      # substitution.gitRepoFilePath = "https://github.com/kraftnix/provision-nix/tree/master/";
-      substitution.gitRepoFilePath = "https://gitea.home.lan/kraftnix/provision-nix/src/branch/master/";
-    };
+    inherit defaults;
     sites = {
       inherit provision-nix-local;
       provision-nix = lib.mkMerge [
