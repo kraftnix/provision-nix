@@ -76,9 +76,12 @@ in
   };
 
   config.flake = {
-    homeManagerModules = mkIf (cfg.enable && cfg.homeManager.addTo.modules) (
-      flattenModules cfg.homeManager.flattened
-    );
+    # TODO: would be nice if we could not set a default value here for flakes which dont use homeManagerModules
+    homeManagerModules =
+      if (cfg.enable && cfg.homeManager.addTo.modules) then
+        (flattenModules cfg.homeManager.flattened)
+      else
+        mkDefault { };
     nixosModules = mkIf (cfg.enable && cfg.nixos.addTo.modules) (flattenModules cfg.nixos.flattened);
     flakeModules =
       if (cfg.enable && cfg.flake.addTo.modules) then
