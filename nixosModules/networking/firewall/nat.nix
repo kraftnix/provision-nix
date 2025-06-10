@@ -120,21 +120,22 @@ in
             modules = [ dnatModule ];
           });
         default = { };
-        example = {
-          forward-to-host = {
-            port = 8080;
-            to = "127.0.0.1";
-          };
-          forward-tls = {
-            port = 443;
-            toPort = 8443;
-            to = "127.0.0.1";
-            protocols = [
-              "udp"
-              "tcp"
-            ];
-          };
-        };
+        example = lib.literalExpression ''
+          {
+                    forward-to-host = {
+                      port = 8080;
+                      to = "127.0.0.1";
+                    };
+                    forward-tls = {
+                      port = 443;
+                      toPort = 8443;
+                      to = "127.0.0.1";
+                      protocols = [
+                        "udp"
+                        "tcp"
+                      ];
+                    };
+                  }'';
       };
     };
     snat = {
