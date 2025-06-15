@@ -3,19 +3,39 @@ steps:
     image: bash
     commands:
       - set -e
-      # - nix-fast-build -f .#devShells --no-nom
-      - nix build .#devShells.x86_64-linux.default --show-trace
+      - nix develop --show-trace
+      # - nix-fast-build -f .#devShells.x86_64-linux.default --skip-cached --systems x86_64-linux --result-file /tmp/resultfile
+      # - print "Results"
+      # - cat /tmp/resultfile
 
   - name: fast-build packages
     image: bash
     commands:
       - set -e
-      - nix-fast-build -f .#packages --no-nom
+      # BUG: CI is building aarch64 when it shouldn't
+      # - nix-fast-build -f .#packages --no-nom --skip-cached
+      - nix-fast-build -f .#packages --no-nom --skip-cached --systems x86_64-linux --result-file /tmp/resultfile
+      - print "Results"
+      - cat /tmp/resultfile
+
+  - name: fast-build all hosts
+    image: bash
+    commands:
+      - set -e
+      # BUG: CI is building aarch64 when it shouldn't
+      # - nix-fast-build -f .#hosts.toplevels --no-nom --skip-cached
+      - nix-fast-build -f .#hosts.toplevels --no-nom --skip-cached --systems x86_64-linux --result-file /tmp/resultfile
+      - print "Results"
+      - cat /tmp/resultfile
 
   - name: fast-build checks
     image: bash
     commands:
-      - nix-fast-build -f .#checks --no-nom
+      # BUG: CI is building aarch64 when it shouldn't
+      # - nix-fast-build -f .#checks --no-nom --skip-cached
+      - nix-fast-build -f .#checks --no-nom --skip-cached --systems x86_64-linux --result-file /tmp/resultfile
+      - print "Results"
+      - cat /tmp/resultfile
 
   # some hosts can't be eval-ed only, must be built
   # - name: nix flake check (eval only)
@@ -26,9 +46,3 @@ steps:
   #     - event: pull_request
   #     - event: push
   #       branch: master
-
-  - name: fast-build all hosts
-    image: bash
-    commands:
-      - set -e
-      - nix-fast-build -f .#hosts.toplevels --no-nom
