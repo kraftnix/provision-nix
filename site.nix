@@ -4,7 +4,7 @@ let
   defaults = {
     nuscht-search.baseHref = "/search/";
     nuscht-search.title = "Provision Nix Options Search";
-    nuscht-search.customTheme = ./docs/theme/css/nuscht-search.css;
+    nuscht-search.customTheme = "${./docs/theme/css/nuscht-search.css}";
     hostOptions = localFlake.self.nixosConfigurations.basic.options;
     substitution.outPath = localFlake.self.outPath;
     # substitution.gitRepoFilePath = "https://github.com/kraftnix/provision-nix";
