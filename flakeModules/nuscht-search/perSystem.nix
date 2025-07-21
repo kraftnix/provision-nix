@@ -171,12 +171,15 @@ in
                     mkMultiSearch
                     ;
                   cfg = config;
+                  nuschtos-pkgs = localFlake.inputs.nuschtos-search.inputs.nixpkgs.legacyPackages.${pkgs.system};
+
                 in
                 {
                   multiSearch = mkMultiSearch {
                     inherit (cfg) baseHref title;
                     nuscht-search =
-                      (pkgs.callPackage "${localFlake.inputs.nuschtos-search}/nix/frontend.nix" { }).overrideAttrs
+                      (nuschtos-pkgs.callPackage "${localFlake.inputs.nuschtos-search}/nix/frontend.nix" { })
+                      .overrideAttrs
                         (oldAttrs: {
                           postPatch =
                             oldAttrs.postPatch

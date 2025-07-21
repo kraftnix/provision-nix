@@ -1,6 +1,6 @@
 {
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-  inputs.nixpkgs-stable.url = "github:nixos/nixpkgs/release-24.11";
+  inputs.nixpkgs-stable.url = "github:nixos/nixpkgs/release-25.05";
   inputs.nixlib.url = "github:nix-community/nixpkgs.lib";
 
   inputs.extra-lib.url = "github:kraftnix/extra-lib";
@@ -42,7 +42,7 @@
 
     # fork that allows some overrides for mkMultiSearch to allow custom theming
     nuschtos-search.url = "github:kraftnix/nuschtos-search";
-    nuschtos-search.inputs.nixpkgs.follows = "nixpkgs";
+    nuschtos-search.inputs.nixpkgs.follows = "nixpkgs-stable";
   };
 
   # deploy

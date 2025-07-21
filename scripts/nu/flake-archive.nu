@@ -23,7 +23,7 @@ def getAllPaths [ attrs ] {
 }
 
 # archives flake and returns path (optionally nix copy to target)
-def main [
+def flake-archive [
   flakeUri : path = "."         # path to flake to archive
   --nixCopyUrl(-f): string = "" # nix copy url, like `ssh-ng://myuser@192.168.1.1`
   --noCheckSigs(-n)             # optionally add `--no-check-sigs` option
