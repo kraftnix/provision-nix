@@ -3,9 +3,9 @@ steps:
     image: bash
     commands:
       - set -e
-      - nix develop --show-trace
+      - nix develop --show-trace --accept-flake-config
       # - nix-fast-build -f .#devShells.x86_64-linux.default --skip-cached --systems x86_64-linux --result-file /tmp/resultfile
-      # - print "Results"
+      # - echo "Results"
       # - cat /tmp/resultfile
 
   - name: fast-build packages
