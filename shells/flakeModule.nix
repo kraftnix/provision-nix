@@ -159,12 +159,13 @@ in
             localFlake.inputs.colmena.packages.${pkgs.system}.colmena
             localFlake.inputs.deploy-rs.packages.${pkgs.system}.deploy-rs
             pkgs.nix-fast-build
+            pkgs.nixfmt-tree
           ];
           formatter = {
             enablePreCommit = mkDefault cfg.enableDefaults;
             package =
-              if fcfg.name == "nixfmt-rfc-style" then
-                pkgs.nixfmt-rfc-style
+              if (fcfg.name == "nixfmt-rfc-style") || (fcfg.name == "nixfmt") then
+                pkgs.nixfmt
               else if fcfg.name == "alejandra" then
                 pkgs.alejandra
               else if fcfg.name == "nixfmt-classic" then

@@ -79,30 +79,29 @@ in
 
   config = mkIf cfg.enable {
     packages = [ ] ++ (optional ncfg.enable pkgs.nvfetcher);
-    commands =
-      [
-        {
-          category = "deploy";
-          package = inputs.deploy-rs.packages.${pkgs.system}.default;
-        }
-        {
-          category = "deploy";
-          package = inputs.colmena.packages.${pkgs.system}.colmena;
-        }
-      ]
-      ++ (optional (enabledSources != { }) {
-        category = "ops";
-        name = "sources";
-        help = "Update all nvfetcher sources, i.e. [${
-          concatStringsSep ", " (mapAttrsToList (_: c: c.name) ncfg.sources)
-        }]";
-        command = concatStringsSep "\n" (mapAttrsToList (_: c: c.sourcesScript) ncfg.sources);
-      })
-      ++ (mapAttrsToList (_: c: {
-        category = "ops";
-        name = "sources-${c.name}";
-        help = "Source ${c.name}: nvfetcher update from `${c.sourcesToml}` to `${c.sourcesDir}`";
-        command = c.sourcesScript;
-      }) enabledSources);
+    commands = [
+      {
+        category = "deploy";
+        package = inputs.deploy-rs.packages.${pkgs.system}.default;
+      }
+      {
+        category = "deploy";
+        package = inputs.colmena.packages.${pkgs.system}.colmena;
+      }
+    ]
+    ++ (optional (enabledSources != { }) {
+      category = "ops";
+      name = "sources";
+      help = "Update all nvfetcher sources, i.e. [${
+        concatStringsSep ", " (mapAttrsToList (_: c: c.name) ncfg.sources)
+      }]";
+      command = concatStringsSep "\n" (mapAttrsToList (_: c: c.sourcesScript) ncfg.sources);
+    })
+    ++ (mapAttrsToList (_: c: {
+      category = "ops";
+      name = "sources-${c.name}";
+      help = "Source ${c.name}: nvfetcher update from `${c.sourcesToml}` to `${c.sourcesDir}`";
+      command = c.sourcesScript;
+    }) enabledSources);
   };
 }

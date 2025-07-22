@@ -54,7 +54,8 @@ in
   config = mkIf cfg.enable {
     environment.systemPackages = [
       pkgs.docker-client
-    ] ++ (optional cfg.podman.enable pkgs.podman-compose);
+    ]
+    ++ (optional cfg.podman.enable pkgs.podman-compose);
     security.unprivilegedUsernsClone = mkIf cfg.podman.allowRootless true;
 
     virtualisation = {

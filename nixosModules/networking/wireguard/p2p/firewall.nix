@@ -60,36 +60,35 @@ let
       flatten
     ];
   provision = {
-    networking.nftables.gen.tables.filter =
-      {
-        forward.rules = mapAttrs (_: n: {
-          iifname = [ n.name ];
-          verdict = "jump forward-${n.name}";
-          comment = "handle ${n.name} rules";
-        }) enabledNetworks;
+    networking.nftables.gen.tables.filter = {
+      forward.rules = mapAttrs (_: n: {
+        iifname = [ n.name ];
+        verdict = "jump forward-${n.name}";
+        comment = "handle ${n.name} rules";
+      }) enabledNetworks;
+    }
+    // (mapAttrs' (
+      _: n:
+      let
+        ipMap = mapAttrs (_: p: p.ip) n.peers;
+        ip = peer: lib.trace n ipMap.${peer};
+      in
+      nameValuePair "forward-${n.name}" {
+        rules = mapAttrs' (
+          _: p:
+          nameValuePair p.name (
+            {
+              saddr = [ (ip p.name) ];
+              verdict = if p.firewall.allowedHosts == [ ] then "reject" else "accept";
+              comment = "handle traffic from ${p.name}";
+            }
+            // (optionalAttrs (p.firewall.allowedHosts != [ ] && !(elem "__all" p.firewall.allowedHosts)) {
+              daddr = map ip p.firewall.allowedHosts;
+            })
+          )
+        ) n.peers;
       }
-      // (mapAttrs' (
-        _: n:
-        let
-          ipMap = mapAttrs (_: p: p.ip) n.peers;
-          ip = peer: lib.trace n ipMap.${peer};
-        in
-        nameValuePair "forward-${n.name}" {
-          rules = mapAttrs' (
-            _: p:
-            nameValuePair p.name (
-              {
-                saddr = [ (ip p.name) ];
-                verdict = if p.firewall.allowedHosts == [ ] then "reject" else "accept";
-                comment = "handle traffic from ${p.name}";
-              }
-              // (optionalAttrs (p.firewall.allowedHosts != [ ] && !(elem "__all" p.firewall.allowedHosts)) {
-                daddr = map ip p.firewall.allowedHosts;
-              })
-            )
-          ) n.peers;
-        }
-      ) enabledNetworks);
+    ) enabledNetworks);
   };
 in
 {

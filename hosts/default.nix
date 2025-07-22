@@ -81,7 +81,8 @@
             users.users.root.initialHashedPassword = lib.mkForce null;
           }
         )
-      ] ++ self.nixosConfigurations.basic._module.args.modules;
+      ]
+      ++ self.nixosConfigurations.basic._module.args.modules;
       basic-iso.modules = [
         (
           {
@@ -106,7 +107,8 @@
             ];
           }
         )
-      ] ++ self.nixosConfigurations.basic._module.args.modules;
+      ]
+      ++ self.nixosConfigurations.basic._module.args.modules;
     };
 
     colmena.targetPort = 22;

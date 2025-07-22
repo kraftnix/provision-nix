@@ -100,12 +100,11 @@ let
         (evalConfig nixpkgs) {
           inherit system;
           pkgs = nixpkgs;
-          specialArgs =
-            {
-              packages = ctx.config.packages;
-            }
-            // hostDefaults.specialArgs
-            // specialArgs;
+          specialArgs = {
+            packages = ctx.config.packages;
+          }
+          // hostDefaults.specialArgs
+          // specialArgs;
           modules = lib.unique (
             lib.flatten [
               {
@@ -307,7 +306,8 @@ in
         specialArgs = hostDefaults.specialArgs;
         nodeNixpkgs = mapAttrs (_: cfg: cfg.nixpkgs) hosts;
       };
-    } // colmenaHosts;
+    }
+    // colmenaHosts;
     deploy = config.flake.hosts.deploy-rs // {
       nodes = deployRsHosts;
     };

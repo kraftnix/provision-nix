@@ -65,7 +65,8 @@ let
         mountpoint = "/var/log";
         mountOptions = [ "noatime" ];
       };
-    } // extraDatasets;
+    }
+    // extraDatasets;
   };
 in
 {
@@ -100,7 +101,8 @@ in
               "--hash ${hash}"
               "--cipher ${cipher}"
               "--key-size ${toString keySize}"
-            ] ++ (optional useRandom "--use-random");
+            ]
+            ++ (optional useRandom "--use-random");
             # required using na-install script during nixos-anywhere installation
             # when using luks
             passwordFile = mkIf (passwordFile != "") passwordFile;

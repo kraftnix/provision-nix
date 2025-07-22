@@ -48,7 +48,8 @@ let
         mountpoint = "/var/log";
         mountOptions = [ "noatime" ];
       };
-    } // extraDatasets;
+    }
+    // extraDatasets;
   };
 in
 {

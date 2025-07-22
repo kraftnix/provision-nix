@@ -10,26 +10,25 @@ let
   inherit (flake-parts-lib) importApply;
 in
 {
-  imports =
-    [
-      inputs.flake-parts.flakeModules.easyOverlay
-      ./install
-      ./scripts
-    ]
-    # we can't import `provison.flake.all` due to infinite cursion
-    ++ (l.mapAttrsToList (_: c: importApply c localFlake) {
-      auto-import = ./flakeModules/auto-import;
-      channels = ./flakeModules/channels;
-      docs = ./flakeModules/docs;
-      hosts = ./flakeModules/hosts;
-      lib = ./flakeModules/lib.nix;
-      nuscht-search = ./flakeModules/nuscht-search;
-      packagesGroups = ./flakeModules/packagesGroups.nix;
-      profiles = ./flakeModules/profiles.nix;
-      scripts = ./scripts/flakeModule.nix;
-      site = ./site.nix;
-      shells = ./shells/flakeModule.nix;
-    });
+  imports = [
+    inputs.flake-parts.flakeModules.easyOverlay
+    ./install
+    ./scripts
+  ]
+  # we can't import `provison.flake.all` due to infinite cursion
+  ++ (l.mapAttrsToList (_: c: importApply c localFlake) {
+    auto-import = ./flakeModules/auto-import;
+    channels = ./flakeModules/channels;
+    docs = ./flakeModules/docs;
+    hosts = ./flakeModules/hosts;
+    lib = ./flakeModules/lib.nix;
+    nuscht-search = ./flakeModules/nuscht-search;
+    packagesGroups = ./flakeModules/packagesGroups.nix;
+    profiles = ./flakeModules/profiles.nix;
+    scripts = ./scripts/flakeModule.nix;
+    site = ./site.nix;
+    shells = ./shells/flakeModule.nix;
+  });
 
   flake = {
     devshellModules.provision = importApply ./shells/provision.nix localFlake;

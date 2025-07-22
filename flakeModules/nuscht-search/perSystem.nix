@@ -181,11 +181,9 @@ in
                       (nuschtos-pkgs.callPackage "${localFlake.inputs.nuschtos-search}/nix/frontend.nix" { })
                       .overrideAttrs
                         (oldAttrs: {
-                          postPatch =
-                            oldAttrs.postPatch
-                            + ''
-                              ${optionalString (cfg.customTheme != null) "cp ${cfg.customTheme} src/styles.scss"}
-                            '';
+                          postPatch = oldAttrs.postPatch + ''
+                            ${optionalString (cfg.customTheme != null) "cp ${cfg.customTheme} src/styles.scss"}
+                          '';
                         });
                     scopes = mapAttrsToList (
                       _: c:

@@ -45,10 +45,9 @@ mkIf (cfg.enable && (cfg.arm || cfg.aarch64)) {
   nix.extraOptions = ''
     extra-platforms = ${toString cfg.supportedPlatforms} i686-linux
   '';
-  nix.sandboxPaths =
-    [
-      "/run/binfmt"
-    ]
-    ++ (optional cfg.arm "${pkgs.qemu-user-arm}")
-    ++ (optional cfg.aarch64 "${pkgs.qemu-user-arm64}");
+  nix.sandboxPaths = [
+    "/run/binfmt"
+  ]
+  ++ (optional cfg.arm "${pkgs.qemu-user-arm}")
+  ++ (optional cfg.aarch64 "${pkgs.qemu-user-arm64}");
 }
