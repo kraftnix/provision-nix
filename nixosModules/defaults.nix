@@ -108,10 +108,10 @@ in
         timeout = "${toString cfg.systemd.defaultTimeoutSec}s";
       in
       {
-        systemd.extraConfig = ''
-          DefaultTimeoutStartSec=${timeout}
-          DefaultTimeoutStopSec=${timeout}
-        '';
+        systemd.settings.Manager = {
+          DefaultTimeoutStartSec = timeout;
+          DefaultTimeoutStopSec = timeout;
+        };
         systemd.user.extraConfig = ''
           DefaultTimeoutStartSec=${timeout}
           DefaultTimeoutStopSec=${timeout}
