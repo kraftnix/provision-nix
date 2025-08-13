@@ -14,13 +14,17 @@
   - [Firewall (nftables)](networking/firewall/intro.md)
     - [Rules](networking/firewall/rules.md)
     - [Mapsets](networking/firewall/mapsets.md)
-    - [Options Reference](options/nixos-nftables-options.md)
+    - [Firewall Options Reference](options/nixos-nftables-options.md)
     <!-- - [Examples](networking/firewall/examples/intro.md) -->
     <!--   - [Desktop](networking/firewall/examples/desktop.md) -->
     <!--   - [Home Firewall](networking/firewall/examples/home-firewall.md) -->
 - [Filesystems](filesystems/intro.md)
   - [Disko](filesystems/disko.md)
   - [Stage 1 Boot / initrd](filesystems/initrd.md)
+  - [Samba](filesystems/samba/intro.md)
+    - [Server](filesystems/samba/server.md)
+    - [Client](filesystems/samba/client.md)
+    - [Samba Options Reference](options/nixos-samba-options.md)
 - [Virtualisation](virtualisation/intro.md)
   - [MicroVM.nix](virtualisation/microvm.md)
 - [Roles](roles/intro.md)
