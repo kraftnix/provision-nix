@@ -75,7 +75,7 @@ module ffmpeg-wrap {
     )
     print $"Running `ffmpeg ($args | str join ' ')`"
     let out = (run-external ffmpeg ...$args e+o>| complete)
-    if ($out | get -i stderr | default "" | str contains "No such filter: 'vidstabdetect'") {
+    if ($out | get -o stderr | default "" | str contains "No such filter: 'vidstabdetect'") {
       ansi red
       print "you need a full version of ffmpeg with filters compiled in, in nix `nix shell nixos#ffmpeg-full`" $out
       ansi reset
@@ -223,7 +223,7 @@ module ffmpeg-wrap {
     )
     print $"Running `ffmpeg ($args | str join ' ')`"
     let out = (run-external ffmpeg ...$args e+o>| complete)
-    if ($out | get -i stderr | default "" | str contains "No such filter: 'vidstabdetect'") {
+    if ($out | get -o stderr | default "" | str contains "No such filter: 'vidstabdetect'") {
       print $out
       ansi red
       print "you need a full version of ffmpeg with filters compiled in, in nix `nix shell nixos#ffmpeg-full`"

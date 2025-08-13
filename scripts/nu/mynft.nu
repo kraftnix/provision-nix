@@ -28,7 +28,7 @@ export module mynft {
         $rule | get expr | reduce -f {} {|expr, acc|
           let r = ($expr | transpose name value | get 0)
           $acc | upsert $r.name {|row|
-            let existing = ($row | get -i $r.name | default [])
+            let existing = ($row | get -o $r.name | default [])
             echo $existing $r.value | flatten
           }
         }
@@ -115,7 +115,7 @@ export module mynft {
       | filterAll table $table
       | filterAll chain $chain
       | each { |row|
-        if ($row | get -i expr) != null {
+        if ($row | get -o expr) != null {
           $row | update expr {|i| getExpr $i.family $i.table $i.chain $i.handle }
         } else {
           $row

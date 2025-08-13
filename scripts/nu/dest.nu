@@ -9,7 +9,7 @@ module dest {
     --timeout(-t): string = "5" # timeout for each request
   ] {
     let interfaces = ($env
-      | get -i INTERFACES
+      | get -o INTERFACES
       | default "default"
       | split row " "
     )

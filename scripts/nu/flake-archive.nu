@@ -1,6 +1,6 @@
 # given a `nix flake archive --json | from json`, returns all input source paths
 def getAllPaths [ attrs ] {
-  let path = ($attrs | get -i path)
+  let path = ($attrs | get -o path)
   let paths = (
     if $path != null {
       [$path]
@@ -8,7 +8,7 @@ def getAllPaths [ attrs ] {
       []
     }
   )
-  let inputs = ($attrs | get -i inputs)
+  let inputs = ($attrs | get -o inputs)
   if $inputs != null {
     $inputs
     | transpose input cfg
