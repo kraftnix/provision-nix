@@ -1,5 +1,7 @@
 # `nixos-anywhere` automated installs
 
+> NOTE: this is somewhat legacy and hasn't been used in a while and is probably in need of a rework
+
 `nixos-anywhere` is used for installing NixOS onto already booted machines
 that may be running other linux distributions (such as Ubuntu, ArchLinux, etc.).
 

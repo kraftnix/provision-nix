@@ -1,1 +1,1 @@
-../../flakeModules/nuscht-search/README.md
+../../modules/flakes/nuscht-search/README.md

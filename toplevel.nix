@@ -17,14 +17,14 @@ in
   ]
   # we can't import `provison.flake.all` due to infinite cursion
   ++ (l.mapAttrsToList (_: c: importApply c localFlake) {
-    auto-import = ./flakeModules/auto-import;
-    channels = ./flakeModules/channels;
-    docs = ./flakeModules/docs;
-    hosts = ./flakeModules/hosts;
-    lib = ./flakeModules/lib.nix;
-    nuscht-search = ./flakeModules/nuscht-search;
-    packagesGroups = ./flakeModules/packagesGroups.nix;
-    profiles = ./flakeModules/profiles.nix;
+    auto-import = ./modules/flakes/auto-import;
+    channels = ./modules/flakes/channels;
+    docs = ./modules/flakes/docs;
+    hosts = ./modules/flakes/hosts;
+    lib = ./modules/flakes/lib.nix;
+    nuscht-search = ./modules/flakes/nuscht-search;
+    packagesGroups = ./modules/flakes/packagesGroups.nix;
+    profiles = ./modules/flakes/profiles.nix;
     scripts = ./scripts/flakeModule.nix;
     site = ./site.nix;
     shells = ./shells/flakeModule.nix;
@@ -43,12 +43,12 @@ in
         modules = true;
       };
       flake = {
-        dir = ./flakeModules;
+        dir = ./modules/flakes;
         flattened.scripts.module = ./scripts/flakeModule.nix;
         flattened."provision.shells".module = ./shells/flakeModule.nix;
       };
       nixos = {
-        dir = ./nixosModules;
+        dir = ./modules/nixos;
         filterByPath = [
           [
             "virt"
@@ -62,13 +62,13 @@ in
       homeManager.flattened."provision.scripts".module = ./scripts/homeModule.nix;
     };
 
-    profiles = lib.recursiveUpdate (self.lib.nix.rakeLeaves ./profiles) {
+    profiles = lib.recursiveUpdate (self.lib.nix.rakeLeaves ./modules/profiles) {
       users = {
         #test-deploy = import ./profiles/users/test-deploy.nix args;
         # test-deploy = import ./profiles/users/test-deploy.nix;
         # test-operator = import ./profiles/users/test-operator.nix;
-        test-deploy = ./profiles/users/test-deploy.nix;
-        test-operator = ./profiles/users/test-operator.nix;
+        test-deploy = ./modules/profiles/users/test-deploy.nix;
+        test-operator = ./modules/profiles/users/test-operator.nix;
       };
     };
   };

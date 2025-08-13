@@ -1,1 +1,1 @@
-../../nixosModules/virt/README.md
+../../modules/nixos/virt/README.md

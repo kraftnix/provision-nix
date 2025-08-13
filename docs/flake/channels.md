@@ -1,1 +1,1 @@
-../../flakeModules/channels/README.md
+../../modules/flakes/channels/README.md

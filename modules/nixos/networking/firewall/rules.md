@@ -12,7 +12,7 @@ These shared rules are added by default under `rules`
 
 ```nix
 # included from ./default-rules.nix
-{{#include ../../../nixosModules/networking/firewall/default-rules.nix}}
+{{#include ../../../modules/nixos/networking/firewall/default-rules.nix}}
 ```
 
 And can be used with

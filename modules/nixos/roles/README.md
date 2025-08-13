@@ -32,7 +32,7 @@ provision.roles.desktop = {
 
 Produces:
 ```nix
-{{#include ../../nixosModules/roles/desktop.nix:25:48}}
+{{#include ../../modules/nixos/roles/desktop.nix:25:48}}
 ```
 
 ## Edge
@@ -63,5 +63,5 @@ provision.roles.desktop = {
 
 Produces:
 ```nix
-{{#include ../../nixosModules/roles/edge.nix:31:54}}
+{{#include ../../modules/nixos/roles/edge.nix:31:54}}
 ```

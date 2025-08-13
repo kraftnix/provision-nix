@@ -87,7 +87,7 @@ flib
     }:
     modules
     ++ [
-      ../nixosModules/networking/firewall/rule.nix
+      ../modules/nixos/networking/firewall/rule.nix
       {
         config._module.args = {
           inherit

@@ -1,1 +1,1 @@
-../../nixosModules/roles/README.md
+../../modules/nixos/roles/README.md

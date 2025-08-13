@@ -1,1 +1,1 @@
-../../../nixosModules/networking/firewall/README.md
+../../../modules/nixos/networking/firewall/README.md

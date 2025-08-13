@@ -1,1 +1,1 @@
-../../flakeModules/hosts/README.md
+../../modules/flakes/hosts/README.md

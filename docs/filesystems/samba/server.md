@@ -1,1 +1,1 @@
-{{#include ../../../nixosModules/fs/samba/server.md}}
+{{#include ../../../modules/nixos/fs/samba/server.md}}
