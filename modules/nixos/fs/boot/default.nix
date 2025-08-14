@@ -64,13 +64,15 @@ in
       enable = true;
       inherit (cfg.systemd.initrd) emergencyAccess;
       network = lib.mkMerge [
-        (mkIf cfg.systemd.network.importAll {
+        (mkIf cfg.systemd.network.all {
           inherit (config.systemd.network) networks netdevs links;
         })
         {
-          links = genAttrs cfg.addLinks (link: config.systemd.network.links.${link});
-          netdevs = genAttrs cfg.addNetdevs (netdev: config.systemd.network.netdevs.${netdev});
-          networks = genAttrs cfg.addNetworks (network: config.systemd.network.networks.${network});
+          links = genAttrs cfg.systemd.network.links (link: config.systemd.network.links.${link});
+          netdevs = genAttrs cfg.systemd.network.netdevs (netdev: config.systemd.network.netdevs.${netdev});
+          networks = genAttrs cfg.systemd.network.networks (
+            network: config.systemd.network.networks.${network}
+          );
         }
       ];
     };

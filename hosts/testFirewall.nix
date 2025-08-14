@@ -120,10 +120,10 @@ in
         device = "/dev/vda1";
         grub.devices = [ "/dev/vda" ];
         configurationLimit = 10;
-      };
-      initrd = {
-        enable = true;
-        ssh.usersImportKeyFiles = [ "test-operator" ];
+        initrd = {
+          enable = true;
+          ssh.usersImportKeyFiles = [ "test-operator" ];
+        };
       };
       luks.devices.enc-root = "/dev/vda2";
       btrfs.enable = true;

@@ -13,8 +13,8 @@
     defaults.enable = true;
     fs = {
       boot.enable = true;
-      initrd.enable = true;
-      initrd.ssh.usersImportKeyFiles = [ "test-operator" ];
+      boot.initrd.enable = true;
+      boot.initrd.ssh.usersImportKeyFiles = [ "test-operator" ];
       zfs = {
         enable = true;
         nativeEncryption = true;

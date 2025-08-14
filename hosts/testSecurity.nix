@@ -30,8 +30,8 @@
     fs = {
       boot.enable = true;
       boot.systemd.initrd.enable = true;
-      initrd.enable = true;
-      initrd.ssh.usersImportKeyFiles = [ "test-operator" ];
+      boot.initrd.enable = true;
+      boot.initrd.ssh.usersImportKeyFiles = [ "test-operator" ];
       btrfs.enable = true; # enable extra tools etc.
       disko.devices.root = {
         device = "/dev/vda";

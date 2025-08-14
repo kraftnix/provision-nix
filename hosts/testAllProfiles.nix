@@ -143,10 +143,10 @@
         initrd.enable = true;
         initrd.emergencyAccess = true;
       };
-    };
-    initrd = {
-      enable = true;
-      ssh.usersImportKeyFiles = [ "test-operator" ];
+      initrd = {
+        enable = true;
+        ssh.usersImportKeyFiles = [ "test-operator" ];
+      };
     };
     luks.devices.enc-root = "/dev/vda2";
     btrfs = {

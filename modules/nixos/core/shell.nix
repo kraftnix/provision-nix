@@ -6,7 +6,7 @@
   ...
 }:
 let
-  inherit (lib) mkIf;
+  inherit (lib) mkIf types;
   opts = self.lib.options;
   cfg = config.provision.core.shell;
 in
@@ -15,7 +15,11 @@ in
     enable = opts.enable "enable basic shell integrations";
     starship = {
       enable = opts.enableTrue "enable starship integration";
-      settings = opts.raw { } "starship settings";
+      settings = lib.mkOption {
+        description = "starship settings";
+        default = { };
+        type = (pkgs.formats.toml { }).type;
+      };
     };
     direnv = {
       enable = opts.enableTrue "enable direnv on bash/zsh";
@@ -26,34 +30,31 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    provision.core.shell.starship.settings = lib.mapAttrs (
-      _:
-      lib.mkDefault {
-        add_newline = false;
-        format = "$all\$fill\$time\$line_break\$character";
-        dill.symbool = " ";
-        shell.disabled = false;
-        time = {
-          disabled = false;
-          format = "$date [ $time ]($style)";
-          time_format = "🗓️ {%D} 🕙 [%T]";
-        };
-        cmd_duration = {
-          min_time = 500;
-          format = "took [$duration](bold yellow) ";
-        };
-        username = {
-          show_always = true;
-          format = "[$user](bold red)";
-        };
-        hostname = {
-          ssh_only = false;
-          format = "[@](bold yellow)[$hostname](bold bright-cyan) [|](bold bright-green) ";
-        };
-        directory.format = "[$path](bold bright-cyan)[$read_only](bold bright-red) ";
-        nix_shell.heuristic = true;
-      }
-    );
+    provision.core.shell.starship.settings = lib.mapAttrs (_: lib.mkDefault) {
+      add_newline = false;
+      format = "$all\$fill\$time\$line_break\$character";
+      dill.symbool = " ";
+      shell.disabled = false;
+      time = {
+        disabled = false;
+        format = "$date [ $time ]($style)";
+        time_format = "🗓️ {%D} 🕙 [%T]";
+      };
+      cmd_duration = {
+        min_time = 500;
+        format = "took [$duration](bold yellow) ";
+      };
+      username = {
+        show_always = true;
+        format = "[$user](bold red)";
+      };
+      hostname = {
+        ssh_only = false;
+        format = "[@](bold yellow)[$hostname](bold bright-cyan) [|](bold bright-green) ";
+      };
+      directory.format = "[$path](bold bright-cyan)[$read_only](bold bright-red) ";
+      nix_shell.heuristic = true;
+    };
     programs.starship = mkIf cfg.starship.enable {
       enable = true;
       settings = cfg.starship.settings;
