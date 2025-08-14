@@ -49,3 +49,37 @@ provision.fs.zfs = {
   };
 }
 ```
+
+## ZFS Pools backed by LUKS
+
+Unlocking many LUKS datasets can take some time (especially in some setups or prior to systemd as an initrd with its parallel LUKS unlock).
+
+An `provision.fs.zfs.luks.pools` provides a way to unlock many LUKS encrypted disks in parallel that are part of a ZFS pool.
+
+This support importing disk configuration from a disko files or just by defining `device` and `label` for each device without defining them in `fileSystems` in NixOS.
+
+```nix
+provision.fs.zfs.luks.pools.enable = true;
+provision.fs.zfs.luks.pools = {
+  # import disk configuration from disko
+  media = {
+    mode = "keyfile";
+    source = "/root/zpool-media-key";
+    disko = ./path/to/disko/
+  };
+
+  # define zpool inline
+  mirror-hdds = {
+    mode = "keyfile";
+    source = "/root/zpool-mirror-hdds-key";
+    disks = [
+      { device = "/dev/disk/by-id/XXX"; label = "mirror-hdds-1"; }
+      { device = "/dev/disk/by-id/YYY"; label = "mirror-hdds-2"; }
+    ];
+  };
+};
+```
+
+These pools are added to `boot.zfs.extraPools` to be auto-imported, the parallel unlock script is run before the `zfs-import-<pool>` service.
+
+The disks are also added to `hardware.sensor.hddtemp.drives`.

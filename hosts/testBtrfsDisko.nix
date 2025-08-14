@@ -12,7 +12,7 @@
   ];
 
   provision = {
-    defaults.enable = true;
+    core.defaults.enable = true;
     fs = {
       boot.enable = true;
       boot.initrd.enable = true;
@@ -30,10 +30,7 @@
         };
       };
     };
-    core = {
-      shell.enable = true;
-      env.enable = true;
-    };
+    core.enable = true;
     nix.basic = true;
     networking.networkd.enable = true;
   };

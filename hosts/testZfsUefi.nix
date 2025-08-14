@@ -10,7 +10,6 @@
   ];
 
   provision = {
-    defaults.enable = true;
     fs = {
       boot.enable = true;
       boot.initrd.enable = true;
@@ -28,10 +27,8 @@
       zfs = true;
       zfsDataset = "zroot/root/docker";
     };
-    core = {
-      shell.enable = true;
-      env.enable = true;
-    };
+    core.enable = true;
+    core.defaults.enable = true;
     nix.basic = true;
     networking.static = {
       address = "192.168.0.187";

@@ -1,4 +1,4 @@
-{ self, ... }:
+{ self, ... }@localFlake:
 {
   config,
   lib,
@@ -18,6 +18,7 @@ let
 in
 {
   imports = [
+    (import ./luks localFlake)
     ./legacy-initrd.nix
     ./legacy-root-uefi.nix
   ];

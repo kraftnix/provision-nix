@@ -13,7 +13,7 @@
   ];
 
   provision = {
-    defaults = {
+    core = {
       enable = true;
       security = {
         doas.enable = true;
@@ -37,10 +37,6 @@
         device = "/dev/vda";
         profile = "btrfs-simple-uefi";
       };
-    };
-    core = {
-      shell.enable = true;
-      env.enable = true;
     };
     nix.basic = true;
     networking.networkd.enable = true;

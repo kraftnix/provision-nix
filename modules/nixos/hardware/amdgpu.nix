@@ -45,6 +45,7 @@ in
     hardware = {
       # You nearly always need this when using a GPU, even with `amdgpu` and `i915`
       enableRedistributableFirmware = mkDefault true;
+      graphics.enable = mkDefault true;
       amdgpu = {
         initrd.enable = !cfg.headless;
         opencl.enable = cfg.opencl;

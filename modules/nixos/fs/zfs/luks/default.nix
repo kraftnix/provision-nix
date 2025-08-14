@@ -19,7 +19,7 @@ let
     types
     ;
   opts = self.lib.options;
-  cfg = config.boot.initrd.postZfsParallelUnlock;
+  cfg = config.provision.fs.zfs.luks;
   # unlockPool = pkgs: keyfile: disks:
   #   (self.nuMount.writeNu pkgs)
   #     "nushell-unlock-pool.nu"
@@ -72,7 +72,7 @@ let
   ];
 in
 {
-  options.boot.initrd.postZfsParallelUnlock = {
+  options.provision.fs.zfs.luks = {
     enable = opts.enable "enable parallel zfs unlock, only works on ZFS pools over LUKS";
     pools = mkOption {
       default = { };

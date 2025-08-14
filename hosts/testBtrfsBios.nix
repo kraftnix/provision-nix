@@ -11,7 +11,6 @@
   ];
 
   provision = {
-    defaults.enable = true;
     fs = {
       boot = {
         enable = true;
@@ -27,10 +26,7 @@
       btrfs.enable = true;
       btrfs.gen.enc-root.subvolumes.root.isRoot = true;
     };
-    core = {
-      shell.enable = true;
-      env.enable = true;
-    };
+    core.enable = true;
     nix.basic = true;
     networking.networkd.enable = true;
   };

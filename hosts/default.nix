@@ -27,7 +27,7 @@
           (
             { lib, ... }:
             {
-              provision.defaults.enable = true;
+              provision.core.defaults.enable = true;
               services.openssh.enable = true;
               networking.firewall.allowedTCPPorts = [ 22 ];
 

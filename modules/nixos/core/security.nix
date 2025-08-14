@@ -27,7 +27,13 @@ in
     libre-only.enable = opts.enable "prevents redistribuation but not free firmware";
     hardened_kernel = {
       enable = opts.enable "enable latest hardened kernel";
-      kernel = opts.package pkgs.linux_hardened "hardened kernel package";
+      kernel = lib.mkOption {
+        description = "hardened kernel package";
+        default = pkgs.linuxPackages_hardened;
+        defaultText = lib.literalExpression "pkgs.linuxPackages_hardened";
+        example = lib.literalExpression "pkgs.linuxPackages_hardened";
+        type = types.raw;
+      };
     };
     namespacing.enable = opts.enable "enable unprivilegedUsernsClone";
   };
