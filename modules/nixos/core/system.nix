@@ -7,10 +7,12 @@
 }:
 let
   inherit (lib)
-    optional
+    filterAttrs
+    mapAttrs
     mkDefault
     mkIf
     mkOverride
+    optional
     types
     ;
   opts = self.lib.options;
@@ -39,9 +41,9 @@ in
     aliases = {
       enable = opts.enable "enable adding some default shell alias shortcuts for sysadmin + nix usage";
       aliases = lib.mkOption {
-        description = "aliases in the same form as {environment.shellAliases}";
+        description = "aliases in the same form as {environment.shellAliases}, set as null or empty string to not add to shellAliases";
         default = { };
-        type = types.attrsOf types.str;
+        type = types.attrsOf (types.nullOr types.str);
       };
     };
     fonts = {
@@ -66,9 +68,14 @@ in
 
     {
       environment = {
-        systemPackages = lib.mkIf cfg.packages.enable cfg.packages.packages;
-        shellAliases = lib.mkIf cfg.aliases.enable (lib.mapAttrs (_: lib.mkDefault) cfg.aliases.aliases);
-        variables.EDITOR = lib.mkIf (cfg.editor != "") cfg.editor;
+        systemPackages = mkIf cfg.packages.enable cfg.packages.packages;
+        shellAliases = mkIf cfg.aliases.enable (
+          lib.pipe cfg.aliases.aliases [
+            (filterAttrs (_: a: a != null && a != ""))
+            (mapAttrs (_: mkDefault))
+          ]
+        );
+        variables.EDITOR = mkIf (cfg.editor != "") cfg.editor;
       };
 
       # Selection of sysadmin tools that can come in handy
@@ -93,7 +100,7 @@ in
         pciutils # lspci
         whois # lookup who-is records
       ];
-      provision.core.aliases.aliases = {
+      provision.core.aliases.aliases = lib.mapAttrs (_: mkDefault) {
         # quick cd
         ".." = "cd ..";
         "..." = "cd ../..";
@@ -140,6 +147,7 @@ in
     (mkIf cfg.fonts.enable {
       fonts = {
         inherit (cfg.fonts) packages;
+        fontconfig.enable = true;
         fontconfig.defaultFonts = {
           monospace = optional (cfg.fonts.name != null) cfg.fonts.name;
           sansSerif = optional (cfg.fonts.name != null) cfg.fonts.name;

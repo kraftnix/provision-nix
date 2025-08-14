@@ -8,6 +8,7 @@
 # NixOS Modules
 
 - [Core](core/intro.md)
+  - [Nix Settings](core/nix.md)
 - [Networking](networking/intro.md)
   - [systemd-networkd](networking/networkd.md)
   - [Wireguard Network Generation](networking/wireguard.md)
@@ -21,6 +22,7 @@
 - [Filesystems](filesystems/intro.md)
   - [Disko](filesystems/disko.md)
   - [Stage 1 Boot / initrd](filesystems/initrd.md)
+  - [ZFS](filesystems/zfs.md)
   - [Samba](filesystems/samba/intro.md)
     - [Server](filesystems/samba/server.md)
     - [Client](filesystems/samba/client.md)

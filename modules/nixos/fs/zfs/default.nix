@@ -35,9 +35,9 @@ in
         example = literalExpression "pkgs.linuxKernel.packages.linux_6_11";
       };
     };
-    trim = opts.enableTrue "enable trim";
+    trim = opts.enableTrue "enable trim, see effects in [zpool-trim](https://openzfs.github.io/openzfs-docs/man/master/8/zpool-trim.8.html) docs";
     scrub = {
-      auto = opts.enableTrue "enable autoscrub";
+      auto = opts.enableTrue "enables periodic scrubbing of ZFS pools {services.zfs.autoScrub.enable}";
     };
     nativeEncryption = opts.enable ''
       sets zfs to request encryption credentials and

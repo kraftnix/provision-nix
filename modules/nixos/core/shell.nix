@@ -26,9 +26,9 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    programs.starship = mkIf cfg.starship.enable {
-      enable = true;
-      settings = {
+    provision.core.shell.starship.settings = lib.mapAttrs (
+      _:
+      lib.mkDefault {
         add_newline = false;
         format = "$all\$fill\$time\$line_break\$character";
         dill.symbool = " ";
@@ -52,7 +52,11 @@ in
         };
         directory.format = "[$path](bold bright-cyan)[$read_only](bold bright-red) ";
         nix_shell.heuristic = true;
-      };
+      }
+    );
+    programs.starship = mkIf cfg.starship.enable {
+      enable = true;
+      settings = cfg.starship.settings;
     };
 
     programs.bash = {
