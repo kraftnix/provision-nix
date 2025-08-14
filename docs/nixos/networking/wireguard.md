@@ -10,4 +10,4 @@ architectures, currently supported:
 > the process of merging these together. The current prefered integration
 > is `provision.networking.wireguard.p2p`
 
-Module Options Reference for [`provision.networking.wireguard.p2p`](../options/nixos-all-options.md#provisionnetworkingwireguardp2penable)
+Module Options Reference for [`provision.networking.wireguard.p2p`](../../options/nixos-all-options.md#provisionnetworkingwireguardp2penable)

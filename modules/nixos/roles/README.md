@@ -17,7 +17,7 @@ Designed for desktop use, sets up:
   - boot integrated, systemd-boot by default but can be changed
   - initrd + SSH encrypted root unlock
 
-Module Options Reference for [`provision.roles.desktop`](../options/nixos-all-options.md#provisionrolesdesktopenable)
+Module Options Reference for [`provision.roles.desktop`](../../options/nixos-all-options.md#provisionrolesdesktopenable)
 
 Example Usage:
 ```nix
@@ -32,7 +32,7 @@ provision.roles.desktop = {
 
 Produces:
 ```nix
-{{#include ../../modules/nixos/roles/desktop.nix:25:48}}
+{{#include ../../../modules/nixos/roles/desktop.nix:25:48}}
 ```
 
 ## Edge
@@ -44,7 +44,7 @@ Designed for server use, sets up:
  - boot integrated, systemd-boot by default but can be changed
  - initrd + SSH encrypted root unlock
 
-Module Options Reference for [`provision.roles.edge`](../options/nixos-all-options.md#provisionrolesedgeenable)
+Module Options Reference for [`provision.roles.edge`](../../options/nixos-all-options.md#provisionrolesedgeenable)
 
 Example Usage:
 ```nix
@@ -63,5 +63,5 @@ provision.roles.desktop = {
 
 Produces:
 ```nix
-{{#include ../../modules/nixos/roles/edge.nix:31:54}}
+{{#include ../../../modules/nixos/roles/edge.nix:31:54}}
 ```

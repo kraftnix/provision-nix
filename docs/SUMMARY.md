@@ -7,29 +7,29 @@
 
 # NixOS Modules
 
-- [Core](core/intro.md)
-  - [Nix Settings](core/nix.md)
-- [Networking](networking/intro.md)
-  - [systemd-networkd](networking/networkd.md)
-  - [Wireguard Network Generation](networking/wireguard.md)
-  - [Firewall (nftables)](networking/firewall/intro.md)
-    - [Rules](networking/firewall/rules.md)
-    - [Mapsets](networking/firewall/mapsets.md)
+- [Core](nixos/core/intro.md)
+  - [Nix Settings](nixos/core/nix.md)
+- [Networking](nixos/networking/intro.md)
+  - [systemd-networkd](nixos/networking/networkd.md)
+  - [Wireguard Network Generation](nixos/networking/wireguard.md)
+  - [Firewall (nftables)](nixos/networking/firewall/intro.md)
+    - [Rules](nixos/networking/firewall/rules.md)
+    - [Mapsets](nixos/networking/firewall/mapsets.md)
     - [Firewall Options Reference](options/nixos-nftables-options.md)
     <!-- - [Examples](networking/firewall/examples/intro.md) -->
     <!--   - [Desktop](networking/firewall/examples/desktop.md) -->
     <!--   - [Home Firewall](networking/firewall/examples/home-firewall.md) -->
-- [Filesystems](filesystems/intro.md)
-  - [Disko](filesystems/disko.md)
-  - [initrd / boot](filesystems/initrd.md)
-  - [ZFS](filesystems/zfs.md)
-  - [Samba](filesystems/samba/intro.md)
-    - [Server](filesystems/samba/server.md)
-    - [Client](filesystems/samba/client.md)
+- [Filesystems](nixos/filesystems/intro.md)
+  - [Disko](nixos/filesystems/disko.md)
+  - [initrd / boot](nixos/filesystems/initrd.md)
+  - [ZFS](nixos/filesystems/zfs.md)
+  - [Samba](nixos/filesystems/samba/intro.md)
+    - [Server](nixos/filesystems/samba/server.md)
+    - [Client](nixos/filesystems/samba/client.md)
     - [Samba Options Reference](options/nixos-samba-options.md)
-- [Virtualisation](virtualisation/intro.md)
-  - [MicroVM.nix](virtualisation/microvm.md)
-- [Roles](roles/intro.md)
+- [Virtualisation](nixos/virtualisation/intro.md)
+  - [MicroVM.nix](nixos/virtualisation/microvm.md)
+- [Roles](nixos/roles/intro.md)
 - [Full NixOS Options Reference](options/nixos-all-options.md)
 
 ---

@@ -48,7 +48,7 @@ More info for provided flakes [here](../flake/intro.md).
 
 NixOS Modules are provided under `nixosModules`.
 
-More info for provided NixOS integrations [here](../core/intro.md).
+More info for provided NixOS integrations [here](../nixos/core/intro.md).
 
 Use a single module:
 ```nix
@@ -79,4 +79,4 @@ A single home-manager module is provided by for the [Scripts Integration]({{DOCS
 Some library functions are provided at `lib`.
 
 Disko profiles can be directly imported from `disko`, however using the nixosModule integration is suggested.
-See [Disko Integration Docs](../filesystems/disko.md) for more information.
+See [Disko Integration Docs](../nixos/filesystems/disko.md) for more information.

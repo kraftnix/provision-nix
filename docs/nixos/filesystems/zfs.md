@@ -13,7 +13,7 @@ This module allows you to:
 - Configure automatic data integrity checks (scrubbing) and TRIM support.
 - Define snapshot policies for frequent, daily, weekly, and monthly backups.
 
-Module Options Reference for [`provision.fs.zfs`](../options/nixos-all-options.md#provisionfszfsenable)
+Module Options Reference for [`provision.fs.zfs`](../../options/nixos-all-options.md#provisionfszfsenable)
 
 ## Example Configuration
 

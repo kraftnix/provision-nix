@@ -11,7 +11,7 @@ a Samba server declaratively, providing some easy to configure features such as:
 
 ## Example Configurations
 
-Samba Module Options [Reference](../../options/nixos-samba-options.md)
+Samba Module Options [Reference](../../../options/nixos-samba-options.md)
 
 ### Basic Public Share
 

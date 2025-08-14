@@ -7,7 +7,7 @@ These are defined under `provision.virt`, which helps to configure:
   - containerisation (i.e. `docker`, `podman`)
   - qemu guest options
 
-Module Options Reference for [`provision.virt`](../options/nixos-all-options.md#provisionvirtbuildarm)
+Module Options Reference for [`provision.virt`](../../options/nixos-all-options.md#provisionvirtbuildarm)
 
 ## QEMU
 

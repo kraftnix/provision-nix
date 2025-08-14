@@ -11,7 +11,7 @@ Features:
   - cache: add substituters and public keys
   - optimise: some defaults + enablement for garbage collection optimisation
 
-Module Options Reference for [`provision.nix`](../options/nixos-all-options.md#provisionnixbasic)
+Module Options Reference for [`provision.nix`](../../options/nixos-all-options.md#provisionnixbasic)
 
 ## Basic Profile
 
@@ -25,7 +25,7 @@ Module Options Reference for [`provision.nix`](../options/nixos-all-options.md#p
 Snippet
 
 ```nix
-{{#include ../../modules/nixos/core/nix-extended.nix:102:128}}
+{{#include ../../../modules/nixos/core/nix-extended.nix:102:128}}
 ```
 
 ## Dev Profile
@@ -38,7 +38,7 @@ Snippet
 Snippet
 
 ```nix
-{{#include ../../modules/nixos/core/nix-extended.nix:129:146}}
+{{#include ../../../modules/nixos/core/nix-extended.nix:129:146}}
 ```
 
 ## Builder Profile
@@ -51,5 +51,5 @@ Snippet
 Snippet
 
 ```nix
-{{#include ../../modules/nixos/core/nix-extended.nix:147:164}}
+{{#include ../../../modules/nixos/core/nix-extended.nix:147:164}}
 ```

@@ -26,7 +26,7 @@ provision.core.defaults = {
 };
 ```
 
-Module Options Reference for [`provision.core.defaults`](../options/nixos-all-options.md#provisioncoredefaultsenable)
+Module Options Reference for [`provision.core.defaults`](../../options/nixos-all-options.md#provisioncoredefaultsenable)
 
 ### Packages
 
@@ -49,7 +49,7 @@ provision.core.packages = {
 };
 ```
 
-Module Options Reference for [`provision.core.packages`](../options/nixos-all-options.md#provisioncorepackagesenable)
+Module Options Reference for [`provision.core.packages`](../../options/nixos-all-options.md#provisioncorepackagesenable)
 
 ### Aliases
 
@@ -76,7 +76,7 @@ provision.core.aliases = {
 };
 ```
 
-Module Options Reference for [`provision.core.aliases`](../options/nixos-all-options.md#provisioncorealiasesenable)
+Module Options Reference for [`provision.core.aliases`](../../options/nixos-all-options.md#provisioncorealiasesenable)
 
 ### Locale
 
@@ -93,7 +93,7 @@ provision.core.locale = {
 };
 ```
 
-Module Options Reference for [`provision.core.locale`](../options/nixos-all-options.md#provisioncorelocaleenable)
+Module Options Reference for [`provision.core.locale`](../../options/nixos-all-options.md#provisioncorelocaleenable)
 
 ### Fonts
 
@@ -107,7 +107,7 @@ provision.core.fonts = {
 };
 ```
 
-Module Options Reference for [`provision.core.fonts`](../options/nixos-all-options.md#provisioncorefontsenable)
+Module Options Reference for [`provision.core.fonts`](../../options/nixos-all-options.md#provisioncorefontsenable)
 
 ### Shell
 
@@ -128,7 +128,7 @@ provision.core.shell = {
 };
 ```
 
-Module Options Reference for [`provision.core.shell`](../options/nixos-all-options.md#provisioncoreshellenable)
+Module Options Reference for [`provision.core.shell`](../../options/nixos-all-options.md#provisioncoreshellenable)
 
 ## Security
 
@@ -159,4 +159,4 @@ provision.core.security = {
 };
 ```
 
-Module Options Reference for [`provision.core.security`](../options/nixos-all-options.md#provisioncoresecurityenable)
+Module Options Reference for [`provision.core.security`](../../options/nixos-all-options.md#provisioncoresecurityenable)
