@@ -42,15 +42,6 @@
 
   boot.initrd.luks.devices.enc-root.device = "/dev/vda2";
 
-  provision.defaults = {
-    enable = true; # auto enable commented fields below
-    # sysctl.bumpInotifyLimits = true;
-    sysctl.inotifyLimitsMultiple = 1000;
-    # security.doas.enable = true;
-    # security.openssh.enable = true;
-    systemd.defaultTimeoutSec = 30;
-  };
-
   provision.hardware = {
     amdgpu.enable = true;
     android.enable = true;
@@ -59,7 +50,22 @@
   };
 
   provision.core = {
-    shell.enable = true;
+    enable = true;
+
+    defaults = {
+      enable = true; # auto enable commented fields below
+      # sysctl.bumpInotifyLimits = true;
+      sysctl.inotifyLimitsMultiple = 1000;
+      systemd.defaultTimeoutSec = 30;
+    };
+
+    security = {
+      doas.enable = true;
+      openssh.enable = true;
+      electron.enable = true;
+      namespacing.enable = true;
+    };
+
     earlyoom = {
       enable = true;
       enableDebug = true;
@@ -69,17 +75,16 @@
         "--prefer '(^|/)(java|chromium|firefox)$'"
       ];
     };
-    env = {
+    locale = {
       enable = true;
-      locale = {
-        keyMap = "uk";
-        default = "en_GB.UTF-8";
-        timeZone = "Europe/London";
-      };
-      fonts = {
-        packages = [ pkgs.hack-font ];
-        name = "Hack";
-      };
+      keyMap = "uk";
+      default = "en_GB.UTF-8";
+      timeZone = "Europe/London";
+    };
+    fonts = {
+      enable = true;
+      packages = [ pkgs.hack-font ];
+      name = "Hack";
     };
   };
 

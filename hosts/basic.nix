@@ -15,9 +15,15 @@
   ];
   boot.loader.systemd-boot.enable = true;
 
-  provision.defaults.enable = true;
-  provision.core.shell.enable = true;
-  provision.core.env.enable = true;
+  provision.core = {
+    enable = true;
+    # enableAll sets all the below to true by the above setting
+    aliases.enable = true;
+    defaults.enable = true;
+    locale.enable = true;
+    packages.enable = true;
+    shell.enable = true;
+  };
   provision.nix.basic = true;
   provision.nix.flakes.enable = true;
 

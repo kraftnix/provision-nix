@@ -36,8 +36,6 @@ in
 
   config = mkIf cfg.edge.enable {
     provision = {
-      defaults.enable = true;
-      defaults.sysctl.inotifyLimitsMultiple = mkIf cfg.edge.bigMachine 10000;
       fs = {
         boot.enable = true;
         initrd.enable = true;
@@ -45,8 +43,13 @@ in
         initrd.netModules = cfg.edge.initrdNetModules;
       };
       core = {
+        enable = true;
         shell.enable = true;
-        env.enable = true;
+        locale.enable = true;
+        aliases.enable = true;
+        packages.enable = true;
+        defaults.sysctl.bumpInotifyLimits = true;
+        defaults.sysctl.inotifyLimitsMultiple = mkIf cfg.edge.bigMachine 10000;
       };
       nix = {
         basic = true;

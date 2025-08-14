@@ -65,7 +65,7 @@ Alternatively, you can import all nixos modules provided:
 { inputs, ... }:
 {
   imports = inputs.provision-nix.nixosModulesAll;
-  provision.core.env.enable = true;
+  provision.core.enable = true;
   networking.nftables.gen.enable = true;
 }
 ```

@@ -26,15 +26,14 @@ in
 
   config = mkIf cfg.desktop.enable {
     provision = {
-      defaults.enable = true;
       fs = {
         boot.enable = true;
         initrd.enable = false;
         initrd.ssh.usersImportKeyFiles = cfg.desktop.initrdUnlockUsers;
       };
       core = {
-        shell.enable = true;
-        env.enable = true;
+        enable = true;
+        fonts.enable = true;
       };
       nix = {
         basic = true;

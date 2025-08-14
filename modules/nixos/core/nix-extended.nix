@@ -28,10 +28,27 @@ let
 in
 {
   options.provision.nix = {
-    basic = opts.enable "good defaults for most usecases";
-    develop = opts.enable "good defaults for developers";
-    builder = opts.enable "good defaults for powerful building machines";
-    server = opts.enable "good defaults for servers / edge devices etc.";
+    basic = opts.enable ''
+      good defaults for most usecases:
+        - auto-generate manpage caches after switching to generation
+        - change daemon scheduling to batch + class to idle to lower impact of nix on other machine operations
+        - increase some defaults in nix settings + auto-enabled `nix-command` and `flakes`
+        - lower `connect-timeout` and increase `download-buffer-size`
+        - add some basic tools
+    '';
+    develop = opts.enable ''
+      good defaults for developers
+        - enables `keep-outputs` and `keep-derivations`
+        - increases `log-lines` returned from build failure (triples the default of `20`)
+        - more useful dev tools
+    '';
+    builder = opts.enable ''
+      good defaults for powerful building machines
+        - enables `keep-outputs` and `keep-derivations`
+        - adds extra system features
+        - adds a `max-silent-time` of 10 minutes to stop checks with no output for 10 mins to timeout
+
+    '';
     optimise = {
       enable = opts.enable "optimise / deduplication store";
       gc = opts.enable "run garbage collection on a schedule";
@@ -112,7 +129,7 @@ in
       nix.settings = {
         keep-outputs = true;
         keep-derivations = true;
-        log-lines = mkDefault 40; # double loglines shown after build failure
+        log-lines = mkDefault 60; # double loglines shown after build failure
       };
       environment.systemPackages = with pkgs; [
         nix-doc # An interactive Nix documentation tool
@@ -138,23 +155,6 @@ in
           "kvm"
         ];
         max-silent-time = mkDefault 600; # timeout after 10mins if no stdout in build
-      };
-      environment.systemPackages = with pkgs; [
-        nix-tree # Interactively browse a Nix store paths dependencies
-        nvd # Nix/NixOS package version diff tool
-        nix-output-monitor # nom, pretty build printing
-      ];
-    })
-    (mkIf cfg.server {
-      nix.settings = {
-        keep-outputs = true;
-        keep-derivations = true;
-        system-features = [
-          "nixos-test"
-          "benchmark"
-          "big-parallel"
-          "kvm"
-        ];
       };
       environment.systemPackages = with pkgs; [
         nix-tree # Interactively browse a Nix store paths dependencies
