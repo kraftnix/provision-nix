@@ -7,18 +7,14 @@
 let
   inherit (lib) mkIf mkDefault flatten;
   opts = self.lib.options;
-  cfg = config.provision.fs.initrd;
+  cfg = config.provision.fs.boot.initrd;
   userKeyFiles = flatten (
     map (user: config.users.users.${user}.openssh.authorizedKeys.keyFiles) cfg.ssh.usersImportKeyFiles
   );
 in
 {
-  imports = [
-    ./legacy-network.nix
-    ./legacy-test-keys.nix
-  ];
 
-  options.provision.fs.initrd = {
+  options.provision.fs.boot.initrd = {
     enable = opts.enable "enable initrd configuration, adds initrd to supportedFilesystems";
     ssh = {
       enable = opts.enableTrue "enable SSH based auth";
@@ -62,8 +58,8 @@ in
 
         you can find out the kernel driver in use with `ethtool`:
         ```sh
-        DRIVER=enp1s0
-        ethtool -i $DRIVER | grep driver
+        INTERFACE=enp1s0
+        ethtool -i $INTERFACE | grep driver
         ```
       ''
       // {
@@ -75,11 +71,6 @@ in
           "r8169"
         ];
       };
-
-    legacy = {
-      network = opts.enable "import the legacy profile for `network`, do not use unless already using";
-      test-keys = opts.enable "import the legacy profile for `test-keys`, do not use unless already using";
-    };
   };
 
   config = mkIf cfg.enable {

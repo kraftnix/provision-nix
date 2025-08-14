@@ -36,8 +36,8 @@ in
 
   config = mkIf cfg.edge.enable {
     provision = {
-      fs = {
-        boot.enable = true;
+      fs.boot = {
+        enable = true;
         initrd.enable = true;
         initrd.ssh.usersImportKeyFiles = cfg.edge.initrdUnlockUsers;
         initrd.netModules = cfg.edge.initrdNetModules;

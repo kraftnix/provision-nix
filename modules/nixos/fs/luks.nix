@@ -14,7 +14,7 @@ in
   options.provision.fs.luks = {
     enable = opts.enable' (
       cfg.devices != { }
-    ) "enable luks encryption, is read by `provision.fs.initrd` and `provision.fs.boot`";
+    ) "enable luks encryption, is read by `provision.fs.boot.initrd` and `provision.fs.boot`";
     devices = opts.mk {
       default = { };
       description = "map of luks name -> device path to unlock";

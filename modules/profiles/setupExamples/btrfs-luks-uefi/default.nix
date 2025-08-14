@@ -3,7 +3,7 @@
 
   You could import this and change `provision.fs.boot.device` and
   `provision.luks.devices.enc-root` to your own, as well as adding
-  your own ssh keyFiles at `provision.fs.initrd.ssh.keyFiles`
+  your own ssh keyFiles at `provision.fs.boot.initrd.ssh.keyFiles`
   or `provivision.fs.initrd.ssh.usersImportKeyFiles` to import keyFiles
   from a user.
 

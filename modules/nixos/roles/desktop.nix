@@ -26,8 +26,8 @@ in
 
   config = mkIf cfg.desktop.enable {
     provision = {
-      fs = {
-        boot.enable = true;
+      fs.boot = {
+        enable = true;
         initrd.enable = false;
         initrd.ssh.usersImportKeyFiles = cfg.desktop.initrdUnlockUsers;
       };

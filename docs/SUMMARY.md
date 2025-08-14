@@ -21,7 +21,7 @@
     <!--   - [Home Firewall](networking/firewall/examples/home-firewall.md) -->
 - [Filesystems](filesystems/intro.md)
   - [Disko](filesystems/disko.md)
-  - [Stage 1 Boot / initrd](filesystems/initrd.md)
+  - [initrd / boot](filesystems/initrd.md)
   - [ZFS](filesystems/zfs.md)
   - [Samba](filesystems/samba/intro.md)
     - [Server](filesystems/samba/server.md)

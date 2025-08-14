@@ -64,7 +64,7 @@ in
     boot.kernelPackages = mkIf cfg.kernel.enable cfg.kernel.latest;
 
     boot.zfs.requestEncryptionCredentials = mkDefault cfg.nativeEncryption;
-    provision.fs.initrd.postCommands = mkIf cfg.nativeEncryption {
+    provision.fs.boot.initrd.postCommands = mkIf cfg.nativeEncryption {
       command = ''
         echo "zfs load-key -a; killall zfs" >> /root/.profile
       '';
