@@ -90,6 +90,7 @@ in
       wireguard-basic = import ./tests/wireguard-basic.nix self;
       wireguard-firewall = import ./tests/wireguard-firewall.nix self;
       samba-basic = import ./tests/samba/basic.nix self;
+      nfs-basic = import ./tests/nfs/basic.nix self;
     }
     // self.packages.x86_64-linux;
 

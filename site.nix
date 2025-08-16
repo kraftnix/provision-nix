@@ -110,6 +110,11 @@ let
       builtins.elemAt option.loc 0 == "networking"
       && builtins.elemAt option.loc 1 == "nftables"
       && builtins.elemAt option.loc 2 == "gen";
+    docgen.nixos-nfs.filter =
+      option:
+      builtins.elemAt option.loc 0 == "provision"
+      && builtins.elemAt option.loc 1 == "fs"
+      && builtins.elemAt option.loc 2 == "nfs";
     docgen.nixos-samba.filter =
       option:
       builtins.elemAt option.loc 0 == "provision"

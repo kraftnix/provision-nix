@@ -37,7 +37,9 @@ let
     }:
     {
       options = {
-        enable = opts.enable "enable ${name} nfs mount";
+        enable = opts.enable "enable ${name} nfs mount" // {
+          default = true;
+        };
         hostPath = opts.string "${localBase}/${name}" "local host mount path";
         remotePath = opts.string "${remoteBase}/${name}" "remote host mount path";
         remoteUrl = opts.string remoteUrl "NFS ip / domain";
