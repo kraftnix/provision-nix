@@ -11,7 +11,10 @@
     profiles.users.test-deploy
   ];
 
+  fileSystems."/" = lib.mkDefault { device = "/dev/disk/by-label/One"; };
+
   users.users.media.uid = 3000;
+  users.users.media.group = "media";
   users.users.media.isSystemUser = true;
   users.groups.media.gid = 3000;
 

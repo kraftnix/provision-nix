@@ -2,6 +2,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 let
@@ -123,6 +124,9 @@ in
   };
 
   config = mkIf cfg.enable {
+    services.rpcbind.enable = lib.mkDefault true;
+    environment.systemPackages = [ pkgs.nfs-utils ];
+    boot.supportedFilesystems = [ "nfs" ];
     fileSystems = pipe cfg.mounts [
       (filterAttrs (_: c: c.enable))
       (mapAttrs' (

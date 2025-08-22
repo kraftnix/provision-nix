@@ -270,6 +270,8 @@ in
   };
 
   config = mkIf cfg.enable {
+    environment.systemPackages = [ pkgs.cifs-utils ];
+    boot.supportedFilesystems = [ "cifs" ];
     system.activationScripts = mkIf ({ } != sambaPasswordFiles) {
       init_smbpasswd_client.text = pipe sambaPasswordFiles [
         (lib.mapAttrsToList (
