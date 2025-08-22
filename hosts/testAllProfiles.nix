@@ -52,6 +52,9 @@
   provision.core = {
     enable = true;
 
+    debug.enable = true;
+    debug.packages = [ pkgs.bcc ];
+
     defaults = {
       enable = true; # auto enable commented fields below
       # sysctl.bumpInotifyLimits = true;

@@ -20,7 +20,7 @@ in
     };
   };
   config = mkIf cfg.enable {
-    environment.systemPackages = cfg.debug.packages;
+    environment.systemPackages = cfg.packages;
     provision.core.debug.packages = with pkgs; [
       amdctl # control AMD power states
       btop # top tool
