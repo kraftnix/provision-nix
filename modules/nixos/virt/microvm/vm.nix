@@ -57,6 +57,7 @@ in
 
       You must still enable `microvm.guest.enable`, cannot set in this module due to infinite recursion.
     '';
+    cid = opts.intNull "sets vsock.cid (and {network.base.id})";
     machineid = opts.stringNull "if set, sets a machine id in the microvm (useful for persistent logs)";
     vcpu = opts.intNull "number of vCPUs (`microvm.vcpu`)";
     mem = opts.intNull "amount of RAM for server in MB (`microvm.mem`)";
@@ -91,6 +92,8 @@ in
     };
 
     mounts = lib.mkOption {
+      description = "combined share/volume wrapper around microvm shares/volumes";
+      default = { };
       type = types.attrsOf (
         types.submodule (
           {
@@ -131,16 +134,6 @@ in
           }
         )
       );
-      default = { };
-      description = "combined share/volume wrapper around microvm shares/volumes";
-    };
-
-    __enabledMounts = lib.mkOption {
-      default = filterAttrs (
-        _: mount: mount.enable && (mount.share.enable || mount.volume.enable)
-      ) cfg.mounts;
-      description = "enabled mounts";
-      readOnly = true;
     };
 
     store = {
@@ -153,8 +146,9 @@ in
   };
 
   config = mkMerge (flatten [
+
     (mkIf cfg.enable {
-      ## defaults
+      provision.virt.microvm.vm.network.base.id = mkIf (cfg.cid != null) cfg.cid;
       provision.virt.microvm.vm.mounts = {
         containers.share.enable = true;
         etc = {
@@ -193,12 +187,12 @@ in
         };
       };
     })
-    # (mkIf cfg.enable {
-    # (optional ((hasAttr "guest" options.microvm) && (cfg.enable)) {
-    (mkIf ((hasAttr "microvm" options) && (hasAttr "guest" options.microvm) && (cfg.enable)) {
-      microvm = {
+
+    (lib.optional ((hasAttr "microvm" options) && (hasAttr "guest" options.microvm)) {
+      microvm = mkIf cfg.enable {
         # guest.enable = true; # causes infinite recursion but should be true
         hypervisor = cfg.hypervisor;
+        vsock.cid = mkIf (cfg.cid != null) cfg.cid;
         writableStoreOverlay = mkIf cfg.store.readwrite.enable "/nix/.rw-store";
         vcpu = mkIf (cfg.vcpu != null) cfg.vcpu;
         mem = mkIf (cfg.mem != null) cfg.mem;
@@ -216,67 +210,7 @@ in
         interfaces = mkIf cfg.network.base.enable [ { inherit (cfg.network.base) id mac type; } ];
       };
     })
+
   ]);
 
-  # config = mkIf cfg.enable {
-  #
-  #   ## defaults
-  #   provision.virt.microvm.vm.mounts = {
-  #
-  #     containers.share.enable = true;
-  #     etc = {
-  #       volume.size = 50;
-  #       mountpoint = "/etc";
-  #     };
-  #     home = {
-  #       share.enable = true;
-  #       mountpoint = "/home";
-  #     };
-  #     journal = {
-  #       share.enable = true;
-  #       mountpoint = "/var/log/journal";
-  #     };
-  #     var = {
-  #       mountpoint = "/var";
-  #       volume.sizeGB = 1;
-  #     };
-  #     ro-store = {
-  #       enable = cfg.store.readonly.enable;
-  #       mountpoint = "/nix/.ro-store";
-  #       share.enable = true;
-  #       share.hostPath = "/nix/store";
-  #     };
-  #     rw-store-vol = {
-  #       enable = cfg.store.readwrite.enable;
-  #       mountpoint = config.microvm.writableStoreOverlay;
-  #       volume.size = cfg.store.readwrite.size;
-  #     };
-  #
-  #   };
-  #
-  #   ##
-  #   environment.etc."machine-id" = mkIf (cfg.machineid != null) {
-  #     mode = "0644";
-  #     text = cfg.machineid;
-  #   };
-  #
-  #   microvm = lib.optionalAttrs (builtins.hasAttr "guest" options.microvm) {
-  #     # guest.enable = true; # causes infinite recursion but should be true
-  #     writableStoreOverlay = mkIf cfg.store.readwrite.enable "/nix/.rw-store";
-  #     vcpu = mkIf (cfg.vcpu != null) cfg.vcpu;
-  #     mem = mkIf (cfg.mem != null) cfg.mem;
-  #     socket = cfg.socket;
-  #     shares = lib.pipe cfg.mounts [
-  #       (lib.filterAttrs (_: mount: mount.enable && mount.share.enable))
-  #       (lib.mapAttrsToList (_: mount: [(mkShare mount.share)]))
-  #       lib.flatten
-  #     ];
-  #     volumes = lib.pipe cfg.mounts [
-  #       (lib.filterAttrs (_: mount: mount.enable && mount.volume.enable))
-  #       (lib.mapAttrsToList (_: mount: [(mkVolume mount.volume)]))
-  #       lib.flatten
-  #     ];
-  #     interfaces = mkIf cfg.network.base.enable [{ inherit (cfg.network.base) id mac type; }];
-  #   };
-  # };
 }
