@@ -190,7 +190,7 @@ in
 
     (lib.optional ((hasAttr "microvm" options) && (hasAttr "guest" options.microvm)) {
       microvm = mkIf cfg.enable {
-        # guest.enable = true; # causes infinite recursion but should be true
+        guest.enable = true;
         hypervisor = cfg.hypervisor;
         vsock.cid = mkIf (cfg.cid != null) cfg.cid;
         writableStoreOverlay = mkIf cfg.store.readwrite.enable "/nix/.rw-store";
