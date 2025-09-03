@@ -166,8 +166,6 @@ in
                 let
                   # inherit (localFlake.inputs.nuschtos-search.packages.${pkgs.system}) nuscht-search ixxPkgs;
                   inherit (localFlake.inputs.nuschtos-search.packages.${pkgs.system})
-                    ixxPkgs
-                    mkSearchData
                     mkMultiSearch
                     ;
                   cfg = config;
@@ -175,29 +173,27 @@ in
 
                 in
                 {
-                  multiSearch = mkMultiSearch {
-                    inherit (cfg) baseHref title;
-                    nuscht-search =
-                      (nuschtos-pkgs.callPackage "${localFlake.inputs.nuschtos-search}/nix/frontend.nix" { })
-                      .overrideAttrs
-                        (oldAttrs: {
-                          postPatch = oldAttrs.postPatch + ''
-                            ${optionalString (cfg.customTheme != null) "cp ${cfg.customTheme} src/styles.scss"}
-                          '';
-                        });
-                    scopes = mapAttrsToList (
-                      _: c:
-                      {
-                        inherit (c) name modules urlPrefix;
-                      }
-                      // (optionalAttrs (c.optionsPrefix != null) {
-                        inherit (c) optionsPrefix;
-                      })
-                      // (optionalAttrs (c.optionsJSON != null) {
-                        inherit (c) optionsJSON;
-                      })
-                    ) cfg.scopes;
-                  };
+                  multiSearch =
+                    (mkMultiSearch {
+                      inherit (cfg) baseHref title;
+                      scopes = mapAttrsToList (
+                        _: c:
+                        {
+                          inherit (c) name modules urlPrefix;
+                        }
+                        // (optionalAttrs (c.optionsPrefix != null) {
+                          inherit (c) optionsPrefix;
+                        })
+                        // (optionalAttrs (c.optionsJSON != null) {
+                          inherit (c) optionsJSON;
+                        })
+                      ) cfg.scopes;
+                    }).overrideAttrs
+                      (oldAttrs: {
+                        postPatch = oldAttrs.postPatch + ''
+                          ${optionalString (cfg.customTheme != null) "cp ${cfg.customTheme} src/styles.scss"}
+                        '';
+                      });
                 };
             }
           )

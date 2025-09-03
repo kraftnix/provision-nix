@@ -10,10 +10,13 @@
 
   --mono-font: "Source Code Pro", Consolas, "Ubuntu Mono", Menlo, "DejaVu Sans Mono", monospace, monospace;
   --bg: #101010;
+  --c-card: #101010;
   --fg: #c5c5c5;
   /* --sidebar-bg: #191c1a; */
   --sidebar-bg: #161616;
   --sidebar-fg: #c8c9db;
+  /* --sidebar-bg: #101010; */
+  /* --sidebar-fg: #c5c5c5; */
   --sidebar-non-existant: #5c6773;
   /* --sidebar-active: #ffb454; */
   --sidebar-active: #bfa4ff; /* purple1-4 */
