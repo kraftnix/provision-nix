@@ -148,7 +148,6 @@ in
   config = mkMerge (flatten [
 
     (mkIf cfg.enable {
-      provision.virt.microvm.vm.network.base.id = mkIf (cfg.cid != null) (toString cfg.cid);
       provision.virt.microvm.vm.mounts = {
         containers.share.enable = true;
         etc = {
