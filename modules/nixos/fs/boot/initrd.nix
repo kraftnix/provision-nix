@@ -46,10 +46,12 @@ in
       command = opts.string "echo 'cryptsetup-askpass' >> /root/.profile" ''
         Command used to unlock root filesystem (and any others you may also want to unlock).
 
-        This can be used with either grub or systemd-boot (but but with systemd-boot as an initrd).
+        This can be used with either grub or systemd-boot (but not with systemd-boot as an initrd).
       '';
     };
-    netModules =
+    network.vlan = opts.enable "add `8021q` driver to {network.modules}";
+    network.bridge = opts.enable "add `bridge` driver to {network.modules}";
+    network.modules =
       opts.stringList [ ] ''
         extra network modules to add to `boot.initrd.availableKernelModules`
 
@@ -74,7 +76,9 @@ in
   };
 
   config = mkIf cfg.enable {
-    boot.initrd.availableKernelModules = cfg.netModules;
+    provision.fs.boot.initrd.network.modules =
+      (lib.optional cfg.network.vlan "8021q") ++ (lib.optional cfg.network.bridge "bridge");
+    boot.initrd.availableKernelModules = cfg.network.modules;
     boot.initrd.network = {
       enable = true;
       ssh = mkIf cfg.ssh.enable {

@@ -75,7 +75,7 @@ provision.fs.boot = {
   };
   # not all network kernel modules may be present at boot to connect to the network for SSH to be acccessible
   # you can add kernel modules to load when initrd is enabled to ensure networks can be configured during initrd
-  initrd.netModules = [
+  initrd.network.modules = [
     "8021q" # VLAN
     "bridge" # bridge / switch
     # example hardware
@@ -84,10 +84,13 @@ provision.fs.boot = {
     "e1000e"
     "i40e"
   ];
+  # there are some other defaults available under `initrd.network`
+  initrd.network.vlan = true; # adds `8021q` to `initrd.network.modules`
+  initrd.network.bridge = true; # adds `bridge` to `initrd.network.modules`
 };
 ```
 
-You can find which kernel modules you might need to add to `provision.fs.boot.initrd.netModules` for your hardware by running
+You can find which kernel modules you might need to add to `provision.fs.boot.initrd.network.modules` for your hardware by running
 ```sh
 INTERFACE=enp1s0
 ethtool -i $INTERFACE | grep driver

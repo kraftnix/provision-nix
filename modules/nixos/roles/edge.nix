@@ -40,7 +40,7 @@ in
         enable = true;
         initrd.enable = true;
         initrd.ssh.usersImportKeyFiles = cfg.edge.initrdUnlockUsers;
-        initrd.netModules = cfg.edge.initrdNetModules;
+        initrd.network.modules = cfg.edge.initrdNetModules;
       };
       core = {
         enable = true;
