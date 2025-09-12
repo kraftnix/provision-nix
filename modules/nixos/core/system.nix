@@ -134,7 +134,7 @@ in
         ctl = "systemctl";
         ctls = "systemctl status";
         ctld = "systemctl down";
-        ctlu = "systemctl up";
+        ctlu = "systemctl --user";
 
         # journalctl
         j = "journalctl";

@@ -230,7 +230,14 @@
     libvirt.legacy.networking = true;
     containers = {
       enable = true;
-      podman.enable = true;
+      podman = {
+        enable = true;
+        dockerSocket = true;
+        rootless = true;
+        network = {
+          subnet = "10.43";
+        };
+      };
       storageContainerOverlay = true;
     };
     build.arm = true;
