@@ -119,6 +119,7 @@ in
       };
       conf = mkIf (cfg.podman.enable && network.enable) {
         network.network_backend = mkIf network.netavark.enable "netavark";
+        network.network_config_dir = "/etc/containers/networks";
         network.default_rootless_network_cmd = mkIf (network.rootless_cmd != null) network.rootless_cmd;
         engine.helper_binaries_dir =
           [ ]
