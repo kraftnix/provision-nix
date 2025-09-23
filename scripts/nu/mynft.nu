@@ -4,7 +4,7 @@ use std
 export module mynft {
 
   def getCol [ name ] {
-    select $name -i | get $name | where {|| $in != null}
+    select $name -o | get $name | where {|| $in != null}
   }
 
   export def "list" [
@@ -42,7 +42,7 @@ export module mynft {
   export def shorten [ doShorten ] {
     let rules = $in
     if $doShorten {
-      $rules | select family table chain handle comment -i
+      $rules | select family table chain handle comment -o
     } else {
       mut some = ($rules | default "" expr | default "" comment | move expr --before comment)
       if ($some | all {|| $in.expr == ""}) {
