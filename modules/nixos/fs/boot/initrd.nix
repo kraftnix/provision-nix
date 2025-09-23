@@ -49,36 +49,42 @@ in
         This can be used with either grub or systemd-boot (but not with systemd-boot as an initrd).
       '';
     };
-    network.vlan = opts.enable "add `8021q` driver to {network.modules}";
-    network.bridge = opts.enable "add `bridge` driver to {network.modules}";
-    network.modules =
-      opts.stringList [ ] ''
-        extra network modules to add to `boot.initrd.availableKernelModules`
+    network = {
+      bridge = opts.enable "add `bridge` driver to {network.modules}";
+      vlan = opts.enable "add `8021q` driver to {network.modules}";
+      vm = opts.enable "add `virtio_net` driver to {network.modules}";
+      modules =
+        opts.stringList [ ] ''
+          extra network modules to add to `boot.initrd.availableKernelModules`
 
-        for network unlock you will likely need to add the kernel modules for
-        your network cards you want to use in stage-1
+          for network unlock you will likely need to add the kernel modules for
+          your network cards you want to use in stage-1
 
-        you can find out the kernel driver in use with `ethtool`:
-        ```sh
-        INTERFACE=enp1s0
-        ethtool -i $INTERFACE | grep driver
-        ```
-      ''
-      // {
-        example = [
-          "e1000e"
-          "i40e"
-          "igc"
-          "8021q"
-          "bridge"
-          "r8169"
-        ];
-      };
+          you can find out the kernel driver in use with `ethtool`:
+          ```sh
+          INTERFACE=enp1s0
+          ethtool -i $INTERFACE | grep driver
+          ```
+        ''
+        // {
+          example = [
+            "e1000e"
+            "i40e"
+            "igc"
+            "8021q"
+            "bridge"
+            "r8169"
+          ];
+        };
+    };
   };
 
   config = mkIf cfg.enable {
-    provision.fs.boot.initrd.network.modules =
-      (lib.optional cfg.network.vlan "8021q") ++ (lib.optional cfg.network.bridge "bridge");
+    provision.fs.boot.initrd.network.modules = lib.flatten [
+      (lib.optional cfg.network.vlan "8021q")
+      (lib.optional cfg.network.bridge "bridge")
+      (lib.optional cfg.network.vm "virtio_net")
+    ];
     boot.initrd.availableKernelModules = cfg.network.modules;
     boot.initrd.network = {
       enable = true;
