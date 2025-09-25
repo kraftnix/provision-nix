@@ -14,6 +14,7 @@
       };
       packages = {
         btrfs-list = pkgs.callPackage (import ./btrfs-list.nix sources.btrfs-list) { };
+        dnsleaktest = pkgs.callPackage (import ./dnsleaktest.nix) { };
         mdbook-theme = pkgs.callPackage (import ./mdbook-theme.nix) { };
         yapp = pkgs.callPackage (import ./yapp.nix) { };
       };
