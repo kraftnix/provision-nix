@@ -31,8 +31,8 @@ in
       latest = mkOption {
         description = "latest linux kernel version that works with zfs";
         type = types.raw;
-        default = pkgs.linuxKernel.packages.linux_6_12;
-        defaultText = literalExpression "self.channels.$\{pkgs.system}.nixpkgs-zfs.pkgs.linuxKernel.packages.linux_6_12";
+        default = pkgs.linuxKernel.packages.linux_6_16;
+        defaultText = literalExpression "pkgs.linuxKernel.packages.linux_6_16";
         example = literalExpression "pkgs.linuxKernel.packages.linux_6_11";
       };
     };

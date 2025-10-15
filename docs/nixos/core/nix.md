@@ -25,7 +25,7 @@ Module Options Reference for [`provision.nix`](../../options/nixos-all-options.m
 Snippet
 
 ```nix
-{{#include ../../../modules/nixos/core/nix-extended.nix:102:128}}
+{{#include ../../../modules/nixos/core/nix-extended.nix:102:127}}
 ```
 
 ## Dev Profile
@@ -38,7 +38,7 @@ Snippet
 Snippet
 
 ```nix
-{{#include ../../../modules/nixos/core/nix-extended.nix:129:146}}
+{{#include ../../../modules/nixos/core/nix-extended.nix:128:146}}
 ```
 
 ## Builder Profile

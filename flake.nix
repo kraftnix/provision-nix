@@ -31,7 +31,8 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     flake-parts.inputs.nixpkgs-lib.follows = "nixlib";
 
-    git-hooks-nix.url = "github:cachix/git-hooks.nix";
+    # NOTE: using a specific commit due to strange eval issues for doc generation with recent commits
+    git-hooks-nix.url = "github:cachix/git-hooks.nix/e891a93b193fcaf2fc8012d890dc7f0befe86ec2";
     git-hooks-nix.inputs = {
       nixpkgs.follows = "nixpkgs";
       flake-compat.follows = "flake-compat";

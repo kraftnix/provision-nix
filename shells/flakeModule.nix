@@ -26,7 +26,6 @@ in
     perSystem = flake-parts-lib.mkPerSystemOption (
       {
         config,
-        pkgs,
         ...
       }:
       let
