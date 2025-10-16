@@ -17,7 +17,7 @@
 
   # core
   inputs = {
-    systems.url = "github:nix-systems/default";
+    systems.url = "github:nix-systems/default-linux";
     flake-utils.url = "github:numtide/flake-utils";
     flake-utils.inputs.systems.follows = "systems";
     flake-compat = {
@@ -102,10 +102,7 @@
         ./scripts
         ./toplevel.nix
       ];
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-      ];
+      systems = import inputs.systems;
     };
 
   nixConfig = {
