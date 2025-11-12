@@ -1,6 +1,8 @@
 {
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
   inputs.nixpkgs-stable.url = "github:nixos/nixpkgs/release-25.05";
+  # WORKAROUND(zfs): 6_16 removed from stable and unstable
+  inputs.nixpkgs-zfs.url = "github:nixos/nixpkgs/544961dfcce86422ba200ed9a0b00dd4b1486ec5";
   inputs.nixlib.url = "github:nix-community/nixpkgs.lib";
 
   inputs.extra-lib.url = "github:kraftnix/extra-lib";
@@ -23,6 +25,11 @@
     flake-compat = {
       url = "github:inclyc/flake-compat";
       flake = false;
+    };
+    nixos-generators.url = "github:nix-community/nixos-generators";
+    nixos-generators = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixlib.follows = "nixlib";
     };
   };
 
@@ -63,23 +70,6 @@
     };
   };
 
-  # install
-  inputs = {
-    nixos-anywhere.url = "github:numtide/nixos-anywhere";
-    nixos-anywhere.inputs = {
-      nixpkgs.follows = "nixpkgs";
-      flake-parts.follows = "flake-parts";
-      nixos-stable.follows = "nixpkgs-stable";
-      disko.follows = "disko";
-    };
-
-    nixos-generators.url = "github:nix-community/nixos-generators";
-    nixos-generators = {
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.nixlib.follows = "nixlib";
-    };
-  };
-
   # TODO: better way to enable
   # if you want to use yubikey iso
   # inputs.drduh.url = "github:DrDuh/YubiKey-Guide";
@@ -95,28 +85,28 @@
       debug = true;
       imports = [
         flake-parts.flakeModules.modules
+        flake-parts.flakeModules.partitions
         ./disko
         ./hosts
-        ./install
         ./packages
         ./scripts
         ./toplevel.nix
       ];
+      partitionedAttrs = {
+        installProfiles = "install";
+        installLib = "install";
+        isos = "install";
+        install = "install";
+      };
+      partitions = {
+        install.extraInputsFlake = ./install;
+        install.module =
+          { inputs, lib, ... }:
+          {
+            imports = [ ./install/default.nix ];
+          };
+      };
       systems = import inputs.systems;
     };
 
-  nixConfig = {
-    extra-experimental-features = [
-      "nix-command"
-      "flakes"
-    ];
-    extra-substituters = [
-      "https://nix-community.cachix.org"
-      "https://colmena.cachix.org"
-    ];
-    extra-trusted-public-keys = [
-      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-      "colmena.cachix.org-1:7BzpDnjjH8ki2CT3f6GdOk7QAzPOl+1t3LvTLXqYcSg="
-    ];
-  };
 }

@@ -164,12 +164,13 @@ in
 
               config =
                 let
-                  # inherit (localFlake.inputs.nuschtos-search.packages.${pkgs.system}) nuscht-search ixxPkgs;
-                  inherit (localFlake.inputs.nuschtos-search.packages.${pkgs.system})
+                  # inherit (localFlake.inputs.nuschtos-search.packages.${pkgs.stdenv.hostPlatform.system}) nuscht-search ixxPkgs;
+                  inherit (localFlake.inputs.nuschtos-search.packages.${pkgs.stdenv.hostPlatform.system})
                     mkMultiSearch
                     ;
                   cfg = config;
-                  nuschtos-pkgs = localFlake.inputs.nuschtos-search.inputs.nixpkgs.legacyPackages.${pkgs.system};
+                  nuschtos-pkgs =
+                    localFlake.inputs.nuschtos-search.inputs.nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system};
 
                 in
                 {

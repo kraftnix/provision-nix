@@ -58,7 +58,7 @@ in
                       default = [ ];
                       type = with types; listOf package;
                       example = literalExpression ''
-                        [ inputs.colmena.packages.$\{pkgs.system}.colmena ]
+                        [ inputs.colmena.packages.$\{pkgs.stdenv.hostPlatform.system}.colmena ]
                       '';
                     };
                   };
@@ -148,15 +148,14 @@ in
         fcfg = config.provision.formatter;
       in
       {
-        packages.na-install = pkgs.writeShellScriptBin "na-install" (builtins.readFile ./na-install.sh);
         pre-commit = mkIf (cfg.enable && pcfg.enable) {
           settings.hooks = pcfg.hooks;
         };
         formatter = mkIf (cfg.enable && fcfg.enable) fcfg.package;
         provision = {
           deploy.packages = mkDefault [
-            localFlake.inputs.colmena.packages.${pkgs.system}.colmena
-            localFlake.inputs.deploy-rs.packages.${pkgs.system}.deploy-rs
+            localFlake.inputs.colmena.packages.${pkgs.stdenv.hostPlatform.system}.colmena
+            localFlake.inputs.deploy-rs.packages.${pkgs.stdenv.hostPlatform.system}.deploy-rs
             pkgs.nix-fast-build
             pkgs.nixfmt-tree
           ];

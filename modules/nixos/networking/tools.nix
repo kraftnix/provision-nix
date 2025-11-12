@@ -28,7 +28,7 @@ in
         with pkgs;
         mkDefault [
           conntrack-tools # CLI: conntrack
-          self.packages.${pkgs.system}.dnsleaktest # CLI: test for leaking DNS
+          self.packages.${pkgs.stdenv.hostPlatform.system}.dnsleaktest # CLI: test for leaking DNS
           ethtool # CLI: ethtool
           iperf # CLI: internet performance measure
           iproute2 # CLI: ip route checking tool

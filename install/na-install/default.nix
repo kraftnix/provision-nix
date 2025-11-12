@@ -1,4 +1,7 @@
-localFlake:
+{
+  localFlake,
+  inputs,
+}:
 {
   config,
   lib,
@@ -25,8 +28,8 @@ in
 
   config = mkIf cfg.enable {
     packages = [
-      localFlake.inputs.nixos-anywhere.packages.${pkgs.system}.default
-      localFlake.self.packages.${pkgs.system}.na-install
+      inputs.nixos-anywhere.packages.${pkgs.stdenv.hostPlatform.system}.default
+      localFlake.self.packages.${pkgs.stdenv.hostPlatform.system}.na-install
     ];
     env = [
       {
@@ -42,7 +45,7 @@ in
       {
         name = "na-install";
         category = "na-install";
-        package = localFlake.self.packages.${pkgs.system}.na-install;
+        package = localFlake.self.packages.${pkgs.stdenv.hostPlatform.system}.na-install;
         help = ''
           Use `nixos-anywhere` to install a to an external host.
                           - `NA_HOST`: matches a host configuration in `nixosConfigurations.{NA_HOST}`.

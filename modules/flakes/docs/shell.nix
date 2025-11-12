@@ -17,7 +17,7 @@ localFlake:
           pkgs.mdbook-linkcheck
           pkgs.mdbook-variables
           # pkgs.mdbook-cmdrun
-          # localFlake.self.packages.${pkgs.system}.yapp
+          # localFlake.self.packages.${pkgs.stdenv.hostPlatform.system}.yapp
           # config.packages.mdbook-theme
         ];
 

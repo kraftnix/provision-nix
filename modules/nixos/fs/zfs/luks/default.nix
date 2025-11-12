@@ -86,13 +86,13 @@ in
               mode = opts.string "keyfile" "mode to use. only keyfile is supported atm";
               source = opts.string "" "location of the key file";
               disko = mkOption {
+                description = "a disko root configuration file";
                 default = null;
                 type = types.nullOr types.path;
-                description = "a disko root configuration file";
               };
               disks = mkOption {
-                default = [ ];
                 description = "disks to mount using specified keyfile";
+                default = [ ];
                 type = types.listOf (
                   types.submodule {
                     options.device = opts.string "" ''

@@ -197,8 +197,8 @@ in
                       pkgs.mdbook-variables
                       # pkgs.mdbook-cmdrun
                       pkgs.nushell
-                      localFlake.self.packages.${pkgs.system}.yapp
-                      localFlake.self.packages.${pkgs.system}.simple-replace
+                      localFlake.self.packages.${pkgs.stdenv.hostPlatform.system}.yapp
+                      localFlake.self.packages.${pkgs.stdenv.hostPlatform.system}.simple-replace
                       # config.packages.mdbook-theme
                     ];
                     # have to set as string or can't evaluate in nix repl

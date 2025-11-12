@@ -12,7 +12,7 @@ let
     ;
 in
 {
-  flake.profiles.install = {
+  flake.installProfiles = {
     # Base modules for nixos-anywhere installs
     nixosAnywhereBase =
       { modulesPath, ... }:
@@ -61,7 +61,7 @@ in
           enable = true;
           ssh = {
             enable = true;
-            inherit (self.internal) authorizedKeys;
+            inherit (self.install) authorizedKeys;
             port = 9797;
             hostKeys = [ "/etc/initrd/ssh_host_ed25519_key" ];
           };
@@ -77,8 +77,8 @@ in
       { config, ... }:
       {
         users.users.root = {
-          hashedPassword = self.internal.rootPasswordHash;
-          openssh.authorizedKeys.keys = self.internal.authorizedKeys;
+          hashedPassword = self.install.rootPasswordHash;
+          openssh.authorizedKeys.keys = self.install.authorizedKeys;
         };
       };
 
@@ -91,7 +91,7 @@ in
       }:
       {
         imports = [
-          self.profiles.install.nixosAnywhereBase
+          self.installProfiles.nixosAnywhereBase
           # add your own disk config
           # (import ./vps-disk.nix { device = "/dev/vda"; })
         ];

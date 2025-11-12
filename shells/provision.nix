@@ -82,11 +82,11 @@ in
     commands = [
       {
         category = "deploy";
-        package = inputs.deploy-rs.packages.${pkgs.system}.default;
+        package = inputs.deploy-rs.packages.${pkgs.stdenv.hostPlatform.system}.default;
       }
       {
         category = "deploy";
-        package = inputs.colmena.packages.${pkgs.system}.colmena;
+        package = inputs.colmena.packages.${pkgs.stdenv.hostPlatform.system}.colmena;
       }
     ]
     ++ (optional (enabledSources != { }) {

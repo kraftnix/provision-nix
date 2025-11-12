@@ -60,7 +60,7 @@ Basic usage:
     # add these overlays to all hosts
     overlays = [
       (final: prev: {
-        inherit (inputs.nixpkgs-latest.legacyPackages.${prev.system})
+        inherit (inputs.nixpkgs-latest.legacyPackages.${prev.stdenv.hostPlatform.system})
           prometheus
           vector
           ;

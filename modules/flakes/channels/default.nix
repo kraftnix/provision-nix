@@ -97,7 +97,7 @@ in
                 input = mkDefault inputs.${config.inputName};
                 pkgs = import config.input (
                   {
-                    inherit (pkgs) system;
+                    inherit (pkgs.stdenv.hostPlatform) system;
                     overlays = config.overlays;
                     inherit (config) config;
                   }
@@ -141,9 +141,9 @@ in
     flake.overlays.channels = final: prev: {
       channels =
         if (prev ? channels) then
-          (prev.channels // (mapChannelOverride prev.system))
+          (prev.channels // (mapChannelOverride prev.stdenv.hostPlatform.system))
         else
-          (mapChannelOverride prev.system);
+          (mapChannelOverride prev.stdenv.hostPlatform.system);
     };
   };
 }

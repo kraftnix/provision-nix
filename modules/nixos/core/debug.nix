@@ -29,7 +29,7 @@ in
       dmidecode # get system information
       dua # disk usage analysis (parallel)
       duf # file usage
-      du-dust # better du
+      dust # better du
       ethtool # ethtool
       iperf # internet performance measure
       iproute2 # ip route checking tool

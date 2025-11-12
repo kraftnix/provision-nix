@@ -14,8 +14,8 @@
   ];
 
   provision.scripts.enable = true;
-  provision.scripts.defaultLibDirs = self.scripts.${pkgs.system}.defaultLibDirs;
-  provision.scripts.scripts = self.scripts.${pkgs.system}.__exportableScripts // {
+  provision.scripts.defaultLibDirs = self.scripts.${pkgs.stdenv.hostPlatform.system}.defaultLibDirs;
+  provision.scripts.scripts = self.scripts.${pkgs.stdenv.hostPlatform.system}.__exportableScripts // {
     testing.inputs = [ pkgs.afetch ];
     testing.text = ''
       # test function

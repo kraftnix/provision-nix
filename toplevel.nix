@@ -12,7 +12,6 @@ in
 {
   imports = [
     inputs.flake-parts.flakeModules.easyOverlay
-    ./install
     ./scripts
   ]
   # we can't import `provison.flake.all` due to infinite cursion
@@ -32,7 +31,6 @@ in
 
   flake = {
     devshellModules.provision = importApply ./shells/provision.nix localFlake;
-    devshellModules.na-install = importApply ./shells/na-install.nix localFlake;
     nixd.options.nixos = self.nixosConfigurations.testAllProfiles.options;
     lib = import ./lib { inherit lib localFlake; };
     auto-import = {
@@ -109,7 +107,7 @@ in
     };
     nix-fast-build = final: prev: {
       # https://github.com/tstack/lnav/issues/1291
-      nix-fast-build = localFlake.self.packages.${final.system}.nix-fast-build;
+      nix-fast-build = localFlake.self.packages.${final.stdenv.hostPlatform.system}.nix-fast-build;
       # lnav = prev.lnav.overrideAttrs (self: {
       #   nativeBuildInputs = self.nativeBuildInputs ++ [prev.tzdata];
       #   buildInputs = self.buildInputs ++ [prev.tzdata];
@@ -126,7 +124,7 @@ in
   };
 
   perSystem =
-    { config, ... }:
+    { config, system, ... }:
     {
       channels.nixpkgs.overlays = self.hosts.defaults.overlays;
       channels.stable.input = inputs.nixpkgs-stable;
@@ -140,15 +138,12 @@ in
             ;
         })
       ];
-      # FIX(zfs): 6_10 removed from stable and unstable
+      # WORKAROUND(zfs): 6_16 removed from stable and unstable
       channels.nixpkgs-zfs.inputName = "nixpkgs-zfs";
       provision = {
         enable = true;
         enableDefaults = true;
       };
-      devshells.default = {
-        imports = [ self.devshellModules.na-install ];
-        na-install.enable = true;
-      };
+      # packages.linux_6_16 = inputs.nixpkgs-zfs.legacyPackages.${system}.linuxKernel.packages.linux_6_16;
     };
 }

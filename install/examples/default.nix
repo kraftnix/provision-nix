@@ -13,7 +13,7 @@ in
   # For basic basic unencrypted installs
   flake.nixosConfigurations.vpsBasicInstall = inputs.nixpkgs.lib.nixosSystem {
     system = "x86_64-linux";
-    modules = with self.profiles.install; [
+    modules = with self.installProfiles; [
       nixosAnywhereInstall
       testRootUser
       # (import ../../disko/ext4-simple-bios-uefi.nix)
@@ -24,7 +24,7 @@ in
   # Luks Encrypted with initrd
   flake.nixosConfigurations.vpsLuksInitrdInstall = inputs.nixpkgs.lib.nixosSystem {
     system = "x86_64-linux";
-    modules = with self.profiles.install; [
+    modules = with self.installProfiles; [
       nixosAnywhereInstall
       testRootUser
       (import ./vps-disk.nix { device = "/dev/vda"; })
@@ -35,7 +35,7 @@ in
   # Luks Encrypted with initrd
   flake.nixosConfigurations.vpsLuksInitrdInstallBtrfs = inputs.nixpkgs.lib.nixosSystem {
     system = "x86_64-linux";
-    modules = with self.profiles.install; [
+    modules = with self.installProfiles; [
       nixosAnywhereInstall
       uefiSystemdBoot
       testRootUser
@@ -56,12 +56,12 @@ in
   # Hizakura example with static ip
   flake.nixosConfigurations.hizakuraStaticInstall = inputs.nixpkgs.lib.nixosSystem {
     system = "x86_64-linux";
-    modules = with self.profiles.install; [
+    modules = with self.installProfiles; [
       nixosAnywhereInstall
       testRootUser
       (import ./vps-disk.nix { device = "/dev/vda"; })
       initrdNetwork
-      (self.lib.initrdStaticIp {
+      (self.installLib.initrdStaticIp {
         address = "45.133.117.40";
         interface = "enp3s0";
         gateway = "45.133.117.1";
@@ -74,7 +74,7 @@ in
   # Steam Deck example
   flake.nixosConfigurations.steamDeckBtrfs = inputs.nixpkgs.lib.nixosSystem {
     system = "x86_64-linux";
-    modules = with self.profiles.install; [
+    modules = with self.installProfiles; [
       nixosAnywhereInstall
       uefiSystemdBoot
       testRootUser
@@ -97,5 +97,5 @@ in
   };
 
   # Generate isos for hosts in `flake.internal.generateIsos`
-  flake.isos = mapAttrs (host: cfg: cfg.config.formats.iso) self.internal.generateIsos;
+  flake.isos = mapAttrs (host: cfg: cfg.config.formats.iso) self.install.generateIsos;
 }
