@@ -71,7 +71,7 @@ export module mynft {
     { rules: rule,
       counters: counter,
       maps: map,
-    } | get $cmd -i | default "all"
+    } | get $cmd -o | default "all"
   }
 
   export def getExpr [
@@ -108,7 +108,7 @@ export module mynft {
     let rulesets = (if $cmd == "all" {
       $ruleset
     } else {
-      $ruleset | get $cmd -i
+      $ruleset | get $cmd -o
     })
     let results = ($rulesets
       | compact
