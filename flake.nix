@@ -1,8 +1,6 @@
 {
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
   inputs.nixpkgs-stable.url = "github:nixos/nixpkgs/release-25.05";
-  # WORKAROUND(zfs): 6_16 removed from stable and unstable
-  inputs.nixpkgs-zfs.url = "github:nixos/nixpkgs/544961dfcce86422ba200ed9a0b00dd4b1486ec5";
   inputs.nixlib.url = "github:nix-community/nixpkgs.lib";
 
   inputs.extra-lib.url = "github:kraftnix/extra-lib";

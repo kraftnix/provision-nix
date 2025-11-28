@@ -138,12 +138,9 @@ in
             ;
         })
       ];
-      # WORKAROUND(zfs): 6_16 removed from stable and unstable
-      channels.nixpkgs-zfs.inputName = "nixpkgs-zfs";
       provision = {
         enable = true;
         enableDefaults = true;
       };
-      # packages.linux_6_16 = inputs.nixpkgs-zfs.legacyPackages.${system}.linuxKernel.packages.linux_6_16;
     };
 }
