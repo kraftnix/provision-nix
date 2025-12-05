@@ -1,4 +1,5 @@
 # yubikey-installer.nix
+nixpkgs:
 let
   configuration =
     {
@@ -7,7 +8,6 @@ let
       pkgs,
       ...
     }:
-    with pkgs;
     let
       src = fetchGit "https://github.com/drduh/YubiKey-Guide";
 
@@ -19,36 +19,36 @@ let
 
       gpg-conf = "${drduhConfig}/gpg.conf";
 
-      xserverCfg = config.services.xserver;
-
       pinentryFlavour =
-        if xserverCfg.desktopManager.lxqt.enable || xserverCfg.desktopManager.plasma5.enable then
+        if
+          config.services.xserver.desktopManager.lxqt.enable || config.services.desktopManager.plasma6.enable
+        then
           "qt"
-        else if xserverCfg.desktopManager.xfce.enable then
+        else if config.services.xserver.desktopManager.xfce.enable then
           "gtk2"
-        else if xserverCfg.enable || config.programs.sway.enable then
+        else if config.services.xserver.enable || config.programs.sway.enable then
           "gnome3"
         else
           "curses";
 
       # Instead of hard-coding the pinentry program, chose the appropriate one
       # based on the environment of the image the user has chosen to build.
-      gpg-agent-conf = runCommand "gpg-agent.conf" { } ''
+      gpg-agent-conf = pkgs.runCommand "gpg-agent.conf" { } ''
         sed '/pinentry-program/d' ${drduhConfig}/gpg-agent.conf > $out
-        echo "pinentry-program ${pinentry.${pinentryFlavour}}/bin/pinentry" >> $out
+        echo "pinentry-program ${lib.getExe pkgs."pinentry-${pinentryFlavour}"}" >> $out
       '';
 
-      view-yubikey-guide = writeShellScriptBin "view-yubikey-guide" ''
+      view-yubikey-guide = pkgs.writeShellScriptBin "view-yubikey-guide" ''
         viewer="$(type -P xdg-open || true)"
         if [ -z "$viewer" ]; then
-          viewer="${glow}/bin/glow -p"
+          viewer="${pkgs.glow}/bin/glow -p"
         fi
         exec $viewer "${guide}"
       '';
 
-      shortcut = makeDesktopItem {
+      shortcut = pkgs.makeDesktopItem {
         name = "yubikey-guide";
-        icon = "${yubikey-manager-qt}/share/ykman-gui/icons/ykman.png";
+        icon = "${pkgs.yubioath-flutter}/share/pixmaps/com.yubico.yubioath.png";
         desktopName = "drduh's YubiKey Guide";
         genericName = "Guide to using YubiKey for GPG and SSH";
         comment = "Open the guide in a reader program";
@@ -56,7 +56,7 @@ let
         exec = "${view-yubikey-guide}/bin/view-yubikey-guide";
       };
 
-      yubikey-guide = symlinkJoin {
+      yubikey-guide = pkgs.symlinkJoin {
         name = "yubikey-guide";
         paths = [
           view-yubikey-guide
@@ -69,22 +69,23 @@ let
         allowBroken = true;
       };
 
-      isoImage.isoBaseName = lib.mkForce "nixos-yubikey";
+      image.baseName = lib.mkForce "nixos-yubikey";
       # Uncomment this to disable compression and speed up image creation time
       #isoImage.squashfsCompression = "gzip -Xcompression-level 1";
 
-      boot.kernelPackages = linuxPackages_latest;
+      # boot.kernelPackages = lib.mkDefault pkgs.linuxKernel.packages.linux_latest;
+      boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_latest;
       # Always copytoram so that, if the image is booted from, e.g., a
       # USB stick, nothing is mistakenly written to persistent storage.
       boot.kernelParams = [ "copytoram" ];
       # Secure defaults
-      boot.cleanTmpDir = true;
+      boot.tmp.cleanOnBoot = true;
       boot.kernel.sysctl = {
         "kernel.unprivileged_bpf_disabled" = 1;
       };
 
       services.pcscd.enable = true;
-      services.udev.packages = [ yubikey-personalization ];
+      services.udev.packages = [ pkgs.yubikey-personalization ];
 
       programs = {
         ssh.startAgent = false;
@@ -94,7 +95,7 @@ let
         };
       };
 
-      environment.systemPackages = [
+      environment.systemPackages = with pkgs; [
         # my extra
         nushell
         age
@@ -108,9 +109,7 @@ let
 
         # Yubico's official tools
         yubikey-manager
-        yubikey-manager-qt
         yubikey-personalization
-        yubikey-personalization-gui
         yubico-piv-tool
         yubioath-flutter
 
@@ -124,7 +123,7 @@ let
 
         # Miscellaneous tools that might be useful beyond the scope of the guide
         cfssl
-        pcsctools
+        pcsc-tools
 
         # This guide itself (run `view-yubikey-guide` on the terminal to open it
         # in a non-graphical environment).
@@ -177,16 +176,19 @@ let
         '';
     };
 
-  nixos = import <nixpkgs/nixos/release.nix> {
-    inherit configuration;
-    supportedSystems = [ "x86_64-linux" ];
+  baseHost = nixpkgs.lib.nixosSystem {
+    modules = [
+      configuration
+      "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
+    ];
+    system = "x86_64-linux";
   };
 
   # Choose the one you like:
-  nixos-yubikey = nixos.iso_minimal; # No graphical environment
+  nixos-yubikey = baseHost.config.system.build.isoImage; # No graphical environment
 in
 #nixos-yubikey = nixos.iso_gnome;
 # nixos-yubikey = nixos.iso_plasma5;
 {
-  inherit nixos-yubikey;
+  inherit baseHost nixos-yubikey;
 }

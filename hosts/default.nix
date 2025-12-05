@@ -117,7 +117,7 @@
   };
 
   # Comes from https://github.com/drduh/YubiKey-Guide#nixos
-  flake.yubikey-installer-old = import ./__old-yubikey-installer.nix;
+  flake.yubikey-installer-old = import ./__old-yubikey-installer.nix inputs.nixpkgs;
   # TODO: better way to enable
   # flake.yubikey-installer = inputs.drduh.nixosConfigurations.yubikeyLive.x86_64-linux.extendModules {
   #   modules = [
