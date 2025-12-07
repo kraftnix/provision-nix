@@ -121,13 +121,19 @@ let
         };
         hostPath = mkOption {
           description = "host path of export, sets `device` of bind mount";
-          default = "/${name}";
+          default = if lib.hasPrefix "/" name then name else "/${name}";
           example = "/media";
+          type = types.path;
+        };
+        subpath = mkOption {
+          description = "subpath of export on host, this is where the export is available to clients";
+          default = if lib.hasPrefix "/" name then name else "/${name}";
+          example = "/export/media";
           type = types.path;
         };
         exportPath = mkOption {
           description = "export path of export";
-          default = "${cfg.exportDir}${config.hostPath}";
+          default = "${cfg.exportDir}${config.subpath}";
           example = "/export/media";
           type = types.path;
         };
@@ -186,6 +192,12 @@ in
       type = types.str;
     };
 
+    default.rootFsid = mkOption {
+      description = "default fsid to set for root export at {exportDir}";
+      default = null;
+      example = 0;
+      type = types.nullOr types.int;
+    };
     default.export.options = mkOption {
       description = "default export options to use for subnet permissions";
       default = { };
@@ -224,8 +236,8 @@ in
             (subnetModule false)
             {
               options = {
-                paths = mkOption {
-                  description = "list of paths to apply these permissions to";
+                exports = mkOption {
+                  description = "list of exports to apply these permissions to";
                   default = [ ];
                   type = types.listOf types.str;
                 };
@@ -249,9 +261,27 @@ in
       (lib.mapAttrsToList (
         _: subnet:
         lib.map (path: {
-          ${path}.subnets.${subnet.subnet}.permissions = subnet.permissions;
-        }) subnet.paths
+          ${path}.subnets.${subnet.name} = {
+            subnet = subnet.subnet;
+            permissions = subnet.permissions;
+          };
+        }) subnet.exports
       ))
+      (
+        exports:
+        exports
+        ++ [
+          {
+            root = {
+              hostPath = cfg.exportDir; # this option is not used when addToFilesystem is set
+              subpath = "/";
+              exportPath = cfg.exportDir;
+              addToFilesystem = false; # so we don't mount full root filesystem
+              export.options.fsid = lib.mkIf (cfg.default.rootFsid != null) cfg.default.rootFsid;
+            };
+          }
+        ]
+      )
       lib.flatten
       lib.mkMerge
     ];

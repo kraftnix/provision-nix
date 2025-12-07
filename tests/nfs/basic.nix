@@ -49,12 +49,13 @@ let
           remoteUrl = "server";
           remoteBase = "/pool";
           mounts.public = {
-            hostPath = "/public";
+            remotePath = "/public";
             networkOnlineService = "network-online.target";
           };
           # mount so `mylocaluser` can access the files locally
           mounts.user-example = {
             hostPath = "/user-example";
+            # remotePath = "/pool/user-example"; # {remoteBase}/{hostPath}
             networkOnlineService = "network-online.target";
             requires = [ "firewall.service" ];
           };
@@ -81,7 +82,8 @@ let
         boot.initrd.postDeviceCommands = ''
           ${pkgs.zfs}/bin/zpool create -O acltype=posixacl -O xattr=sa -O compression=lz4 pool /dev/vdb
           ${pkgs.zfs}/bin/zfs set mountpoint=/pool pool
-          ${pkgs.zfs}/bin/zfs create pool/public
+          ${pkgs.zfs}/bin/zfs create pool/var
+          ${pkgs.zfs}/bin/zfs create pool/var/public
           ${pkgs.zfs}/bin/zfs create pool/user-example
           ${pkgs.zfs}/bin/zfs mount -r pool
         '';
@@ -113,6 +115,7 @@ let
             "eth1"
           ];
           default.addToFilesystem = true;
+          default.rootFsid = 0;
           default.export.options = {
             rw = true;
             insecure = true;
@@ -121,26 +124,15 @@ let
             async = true;
           };
           exports = {
-            "/" = {
-              exportPath = "/export";
-              # addToFilesystem = false;
-              export.options.fsid = 0;
+            root.subnets."*" = { };
+            "/pool".subnets."*" = { };
+            public = {
+              hostPath = "/pool/var/public";
               subnets."*" = { };
             };
-            "/pool" = {
-              hostPath = "/pool";
-              subnets."*" = { };
-            };
-            "/pool/public" = {
-              hostPath = "/pool/public";
-              subnets."*" = { };
-            };
-            "/pool/user-example" = {
-              hostPath = "/pool/user-example";
-              subnets."*".export.options = {
-                anonuid = config.users.users.shared-user.uid;
-                anongid = config.users.groups.users.gid;
-              };
+            "/pool/user-example".subnets."*".export.options = {
+              anonuid = config.users.users.shared-user.uid;
+              anongid = config.users.groups.users.gid;
             };
           };
         };
@@ -163,18 +155,21 @@ let
         server.wait_for_unit("default.target")
 
       with subtest("Setup permissions"):
-        server.succeed("chown -R shared-user:users /pool/public")
+        server.succeed("chown -R shared-user:users /pool/var/public")
         server.succeed("chown -R shared-user:users /pool/user-example")
 
       with subtest("testing public read access on existing file"):
-        server.succeed("sudo -u shared-user sh -c 'echo __EXISTING_FILE__ > /pool/public/existing'")
+        server.succeed("sudo -u shared-user sh -c 'echo __EXISTING_FILE__ > /pool/var/public/existing'")
+        server.succeed("sudo -u shared-user sh -c 'cat /pool/var/public/existing | grep -e __EXISTING_FILE__'")
         client.succeed("sudo -u shared-user sh -c 'cat /public/existing | grep -e __EXISTING_FILE__'")
 
       with subtest("testing public create/write/read/delete access for new file from client"):
         client.succeed("sudo -u shared-user sh -c 'echo __SUCCESS_STRING__ > /public/newfile'")
-        server.succeed("cat /pool/public/newfile | grep -e __SUCCESS_STRING__")
+        server.succeed("cat /pool/var/public/newfile | grep -e __SUCCESS_STRING__")
+        server.succeed("cat /export/public/newfile | grep -e __SUCCESS_STRING__")
         client.succeed("sudo -u shared-user sh -c 'echo 'EDIT_SUCCESS' >> /public/newfile'")
-        server.succeed("cat /pool/public/newfile | grep -e EDIT_SUCCESS")
+        server.succeed("cat /pool/var/public/newfile | grep -e EDIT_SUCCESS")
+        server.succeed("cat /export/public/newfile | grep -e EDIT_SUCCESS")
         client.succeed("sudo -u shared-user sh -c 'cat /public/newfile | grep -e EDIT_SUCCESS'")
         client.succeed("sudo -u shared-user sh -c 'rm /public/newfile'")
         client.fail("sudo -u shared-user sh -c 'test -f /public/newfile'")
