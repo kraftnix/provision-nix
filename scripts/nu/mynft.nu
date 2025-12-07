@@ -18,7 +18,7 @@ export module mynft {
     which = "all"
     --short(-s) = false
   ] {
-    let nftables = (nft get rules)
+    let nftables = (mynft list)
     if $which == all {
       return $nftables
     }
@@ -91,8 +91,8 @@ export module mynft {
   # Nftables helper / wrapper tool
   #
   # Example Usage:
-  # `main rule`         # lists the rules in the filter table
-  # `main table`        # lists the rules in the filter table
+  # `mynft rule`         # lists the rules in the filter table
+  # `mynft table`        # lists the rules in the filter table
   export def main [
     cmd : string                # module to list (rules, counters, maps)
     table?:  string = "all"     # table to filter results to
