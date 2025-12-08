@@ -65,6 +65,7 @@ let
         drives = map (x: x.device) cfg.disks;
         services."zfs-import-${pool}" = {
           path = [ pkgs.cryptsetup ];
+          environment.ZFS_UNLOCK_ALLOW_FAIL = if cfg.allowUnlockFail then "true" else "false";
           preStart = "${nuUnlockPool cfg.source cfg.disks}";
         };
       }
@@ -83,6 +84,7 @@ in
           {
             options = {
               enable = opts.enableTrue "enable parallel unlock for this pool";
+              allowUnlockFail = opts.enable "allow zfs pool to be imported even if some crypted disks are missing";
               mode = opts.string "keyfile" "mode to use. only keyfile is supported atm";
               source = opts.string "" "location of the key file";
               disko = mkOption {

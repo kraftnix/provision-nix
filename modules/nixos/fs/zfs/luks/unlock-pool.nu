@@ -10,7 +10,12 @@ let exit_codes = ($env.disks | par-each { |it|
     $status.exit_code
   });
 })
-if ($exit_codes | any { |exit_code| $exit_code != 0}) {
+let some_fail = ($exit_codes | any { |exit_code| $exit_code != 0})
+let allow_fail = ($env | get -o ZFS_UNLOCK_ALLOW_FAIL | default false | into bool)
+if $some_fail {
   print "There was a non-zero exit code while unlocking the disks."
-  exit 1
-} else { exit 0 }
+  if not $allow_fail {
+    exit 1
+  }
+}
+exit 0
