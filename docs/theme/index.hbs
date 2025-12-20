@@ -59,9 +59,7 @@
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "{{ preferred_dark_theme }}" : "{{ default_theme }}";
         </script>
         <!-- Start loading toc.js asap -->
-        <!-- WORKAROUND: disable toc.js usage so we can include our Homepage title
-            <script src="{{ path_to_root }}toc.js"></script>
-        -->
+        <script src="{{ path_to_root }}toc.js"></script>
     </head>
     <body>
     <div id="body-container">
@@ -112,8 +110,6 @@
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox">
-                <!--HACKY_HOMEPAGE_REPLACE-->
-                {{#toc}}{{/toc}}
             </mdbook-sidebar-scrollbox>
             <noscript>
                 <iframe class="sidebar-iframe-outer" src="{{ path_to_root }}toc.html"></iframe>
