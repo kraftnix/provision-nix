@@ -1,6 +1,6 @@
 {
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-  inputs.nixpkgs-stable.url = "github:nixos/nixpkgs/release-25.05";
+  inputs.nixpkgs-stable.url = "github:nixos/nixpkgs/release-25.11";
   inputs.nixlib.url = "github:nix-community/nixpkgs.lib";
 
   inputs.extra-lib.url = "github:kraftnix/extra-lib";

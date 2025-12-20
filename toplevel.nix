@@ -126,6 +126,13 @@ in
   perSystem =
     { config, system, ... }:
     {
+      # _module.args.pkgs = import inputs.nixpkgs {
+      #   inherit system;
+      #   overlays = self.hosts.defaults.overlays;
+      #   config = {
+      #     allowUnfree = false;
+      #   };
+      # };
       channels.nixpkgs.overlays = self.hosts.defaults.overlays;
       channels.stable.input = inputs.nixpkgs-stable;
       channels.stable.overlays = [

@@ -4,10 +4,13 @@ localFlake:
   perSystem =
     {
       config,
-      pkgs,
+      system,
       lib,
       ...
     }:
+    let
+      pkgs = self.inputs.nixpkgs.legacyPackages.${system};
+    in
     {
       devshells.default = lib.mkIf self.docs.enable {
         packages = [
@@ -31,10 +34,11 @@ localFlake:
                 command = ''
                   #!/usr/bin/env bash
                   set -e
+                  SITE_DOCS_ONLY_PORT="''${SITE_DOCS_ONLY_PORT:-8937}"
 
                   SITE_ROOT=$(nix build $PRJ_ROOT#docs-mdbook-${name} --no-link --print-out-paths)
                   echo "Running: $SITE_ROOT"
-                  caddy file-server --root "$SITE_ROOT" --listen :8937 --debug
+                  caddy file-server --root "$SITE_ROOT" --listen :$SITE_DOCS_ONLY_PORT --debug
                 '';
               }
               {

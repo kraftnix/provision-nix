@@ -13,7 +13,8 @@ let
     substitution.gitRepoFilePath = "https://gitea.home.lan/kraftnix/provision-nix/src/branch/master/";
   };
   provision-nix-local = {
-    mdbook.src = ./.;
+    mdbook.src = localFlake.self.outPath;
+    mdbook.path = "docs";
     inherit defaults;
     homepage = {
       url = "http://localhost:8937";

@@ -139,10 +139,11 @@ in
     perSystem =
       {
         config,
-        pkgs,
+        system,
         ...
       }:
       let
+        pkgs = localFlake.inputs.nixpkgs.legacyPackages.${system};
         cfg = config.provision;
         pcfg = config.provision.pre-commit;
         fcfg = config.provision.formatter;
@@ -154,8 +155,8 @@ in
         formatter = mkIf (cfg.enable && fcfg.enable) fcfg.package;
         provision = {
           deploy.packages = mkDefault [
-            localFlake.inputs.colmena.packages.${pkgs.stdenv.hostPlatform.system}.colmena
-            localFlake.inputs.deploy-rs.packages.${pkgs.stdenv.hostPlatform.system}.deploy-rs
+            localFlake.inputs.colmena.packages.${system}.colmena
+            localFlake.inputs.deploy-rs.packages.${system}.deploy-rs
             pkgs.nix-fast-build
             pkgs.nixfmt-tree
           ];

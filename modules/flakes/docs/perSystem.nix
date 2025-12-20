@@ -154,10 +154,12 @@ in
                   mdbook-pre = pkgs.stdenvNoCC.mkDerivation {
                     name = "docs-mdbook-${site.name}-preprocessed";
                     buildInputs = [ pkgs.nushell ];
-                    src = pkgs.lib.cleanSourceWith {
-                      src = site.mdbook.src;
-                      # filter = path: type: baseNameOf (toString path) != "nix";
-                    };
+                    src = pkgs.nix-gitignore.gitignoreSource [ ] site.mdbook.src;
+                    # src = pkgs.lib.cleanSourceWith {
+                    #   src = site.mdbook.src;
+                    #   # filter = path: type: baseNameOf (toString path) != "nix";
+                    #   filter = path: type: baseNameOf (toString path) != ".direnv";
+                    # };
                     DOCS_PATH = toString site.mdbook.path;
                     buildPhase = ''
                       runHook preBuild

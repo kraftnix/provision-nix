@@ -88,10 +88,11 @@ in
       '';
     };
     mdbook.src = mkOption {
-      description = "source directory of mdBook documentation";
+      description = "source directory of mdBook documentation, take care to use string interpolation to force path into nix store";
       type = types.path;
-      default = ../../docs;
-      example = literalExpression "./.";
+      default = config.defaults.substitution.outPath;
+      defaultText = lib.literalExpression "$\{self.outPath}";
+      example = literalExpression "$\{./.}";
     };
     mdbook.path = mkOption {
       description = "path in `src` where mdbook docs are located";
