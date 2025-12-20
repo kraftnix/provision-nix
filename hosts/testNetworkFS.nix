@@ -37,7 +37,7 @@
     subnets = {
       mydevices = {
         subnet = "10.77.1.0/24";
-        paths = [
+        exports = [
           "/media"
           "/pictures"
           "/documents"
@@ -46,11 +46,11 @@
       };
       lan = {
         subnet = "192.168.1.0/24";
-        paths = [ "/media" ];
+        exports = [ "/media" ];
       };
       phone = {
         subnet = "192.168.1.7/32";
-        paths = [
+        exports = [
           "/media"
           "/pictures"
           "/documents"
@@ -59,7 +59,7 @@
       };
       thinclient = {
         subnet = "192.168.1.88/32";
-        paths = [
+        exports = [
           "/documents"
           "/backups"
         ];
