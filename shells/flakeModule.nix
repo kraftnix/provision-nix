@@ -82,7 +82,7 @@ in {
                   };
                 formatHook = mkOption {
                   default = if fcfg.name == "nixfmt" then {
-                    nixfmt.enable = true;
+                    nixfmt-rfc-style.enable = true;
                   } else if fcfg.name == "alejandra" then {
                     alejandra.enable = true;
                   } else if fcfg.name == "nixfmt-classic" then {
