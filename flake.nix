@@ -1,6 +1,8 @@
 {
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
   inputs.nixpkgs-stable.url = "github:nixos/nixpkgs/release-25.11";
+  inputs.nixpkgs-mdbook-variables.url =
+    "github:nixos/nixpkgs?ref=pull/466695/head";
   inputs.nixlib.url = "github:nix-community/nixpkgs.lib";
 
   inputs.extra-lib.url = "github:kraftnix/extra-lib";
@@ -36,7 +38,8 @@
     flake-parts.inputs.nixpkgs-lib.follows = "nixlib";
 
     # NOTE: using a specific commit due to strange eval issues for doc generation with recent commits
-    git-hooks-nix.url = "github:cachix/git-hooks.nix/e891a93b193fcaf2fc8012d890dc7f0befe86ec2";
+    git-hooks-nix.url =
+      "github:cachix/git-hooks.nix/e891a93b193fcaf2fc8012d890dc7f0befe86ec2";
     git-hooks-nix.inputs = {
       nixpkgs.follows = "nixpkgs";
       flake-compat.follows = "flake-compat";
@@ -72,12 +75,7 @@
   # inputs.drduh.url = "github:DrDuh/YubiKey-Guide";
   # inputs.drduh.inputs.nixpkgs.follows = "nixpkgs";
 
-  outputs =
-    inputs@{
-      self,
-      flake-parts,
-      ...
-    }:
+  outputs = inputs@{ self, flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       debug = true;
       imports = [
@@ -97,11 +95,9 @@
       };
       partitions = {
         install.extraInputsFlake = ./install;
-        install.module =
-          { inputs, lib, ... }:
-          {
-            imports = [ ./install/default.nix ];
-          };
+        install.module = { inputs, lib, ... }: {
+          imports = [ ./install/default.nix ];
+        };
       };
       systems = import inputs.systems;
     };

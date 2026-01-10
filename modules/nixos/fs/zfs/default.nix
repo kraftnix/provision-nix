@@ -1,44 +1,42 @@
 { self, ... }@localFlake:
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
+{ config, lib, pkgs, ... }:
 let
   inherit (lib)
-    literalExpression
-    mkDefault
-    mkIf
-    mkOption
-    types
-    ;
+    literalExpression mkAliasOptionModule mkDefault mkIf mkOption types;
   opts = self.lib.options;
   cfg = config.provision.fs.zfs;
-in
-{
+in {
   imports = [
     (import ./luks localFlake)
     ./legacy-initrd.nix
     ./legacy-root-uefi.nix
+    (mkAliasOptionModule [ "provision" "fs" "zfs" "package" ] [
+      "boot"
+      "zfs"
+      "package"
+    ])
   ];
 
   options.provision.fs.zfs = {
-    enable = opts.enable "enable zfs configuration, adds zfs to supportedFilesystems";
-    hostId = opts.stringNull "optionally set `networking.hostId` here, not required";
+    enable =
+      opts.enable "enable zfs configuration, adds zfs to supportedFilesystems";
+    hostId =
+      opts.stringNull "optionally set `networking.hostId` here, not required";
     kernel = {
       enable = opts.enable "sets the kernel to the latest compatible with ZFS";
       latest = mkOption {
         description = "latest linux kernel version that works with zfs";
         type = types.raw;
-        default = pkgs.linuxKernel.packages.linux_6_17;
-        defaultText = literalExpression "pkgs.linuxKernel.packages.linux_6_17";
+        default = pkgs.linuxKernel.packages.linux_6_18;
+        defaultText = literalExpression "pkgs.linuxKernel.packages.linux_6_18";
         example = literalExpression "pkgs.linuxKernel.packages.linux_6_11";
       };
     };
-    trim = opts.enableTrue "enable trim, see effects in [zpool-trim](https://openzfs.github.io/openzfs-docs/man/master/8/zpool-trim.8.html) docs";
+    trim = opts.enableTrue
+      "enable trim, see effects in [zpool-trim](https://openzfs.github.io/openzfs-docs/man/master/8/zpool-trim.8.html) docs";
     scrub = {
-      auto = opts.enableTrue "enables periodic scrubbing of ZFS pools {services.zfs.autoScrub.enable}";
+      auto = opts.enableTrue
+        "enables periodic scrubbing of ZFS pools {services.zfs.autoScrub.enable}";
     };
     nativeEncryption = opts.enable ''
       sets zfs to request encryption credentials and
@@ -53,8 +51,10 @@ in
     };
 
     legacy = {
-      root-uefi = opts.enable "import the legacy profile for `root-uefi`, do not use unless already using";
-      initrd = opts.enable "import the legacy profile for `initrd`, do not use unless already using";
+      root-uefi = opts.enable
+        "import the legacy profile for `root-uefi`, do not use unless already using";
+      initrd = opts.enable
+        "import the legacy profile for `initrd`, do not use unless already using";
     };
   };
 
@@ -63,6 +63,8 @@ in
 
     boot.supportedFilesystems = [ "zfs" ];
     boot.kernelPackages = mkIf cfg.kernel.enable cfg.kernel.latest;
+    provision.fs.zfs.package =
+      pkgs.zfs_2_4; # is released but not currently default, required for 6.18 support
 
     boot.zfs.requestEncryptionCredentials = mkDefault cfg.nativeEncryption;
     provision.fs.boot.initrd.postCommands = mkIf cfg.nativeEncryption {
@@ -76,12 +78,7 @@ in
       autoScrub.enable = cfg.scrub.auto;
       autoSnapshot = mkIf cfg.snapshot.auto {
         enable = true;
-        inherit (cfg.snapshot)
-          frequent
-          daily
-          weekly
-          monthly
-          ;
+        inherit (cfg.snapshot) frequent daily weekly monthly;
       };
     };
   };

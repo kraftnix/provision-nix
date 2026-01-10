@@ -1,32 +1,15 @@
-{
-  self,
-  inputs,
-  ...
-}:
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
+{ self, inputs, ... }:
+{ config, lib, pkgs, ... }:
 let
   inherit (lib)
-    filterAttrs
-    literalExpression
-    mapAttrs
-    mapAttrsToList
-    mkDefault
-    mkOption
-    mkMerge
-    mkIf
-    types
-    ;
+    filterAttrs literalExpression mapAttrs mapAttrsToList mkDefault mkOption
+    mkMerge mkIf types;
   opts = self.lib.options;
   cfg = config.provision.nix;
   enabledSubstituters = filterAttrs (_: s: s.enable) cfg.substituters;
-  substitutersUsed = lib.partition (sub: sub.use) (lib.attrValues enabledSubstituters);
-in
-{
+  substitutersUsed =
+    lib.partition (sub: sub.use) (lib.attrValues enabledSubstituters);
+in {
   options.provision.nix = {
     basic = opts.enable ''
       good defaults for most usecases:
@@ -53,36 +36,37 @@ in
       enable = opts.enable "optimise / deduplication store";
       gc = opts.enable "run garbage collection on a schedule";
       dates = opts.string "weekly" "how often to run garbage collection";
-      options = opts.string "--delete-older-than 30d" "options to pass into `nix-collect-garbage`";
+      options = opts.string "--delete-older-than 30d"
+        "options to pass into `nix-collect-garbage`";
     };
 
     trustWheel = opts.enable "add wheel as allowed + trusted users";
-    trustedUsers = opts.stringList [ ] "adds these users to `allowed-users` and `trusted-users`";
+    trustedUsers = opts.stringList [ ]
+      "adds these users to `allowed-users` and `trusted-users`";
 
     substituters = mkOption {
       description = "easily set binary cache substituters and keys";
       default = { };
-      type = types.attrsOf (
-        types.submodule (
-          { config, ... }:
-          {
-            options = {
-              enable = opts.enable' (config.publicKey != "" && config.substituter != "") ''
-                Whether to allow (but not enable by default) a substituter:
+      type = types.attrsOf (types.submodule ({ config, ... }: {
+        options = {
+          enable =
+            opts.enable' (config.publicKey != "" && config.substituter != "") ''
+              Whether to allow (but not enable by default) a substituter:
 
-                sets `trusted-substituters"
-              '';
-              use = opts.enable "use as a system substituter";
-              publicKey = opts.string "" "Pubkey that signed substituter store paths, sets `trusted-public-keys`";
-              substituter = opts.string "" "Substituter for binaries, sets `trusted-public-keys`";
-            };
-          }
-        )
-      );
+              sets `trusted-substituters"
+            '';
+          use = opts.enable "use as a system substituter";
+          publicKey = opts.string ""
+            "Pubkey that signed substituter store paths, sets `trusted-public-keys`";
+          substituter = opts.string ""
+            "Substituter for binaries, sets `trusted-public-keys`";
+        };
+      }));
     };
 
     flakes = {
-      enable = opts.enable "enable basic flakes usage (--experimental-features)";
+      enable =
+        opts.enable "enable basic flakes usage (--experimental-features)";
       inputs = mkOption {
         description = "Flake inputs to add to nix-path and registry";
         type = with types; attrsOf unspecified;
@@ -102,27 +86,27 @@ in
     (mkIf cfg.basic {
       # auto-geneate manpage caches docs when first switching to a new generation
       documentation.man.generateCaches = true;
-      nix.daemonCPUSchedPolicy = mkDefault "batch"; # slightly better than default, change to idle if very resource constrained
+      nix.daemonCPUSchedPolicy = mkDefault
+        "batch"; # slightly better than default, change to idle if very resource constrained
       nix.daemonIOSchedClass = mkDefault "idle";
       nix.daemonIOSchedPriority = mkDefault 7; # lowest priority
       nix.settings = {
-        fallback = true; # if true, fall back to building source if missing in cache
+        fallback =
+          true; # if true, fall back to building source if missing in cache
         sandbox = true;
         # frees garbage until `max-free` when disk space drops below `min-free` during a build
         min-free = mkDefault 536870912; # 500MB
         max-free = mkDefault 1036870912; # 1GB
-        experimental-features = [
-          "nix-command"
-          "flakes"
-        ];
+        experimental-features = [ "nix-command" "flakes" ];
         connect-timeout = mkDefault 5; # timeout for substituters
-        download-buffer-size = mkDefault 524288000; # increase to 500MB (default: 64MB)
+        download-buffer-size =
+          mkDefault 524288000; # increase to 500MB (default: 64MB)
       };
       environment.systemPackages = with pkgs; [
         nix-du # A tool to determine which gc-roots take space in your nix store
         nix-output-monitor # nom, pretty build printing
         nix-tree # Interactively browse a Nix store paths dependencies
-        nvd # Nix/NixOS package version diff tool
+        dix # Nix/NixOS package version diff tool
       ];
     })
     (mkIf cfg.develop {
@@ -141,6 +125,7 @@ in
         nix-output-monitor # nom, pretty build printing
         nix-search-cli # cli tool that search nixos.org, can search for packages
         nix-template # Make creating nix expressions easy
+        nix-prefetch-docker # Prefetch hashes and digests for OCI images
         nurl # generate fetchers from url
       ];
     })
@@ -148,13 +133,9 @@ in
       nix.settings = {
         keep-outputs = true;
         keep-derivations = true;
-        system-features = [
-          "nixos-test"
-          "benchmark"
-          "big-parallel"
-          "kvm"
-        ];
-        max-silent-time = mkDefault 600; # timeout after 10mins if no stdout in build
+        system-features = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
+        max-silent-time =
+          mkDefault 600; # timeout after 10mins if no stdout in build
       };
       environment.systemPackages = with pkgs; [
         nix-tree # Interactively browse a Nix store paths dependencies
@@ -167,10 +148,7 @@ in
     (mkIf cfg.trustWheel {
       nix.settings = {
         allowed-users = [ "@wheel" ];
-        trusted-users = [
-          "root"
-          "@wheel"
-        ];
+        trusted-users = [ "root" "@wheel" ];
       };
     })
     {
@@ -179,9 +157,11 @@ in
         trusted-users = cfg.trustedUsers;
 
         ## binary cache
-        trusted-public-keys = mapAttrsToList (_: sub: sub.publicKey) enabledSubstituters;
+        trusted-public-keys =
+          mapAttrsToList (_: sub: sub.publicKey) enabledSubstituters;
         substituters = map (sub: sub.substituter) substitutersUsed.right;
-        trusted-substituters = map (sub: sub.substituter) substitutersUsed.wrong;
+        trusted-substituters =
+          map (sub: sub.substituter) substitutersUsed.wrong;
 
         ## ops
         auto-optimise-store = cfg.optimise.enable; # deduplications
@@ -195,23 +175,20 @@ in
 
     ## Flakes
     (mkIf cfg.flakes.enable {
-      nix.nixPath = [ "nixpkgs=flake:nixos" ]; # https://github.com/NixOS/nixpkgs/issues/241356
-      nix.settings.extra-experimental-features = [
-        "flakes"
-        "nix-command"
-      ];
+      nix.nixPath = [
+        "nixpkgs=flake:nixos"
+      ]; # https://github.com/NixOS/nixpkgs/issues/241356
+      nix.settings.extra-experimental-features = [ "flakes" "nix-command" ];
       nix.registry = mkMerge [
         cfg.flakes.registry
         {
-          nixos = mkDefault {
-            flake = inputs.nixpkgs;
-          };
-          stable = mkDefault {
-            flake = inputs.nixpkgs-stable;
-          };
+          nixos = mkDefault { flake = inputs.nixpkgs; };
+          stable = mkDefault { flake = inputs.nixpkgs-stable; };
         }
       ];
-      nix.settings.nix-path = mapAttrsToList (key: value: "${key}=${value.to.path}") config.nix.registry;
+      nix.settings.nix-path =
+        mapAttrsToList (key: value: "${key}=${value.to.path}")
+        config.nix.registry;
     })
   ];
 }
