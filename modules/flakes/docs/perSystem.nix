@@ -3,214 +3,254 @@ localFlake:
 let
   inherit (localFlake) lib;
   inherit (localFlake.lib)
-    concatStringsSep filterAttrs mapAttrs mapAttrs' mapAttrsToList mkDefault
-    mkMerge mkOption nameValuePair pipe replaceStrings types;
+    concatStringsSep
+    filterAttrs
+    mapAttrs
+    mapAttrs'
+    mapAttrsToList
+    mkDefault
+    mkMerge
+    mkOption
+    nameValuePair
+    pipe
+    replaceStrings
+    types
+    ;
   cfg = self.docs;
   filterEnable = filterAttrs (_: c: c.enable);
-  docgenPackagesModule = { name, config, pkgs, siteConfig, ... }: {
-    options = {
-      outName = mkOption {
-        default = "";
-        type = types.str;
-        description = "output name, used for package names / prefix";
+  docgenPackagesModule =
+    {
+      name,
+      config,
+      pkgs,
+      siteConfig,
+      ...
+    }:
+    {
+      options = {
+        outName = mkOption {
+          default = "";
+          type = types.str;
+          description = "output name, used for package names / prefix";
+        };
+        docsout = mkOption {
+          description = "`nixosOptionsDocs` output";
+          type = with types; lazyAttrsOf raw;
+          default = { };
+        };
+        filtered = mkOption {
+          description = "filter `optionsCommonMark` output of {mkdocs}, removing file paths + fixing siteRoot links";
+          type = types.pathInStore;
+        };
       };
-      docsout = mkOption {
-        description = "`nixosOptionsDocs` output";
-        type = with types; lazyAttrsOf raw;
+      config =
+        let
+          opt = cfg.sites.${siteConfig.name}.docgen.${name};
+        in
+        {
+          outName = opt.out.name;
+          docsout = removeAttrs (pkgs.nixosOptionsDoc {
+            options = removeAttrs opt.hostOptions [ "_module" ];
+            transformOptions =
+              option:
+              option
+              // {
+                visible = option.visible && (opt.filter option);
+              };
+          }) [ "optionsDocBook" ];
+          filtered =
+            let
+              ## Very Hacky sed replacements for internal modules
+              # escape args for usage with `sed`
+              escapedNixStorePath = replaceStrings [ "/" ] [ "\\/" ] opt.substitution.outPath;
+              escapedSiteRootPath = replaceStrings [ "/" "." ] [ "\\/" "\\." ] opt.substitution.gitRepoFilePath;
+
+              # `sed` filters
+              removeNixStorePath = "s/${escapedNixStorePath}\\///";
+              substituteSiteRoot = "s/file:\\/\\/${escapedNixStorePath}\\//${escapedSiteRootPath}/";
+            in
+            pkgs.stdenvNoCC.mkDerivation {
+              name = "docs-options-${siteConfig.name}-${name}-filtered";
+              buildInputs = [ pkgs.gnused ];
+              src = config.docsout.optionsCommonMark;
+              unpackPhase = ''
+                cp $src options.md
+              '';
+              buildPhase = ''
+                runHook preBuild
+                sed '${removeNixStorePath}' options.md > path-filtered.md
+                sed '${substituteSiteRoot}' path-filtered.md > link-filtered.md
+                cp link-filtered.md $out
+                runHook postBuild
+              '';
+            };
+        };
+    };
+in
+{
+  options.perSystem = flake-parts-lib.mkPerSystemOption (
+    { pkgs, lib, ... }:
+    {
+      _file = ./perSystem.nix;
+      options.sites = mkOption {
+        description = "generated docs packages";
         default = { };
+        type = types.attrsOf (
+          types.submodule (
+            siteConfig@{ config, name, ... }:
+            {
+              options = {
+                docgen = mkOption {
+                  description = "option docs generated from `docs.sites.<site>.docgen`";
+                  default = { };
+                  type = types.attrsOf (
+                    types.submoduleWith {
+                      specialArgs = { inherit siteConfig pkgs; };
+                      modules = [ docgenPackagesModule ];
+                    }
+                  );
+                };
+                mdbook-pre = mkOption {
+                  description = "mdbook with some preprocessing applied + docgen options copied in";
+                  type = types.pathInStore;
+                };
+                mdbook = mkOption {
+                  description = "mdbook build and some postprocessing";
+                  type = types.pathInStore;
+                };
+              };
+
+              config =
+                let
+                  site = cfg.sites.${siteConfig.name};
+                in
+                {
+                  docgen = mapAttrs (name: opt: { }) (filterEnable site.docgen);
+
+                  mdbook-pre = pkgs.stdenvNoCC.mkDerivation {
+                    name = "docs-mdbook-${site.name}-preprocessed";
+                    buildInputs = [ pkgs.nushell ];
+                    src = pkgs.nix-gitignore.gitignoreSource [ ] site.mdbook.src;
+                    # src = pkgs.lib.cleanSourceWith {
+                    #   src = site.mdbook.src;
+                    #   # filter = path: type: baseNameOf (toString path) != "nix";
+                    #   filter = path: type: baseNameOf (toString path) != ".direnv";
+                    # };
+                    DOCS_PATH = toString site.mdbook.path;
+                    buildPhase = ''
+                      runHook preBuild
+
+                      cp -r . $out
+                      {
+                        echo '<!-- THIS FILE IS GENERATED, NO CHANGES IN GIT WILL BE APPLIED -->'
+                        while read ln; do
+                          case "$ln" in
+                            *end_of_intro*)
+                              break
+                              ;;
+                            *)
+                              echo "$ln"
+                              ;;
+                          esac
+                        done
+                        cat ./$DOCS_PATH/intro-continued.md
+                      } <${site.defaults.substitution.outPath + "/README.md"} >./$DOCS_PATH/intro.md
+                      cp ./$DOCS_PATH/intro.md $out/$DOCS_PATH
+                      mkdir -p "$out/$DOCS_PATH/options"
+                      ${concatStringsSep "\n" (
+                        mapAttrsToList (
+                          name: opt: ''cp ${opt.filtered} "$out/$DOCS_PATH/options/${opt.outName}"''
+                        ) config.docgen
+                      )}
+                      runHook postBuild
+                    '';
+                  };
+
+                  mdbook = pkgs.stdenvNoCC.mkDerivation {
+                    name = "docs-mdbook-${site.name}";
+                    buildInputs = [
+                      pkgs.ripgrep
+                      pkgs.mdbook
+                      # pkgs.mdbook-linkcheck
+                      localFlake.self.packages.${pkgs.stdenv.hostPlatform.system}.mdbook-linkcheck
+                      pkgs.mdbook-variables
+                      # pkgs.mdbook-cmdrun
+                      pkgs.nushell
+                      localFlake.self.packages.${pkgs.stdenv.hostPlatform.system}.yapp
+                      localFlake.self.packages.${pkgs.stdenv.hostPlatform.system}.simple-replace
+                    ];
+                    # have to set as string or can't evaluate in nix repl
+                    src = "${config.mdbook-pre}";
+                    HOMEPAGE_URL = site.homepage.url;
+                    HOMEPAGE_BODY = site.homepage.body;
+                    DOCSITE_BASE = "${site.homepage.url}${site.homepage.siteBase}";
+                    MDBOOK_OUTPUT__HTML__SITE_URL = site.homepage.siteBase;
+                    DOCS_PATH = toString site.mdbook.path;
+                    GIT_REPO_FILE_BASE = site.defaults.substitution.gitRepoFilePath;
+                    buildPhase = ''
+                      runHook preBuild
+
+                      cd ${site.mdbook.path}
+
+                      # Could also be solved if mdBooks supported custom handlebars templates
+                      # Injecting an env var can probably be done by mdbook-cmdrum inside .md files
+                      # hacky way to inject a link back to a homepage, styled in the same way as the Summary items
+                      if [[ -n "$HOMEPAGE_URL" ]]; then
+                        local search='<!--HACKY_HOMEPAGE_REPLACE-->'
+                        local replace="<ol class=\"chapter\"><li class=\"part-title homepage-url\"><a href=\"$HOMEPAGE_URL\">$HOMEPAGE_BODY</a></li></ol>"
+                        simple-replace "$search" "$replace" .
+                      fi
+
+                      simple-replace '<--DOCSITE_BASE-->' "$DOCSITE_BASE" .
+                      simple-replace '<--GIT_REPO_FILE_BASE-->' "$GIT_REPO_FILE_BASE" .
+
+                      mdbook build --dest-dir "$TMPDIR/out/$DOCS_PATH"
+                      cp -r "$TMPDIR/out/$DOCS_PATH/html" $out
+
+                      runHook postBuild
+                    '';
+                    dontInstall = true;
+                  };
+                };
+            }
+          )
+        );
       };
-      filtered = mkOption {
-        description =
-          "filter `optionsCommonMark` output of {mkdocs}, removing file paths + fixing siteRoot links";
-        type = types.pathInStore;
-      };
-    };
-    config = let opt = cfg.sites.${siteConfig.name}.docgen.${name};
-    in {
-      outName = opt.out.name;
-      docsout = removeAttrs (pkgs.nixosOptionsDoc {
-        options = removeAttrs opt.hostOptions [ "_module" ];
-        transformOptions = option:
-          option // {
-            visible = option.visible && (opt.filter option);
-          };
-      }) [ "optionsDocBook" ];
-      filtered = let
-        ## Very Hacky sed replacements for internal modules
-        # escape args for usage with `sed`
-        escapedNixStorePath =
-          replaceStrings [ "/" ] [ "\\/" ] opt.substitution.outPath;
-        escapedSiteRootPath = replaceStrings [ "/" "." ] [ "\\/" "\\." ]
-          opt.substitution.gitRepoFilePath;
-
-        # `sed` filters
-        removeNixStorePath = "s/${escapedNixStorePath}\\///";
-        substituteSiteRoot =
-          "s/file:\\/\\/${escapedNixStorePath}\\//${escapedSiteRootPath}/";
-      in pkgs.stdenvNoCC.mkDerivation {
-        name = "docs-options-${siteConfig.name}-${name}-filtered";
-        buildInputs = [ pkgs.gnused ];
-        src = config.docsout.optionsCommonMark;
-        unpackPhase = ''
-          cp $src options.md
-        '';
-        buildPhase = ''
-          runHook preBuild
-          sed '${removeNixStorePath}' options.md > path-filtered.md
-          sed '${substituteSiteRoot}' path-filtered.md > link-filtered.md
-          cp link-filtered.md $out
-          runHook postBuild
-        '';
-      };
-    };
-  };
-in {
-  options.perSystem = flake-parts-lib.mkPerSystemOption ({ pkgs, lib, ... }: {
-    _file = ./perSystem.nix;
-    options.sites = mkOption {
-      description = "generated docs packages";
-      default = { };
-      type = types.attrsOf (types.submodule (siteConfig@{ config, name, ... }: {
-        options = {
-          docgen = mkOption {
-            description =
-              "option docs generated from `docs.sites.<site>.docgen`";
-            default = { };
-            type = types.attrsOf (types.submoduleWith {
-              specialArgs = { inherit siteConfig pkgs; };
-              modules = [ docgenPackagesModule ];
-            });
-          };
-          mdbook-pre = mkOption {
-            description =
-              "mdbook with some preprocessing applied + docgen options copied in";
-            type = types.pathInStore;
-          };
-          mdbook = mkOption {
-            description = "mdbook build and some postprocessing";
-            type = types.pathInStore;
-          };
-        };
-
-        config = let site = cfg.sites.${siteConfig.name};
-        in {
-          docgen = mapAttrs (name: opt: { }) (filterEnable site.docgen);
-
-          mdbook-pre = pkgs.stdenvNoCC.mkDerivation {
-            name = "docs-mdbook-${site.name}-preprocessed";
-            buildInputs = [ pkgs.nushell ];
-            src = pkgs.nix-gitignore.gitignoreSource [ ] site.mdbook.src;
-            # src = pkgs.lib.cleanSourceWith {
-            #   src = site.mdbook.src;
-            #   # filter = path: type: baseNameOf (toString path) != "nix";
-            #   filter = path: type: baseNameOf (toString path) != ".direnv";
-            # };
-            DOCS_PATH = toString site.mdbook.path;
-            buildPhase = ''
-              runHook preBuild
-
-              cp -r . $out
-              {
-                echo '<!-- THIS FILE IS GENERATED, NO CHANGES IN GIT WILL BE APPLIED -->'
-                while read ln; do
-                  case "$ln" in
-                    *end_of_intro*)
-                      break
-                      ;;
-                    *)
-                      echo "$ln"
-                      ;;
-                  esac
-                done
-                cat ./$DOCS_PATH/intro-continued.md
-              } <${
-                site.defaults.substitution.outPath + "/README.md"
-              } >./$DOCS_PATH/intro.md
-              cp ./$DOCS_PATH/intro.md $out/$DOCS_PATH
-              mkdir -p "$out/$DOCS_PATH/options"
-              ${concatStringsSep "\n" (mapAttrsToList (name: opt:
-                ''cp ${opt.filtered} "$out/$DOCS_PATH/options/${opt.outName}"'')
-                config.docgen)}
-              runHook postBuild
-            '';
-          };
-
-          mdbook = pkgs.stdenvNoCC.mkDerivation {
-            name = "docs-mdbook-${site.name}";
-            buildInputs = [
-              pkgs.ripgrep
-              pkgs.mdbook
-              # pkgs.mdbook-linkcheck
-              localFlake.self.packages.${pkgs.stdenv.hostPlatform.system}.mdbook-linkcheck
-              # pkgs.mdbook-variables
-              localFlake.inputs.nixpkgs-mdbook-variables.legacyPackages.${pkgs.stdenv.hostPlatform.system}.mdbook-variables
-              # pkgs.mdbook-cmdrun
-              pkgs.nushell
-              localFlake.self.packages.${pkgs.stdenv.hostPlatform.system}.yapp
-              localFlake.self.packages.${pkgs.stdenv.hostPlatform.system}.simple-replace
-            ];
-            # have to set as string or can't evaluate in nix repl
-            src = "${config.mdbook-pre}";
-            HOMEPAGE_URL = site.homepage.url;
-            HOMEPAGE_BODY = site.homepage.body;
-            DOCSITE_BASE = "${site.homepage.url}${site.homepage.siteBase}";
-            MDBOOK_OUTPUT__HTML__SITE_URL = site.homepage.siteBase;
-            DOCS_PATH = toString site.mdbook.path;
-            GIT_REPO_FILE_BASE = site.defaults.substitution.gitRepoFilePath;
-            buildPhase = ''
-              runHook preBuild
-
-              cd ${site.mdbook.path}
-
-              # Could also be solved if mdBooks supported custom handlebars templates
-              # Injecting an env var can probably be done by mdbook-cmdrum inside .md files
-              # hacky way to inject a link back to a homepage, styled in the same way as the Summary items
-              if [[ -n "$HOMEPAGE_URL" ]]; then
-                local search='<!--HACKY_HOMEPAGE_REPLACE-->'
-                local replace="<ol class=\"chapter\"><li class=\"part-title homepage-url\"><a href=\"$HOMEPAGE_URL\">$HOMEPAGE_BODY</a></li></ol>"
-                simple-replace "$search" "$replace" .
-              fi
-
-              simple-replace '<--DOCSITE_BASE-->' "$DOCSITE_BASE" .
-              simple-replace '<--GIT_REPO_FILE_BASE-->' "$GIT_REPO_FILE_BASE" .
-
-              mdbook build --dest-dir "$TMPDIR/out/$DOCS_PATH"
-              cp -r "$TMPDIR/out/$DOCS_PATH/html" $out
-
-              runHook postBuild
-            '';
-            dontInstall = true;
-          };
-        };
-      }));
-    };
-  });
+    }
+  );
 
   config.transposition.sites = { };
-  config.perSystem = { config, ... }: {
-    sites = mapAttrs (_: site: { }) (filterEnable cfg.sites);
-    nuscht-search = mapAttrs' (name: site:
-      let siteConfig = cfg.sites.${name};
-      in nameValuePair name {
-        customTheme = mkDefault siteConfig.defaults.nuscht-search.customTheme;
-        title = mkDefault siteConfig.defaults.nuscht-search.title;
-        baseHref = mkDefault siteConfig.defaults.nuscht-search.baseHref;
-        scopes = pipe site.docgen [
-          (mapAttrsToList (n: c:
-            nameValuePair "${name}-${n}" {
-              name = "${name}: ${n} Options Search";
-              optionsJSONPackage = c.docsout.optionsJSON;
-              # optionsJSON = "${c.docsout.optionsJSON}/share/doc/nixos/options.json";
-              urlPrefix = siteConfig.defaults.substitution.gitRepoUrl;
-              # urlPrefix = site.defaults.substitution.gitRepoUrl;
-            }))
-          lib.flatten
-          lib.listToAttrs
-        ];
-      }) config.sites;
-    packages = mkMerge [
-      (mapAttrs' (name: site: nameValuePair "docs-mdbook-${name}" site.mdbook)
-        config.sites)
-    ];
-  };
+  config.perSystem =
+    { config, ... }:
+    {
+      sites = mapAttrs (_: site: { }) (filterEnable cfg.sites);
+      nuscht-search = mapAttrs' (
+        name: site:
+        let
+          siteConfig = cfg.sites.${name};
+        in
+        nameValuePair name {
+          customTheme = mkDefault siteConfig.defaults.nuscht-search.customTheme;
+          title = mkDefault siteConfig.defaults.nuscht-search.title;
+          baseHref = mkDefault siteConfig.defaults.nuscht-search.baseHref;
+          scopes = pipe site.docgen [
+            (mapAttrsToList (
+              n: c:
+              nameValuePair "${name}-${n}" {
+                name = "${name}: ${n} Options Search";
+                optionsJSONPackage = c.docsout.optionsJSON;
+                # optionsJSON = "${c.docsout.optionsJSON}/share/doc/nixos/options.json";
+                urlPrefix = siteConfig.defaults.substitution.gitRepoUrl;
+                # urlPrefix = site.defaults.substitution.gitRepoUrl;
+              }
+            ))
+            lib.flatten
+            lib.listToAttrs
+          ];
+        }
+      ) config.sites;
+      packages = mkMerge [
+        (mapAttrs' (name: site: nameValuePair "docs-mdbook-${name}" site.mdbook) config.sites)
+      ];
+    };
 }

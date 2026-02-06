@@ -2,20 +2,30 @@ localFlake:
 { lib, flake-parts-lib, ... }:
 let
   inherit (lib)
-    literalExpression mkDefault mkEnableOption mkIf mkMerge mkOption
-    optionalAttrs optionalString types;
-in {
+    literalExpression
+    mkDefault
+    mkEnableOption
+    mkIf
+    mkMerge
+    mkOption
+    optionalAttrs
+    optionalString
+    types
+    ;
+in
+{
   imports = [
     localFlake.inputs.devshell.flakeModule
     localFlake.inputs.git-hooks-nix.flakeModule
   ];
   options = {
-    perSystem = flake-parts-lib.mkPerSystemOption ({ config, ... }:
+    perSystem = flake-parts-lib.mkPerSystemOption (
+      { config, ... }:
       let
         cfg = config.provision;
-        pcfg = config.provision.pre-commit;
         fcfg = config.provision.formatter;
-      in {
+      in
+      {
         _file = ./flakeModule.nix;
         options.provision = mkOption {
           description = ''
@@ -26,8 +36,7 @@ in {
           type = types.submodule {
             options = {
               enable = mkEnableOption "enable provision-nix shell";
-              enableDefaults =
-                mkEnableOption "enables pre-commit hook + a default formatter";
+              enableDefaults = mkEnableOption "enables pre-commit hook + a default formatter";
               deploy = mkOption {
                 default = { };
                 description = "Configure which deploy packages to add.";
@@ -52,50 +61,54 @@ in {
                   Configure default formatter for flake, optionally add as a pre-commit hook.
                 '';
                 default = { };
-                type = types.submodule ({ config, ... }: {
-                  options = {
-                    enable = mkEnableOption "enable setting formatter" // {
-                      default = config.name != "";
+                type = types.submodule (
+                  { config, ... }:
+                  {
+                    options = {
+                      enable = mkEnableOption "enable setting formatter" // {
+                        default = config.name != "";
+                      };
+                      enablePreCommit = mkEnableOption "adds formatter to pre-commit hook";
+                      name = mkOption {
+                        description = "optional formatter package to use, attempts to infer from `name`.";
+                        default = optionalString cfg.enableDefaults "nixfmt";
+                        type = types.str;
+                      };
+                      package = mkOption {
+                        description = "optional formatter package to use, attempts to infer from `name`.";
+                        default = null;
+                        type = with types; nullOr package;
+                      };
                     };
-                    enablePreCommit =
-                      mkEnableOption "adds formatter to pre-commit hook";
-                    name = mkOption {
-                      description =
-                        "optional formatter package to use, attempts to infer from `name`.";
-                      default = optionalString cfg.enableDefaults "nixfmt";
-                      type = types.str;
-                    };
-                    package = mkOption {
-                      description =
-                        "optional formatter package to use, attempts to infer from `name`.";
-                      default = null;
-                      type = with types; nullOr package;
-                    };
-                  };
-                });
+                  }
+                );
               };
               pre-commit = {
-                enable = mkEnableOption
-                  "enable pre-commit hooks integration from `git-hooks.nix`"
-                  // {
-                    default = cfg.enableDefaults;
-                  };
+                enable = mkEnableOption "enable pre-commit hooks integration from `git-hooks.nix`" // {
+                  default = cfg.enableDefaults;
+                };
                 formatHook = mkOption {
-                  default = if fcfg.name == "nixfmt" then {
-                    nixfmt-rfc-style.enable = true;
-                  } else if fcfg.name == "alejandra" then {
-                    alejandra.enable = true;
-                  } else if fcfg.name == "nixfmt-classic" then {
-                    nixfmt-classic.enable = true;
-                  } else
-                    { };
+                  default =
+                    if fcfg.name == "nixfmt" then
+                      {
+                        nixfmt.enable = true;
+                      }
+                    else if fcfg.name == "alejandra" then
+                      {
+                        alejandra.enable = true;
+                      }
+                    else if fcfg.name == "nixfmt-classic" then
+                      {
+                        nixfmt-classic.enable = true;
+                      }
+                    else
+                      { };
                   type = types.attrsOf types.raw;
                   description = "format hook from `provision.formatter` option";
                 };
                 hooks = mkOption {
                   default = { };
-                  description =
-                    "hooks to passthrough to `pre-commit.settings.hooks`";
+                  description = "hooks to passthrough to `pre-commit.settings.hooks`";
                   type = types.attrsOf types.raw;
                 };
               };
@@ -115,20 +128,22 @@ in {
             }
           '';
         };
-      });
+      }
+    );
   };
 
   config = {
     transposition.provision = { };
-    perSystem = { config, system, ... }:
+    perSystem =
+      { config, system, ... }:
       let
         pkgs = localFlake.inputs.nixpkgs.legacyPackages.${system};
         cfg = config.provision;
         pcfg = config.provision.pre-commit;
         fcfg = config.provision.formatter;
-      in {
-        pre-commit =
-          mkIf (cfg.enable && pcfg.enable) { settings.hooks = pcfg.hooks; };
+      in
+      {
+        pre-commit = mkIf (cfg.enable && pcfg.enable) { settings.hooks = pcfg.hooks; };
         formatter = mkIf (cfg.enable && fcfg.enable) fcfg.package;
         provision = {
           deploy.packages = mkDefault [
@@ -139,15 +154,15 @@ in {
           ];
           formatter = {
             enablePreCommit = mkDefault cfg.enableDefaults;
-            package = if (fcfg.name == "nixfmt-rfc-style")
-            || (fcfg.name == "nixfmt") then
-              pkgs.nixfmt
-            else if fcfg.name == "alejandra" then
-              pkgs.alejandra
-            else if fcfg.name == "nixfmt-classic" then
-              pkgs.nixfmt-classic
-            else
-              null;
+            package =
+              if (fcfg.name == "nixfmt-rfc-style") || (fcfg.name == "nixfmt") then
+                pkgs.nixfmt
+              else if fcfg.name == "alejandra" then
+                pkgs.alejandra
+              else if fcfg.name == "nixfmt-classic" then
+                pkgs.nixfmt-classic
+              else
+                null;
           };
           pre-commit = {
             enable = cfg.enableDefaults;
@@ -159,11 +174,10 @@ in {
         };
         devshells.default = {
           imports = [ localFlake.self.devshellModules.provision ];
-          devshell.startup.pre-commit =
-            mkIf pcfg.enable { text = config.pre-commit.installationScript; };
+          devshell.startup.pre-commit = mkIf pcfg.enable { text = config.pre-commit.installationScript; };
           # na-install.enable = true;
-          packages = config.pre-commit.settings.enabledPackages
-            ++ (lib.optionals cfg.deploy.enable cfg.deploy.packages);
+          packages =
+            config.pre-commit.settings.enabledPackages ++ (lib.optionals cfg.deploy.enable cfg.deploy.packages);
         };
       };
   };

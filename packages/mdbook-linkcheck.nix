@@ -1,5 +1,13 @@
-{ lib, stdenv, fetchFromGitHub, rustPlatform, pkg-config, openssl, testers
-, mdbook-linkcheck, }:
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  rustPlatform,
+  pkg-config,
+  openssl,
+  testers,
+  mdbook-linkcheck,
+}:
 
 rustPlatform.buildRustPackage rec {
   pname = "mdbook-linkcheck";
@@ -16,13 +24,11 @@ rustPlatform.buildRustPackage rec {
 
   buildInputs = lib.optionals (!stdenv.hostPlatform.isDarwin) [ openssl ];
 
-  nativeBuildInputs =
-    lib.optionals (!stdenv.hostPlatform.isDarwin) [ pkg-config ];
+  nativeBuildInputs = lib.optionals (!stdenv.hostPlatform.isDarwin) [ pkg-config ];
 
   OPENSSL_NO_VENDOR = 1;
 
-  doCheck =
-    false; # tries to access network to test broken web link functionality
+  doCheck = false; # tries to access network to test broken web link functionality
 
   passthru.tests.version = testers.testVersion { package = mdbook-linkcheck; };
 
@@ -31,6 +37,9 @@ rustPlatform.buildRustPackage rec {
     mainProgram = "mdbook-linkcheck";
     homepage = "https://github.com/Michael-F-Bryan/mdbook-linkcheck";
     license = licenses.mit;
-    maintainers = with maintainers; [ zhaofengli matthiasbeyer ];
+    maintainers = with maintainers; [
+      zhaofengli
+      matthiasbeyer
+    ];
   };
 }
