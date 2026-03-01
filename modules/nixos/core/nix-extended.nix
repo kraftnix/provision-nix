@@ -97,7 +97,7 @@ in
     ## Profiles
     (mkIf cfg.basic {
       # auto-geneate manpage caches docs when first switching to a new generation
-      documentation.man.generateCaches = true;
+      documentation.man.cache.enable = mkDefault true;
       nix.daemonCPUSchedPolicy = mkDefault "batch"; # slightly better than default, change to idle if very resource constrained
       nix.daemonIOSchedClass = mkDefault "idle";
       nix.daemonIOSchedPriority = mkDefault 7; # lowest priority

@@ -74,19 +74,9 @@ let
           self.nixosModules.fs-nfs-server
         ];
 
-        # Create ZFS pool for nfs use
-        virtualisation.emptyDiskImages = [ 100 ];
-        networking.hostId = "deadbeef";
-        boot.kernelPackages = pkgs.linuxKernel.packages.linux_6_19;
-        boot.supportedFilesystems = [ "zfs" ];
-        boot.initrd.kernelModules = [ "zfs" ];
-        boot.initrd.postDeviceCommands = ''
-          ${pkgs.zfs}/bin/zpool create -O acltype=posixacl -O xattr=sa -O compression=lz4 pool /dev/vdb
-          ${pkgs.zfs}/bin/zfs set mountpoint=/pool pool
-          ${pkgs.zfs}/bin/zfs create pool/var
-          ${pkgs.zfs}/bin/zfs create pool/var/public
-          ${pkgs.zfs}/bin/zfs create pool/user-example
-          ${pkgs.zfs}/bin/zfs mount -r pool
+        boot.initrd.postMountCommands = ''
+          mkdir -p /pool/user-example
+          mkdir -p /pool/var/public
         '';
 
         ## issue with NixOS VM not setting `fileSystems` correctly for these mounts requires defining them here...

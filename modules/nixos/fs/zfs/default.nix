@@ -37,12 +37,27 @@ in
     hostId = opts.stringNull "optionally set `networking.hostId` here, not required";
     kernel = {
       enable = opts.enable "sets the kernel to the latest compatible with ZFS";
+      version = mkOption {
+        description = "which kernel to use, `stable` or `latest`";
+        default = "latest";
+        type = types.enum [
+          "stable"
+          "latest"
+        ];
+      };
       latest = mkOption {
         description = "latest linux kernel version that works with zfs";
         type = types.raw;
+        default = pkgs.linuxKernel.packages.linux_6_19;
+        defaultText = literalExpression "pkgs.linuxKernel.packages.linux_6_19";
+        example = literalExpression "pkgs.linuxKernel.packages.linux_6_19";
+      };
+      stable = mkOption {
+        description = "stable linux kernel version that works with zfs";
+        type = types.raw;
         default = pkgs.linuxKernel.packages.linux_6_18;
         defaultText = literalExpression "pkgs.linuxKernel.packages.linux_6_18";
-        example = literalExpression "pkgs.linuxKernel.packages.linux_6_11";
+        example = literalExpression "pkgs.linuxKernel.packages.linux_6_12";
       };
     };
     trim = opts.enableTrue "enable trim, see effects in [zpool-trim](https://openzfs.github.io/openzfs-docs/man/master/8/zpool-trim.8.html) docs";
@@ -71,7 +86,9 @@ in
     networking.hostId = mkIf (cfg.hostId != null) cfg.hostId;
 
     boot.supportedFilesystems = [ "zfs" ];
-    boot.kernelPackages = mkIf cfg.kernel.enable cfg.kernel.latest;
+    boot.kernelPackages = mkIf cfg.kernel.enable (
+      if cfg.kernel.version == "stable" then cfg.kernel.stable else cfg.kernel.latest
+    );
     provision.fs.zfs.package = pkgs.zfs_2_4; # is released but not currently default, required for 6.18 support
 
     boot.zfs.requestEncryptionCredentials = mkDefault cfg.nativeEncryption;
