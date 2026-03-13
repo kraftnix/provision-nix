@@ -3,18 +3,24 @@
 def main [
   match : string # string to match in files
   replace : string # string to replace matches with
-  path : path # path to search files in
+  path : path = "." # path to search files in
   --dryRun(-d) # add flag to print replaced files instead of saving in place
 ] {
-  rg $match --files-with-matches
-    | lines
+  let matches = (rg $match --files-with-matches $path | complete)
+  if $matches.exit_code == 0 {
+    $matches.stdout | lines
     | each {|path|
-      let str = (open $path --raw | str replace $match $replace)
+      let str = (cat $path | str replace $match $replace)
       if $dryRun {
         print $str
       } else {
-        $str | save -f $path
+        # WORKAROUND(hang): related to: https://github.com/nushell/nushell/issues/16388
+        # $str | save -f $path --raw
+        $str | ^tee $path
       }
     }
-  exit 0
+  } else {
+    print -e "Found no matches for $match"
+    print -e $matches.stderr
+  }
 }
