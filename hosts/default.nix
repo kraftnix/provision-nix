@@ -93,6 +93,10 @@
           }:
           {
             imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
+            fileSystems."/" = lib.mkImageMediaOverride {
+              fsType = "tmpfs";
+              options = [ "mode=0755" ];
+            };
             boot.supportedFilesystems = [
               "zfs"
               "btrfs"

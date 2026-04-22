@@ -27,11 +27,13 @@ in
     libre-only.enable = opts.enable "prevents redistribuation but not free firmware";
     hardened_kernel = {
       enable = opts.enable "enable latest hardened kernel";
-      kernel = lib.mkOption {
+      package = lib.mkOption {
         description = "hardened kernel package";
-        default = pkgs.linuxPackages_hardened;
-        defaultText = lib.literalExpression "pkgs.linuxPackages_hardened";
-        example = lib.literalExpression "pkgs.linuxPackages_hardened";
+        default = lib.recurseIntoAttrs (
+          pkgs.linuxPackagesFor self.packages.${pkgs.stdenv.hostPlatform.system}.linux_6_12_hardened
+        );
+        defaultText = lib.literalExpression "lib.recurseIntoAttrs (pkgs.linuxPackagesFor self.packages.\${pkgs.stdenv.hostPlatform.system}.linux_6_12_hardened)";
+        example = lib.literalExpression "lib.recurseIntoAttrs (pkgs.linuxPackagesFor self.packages.\${pkgs.stdenv.hostPlatform.system}.linux_6_19_hardened)";
         type = types.raw;
       };
     };
@@ -60,7 +62,7 @@ in
       hardware.enableRedistributableFirmware = lib.mkOverride 51 false;
     })
     (mkIf (cfg.hardened_kernel.enable) {
-      boot.kernelPackages = cfg.hardened_kernel.kernel;
+      boot.kernelPackages = cfg.hardened_kernel.package;
     })
     (mkIf (cfg.namespacing.enable) {
       security.allowUserNamespaces = mkDefault true;

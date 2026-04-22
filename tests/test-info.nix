@@ -89,7 +89,10 @@ rec {
           prefixLength = 24;
         }
       ];
-      fileSystems."/" = lib.mkDefault { device = "/dev/disk/by-label/One"; };
+      fileSystems."/" = lib.mkDefault {
+        device = "/dev/disk/by-label/One";
+        fsType = "auto";
+      };
       environment.systemPackages = with pkgs; [
         fd
         ripgrep

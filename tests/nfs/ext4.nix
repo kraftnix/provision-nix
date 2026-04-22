@@ -37,6 +37,7 @@ let
           }
         ) (lib.filterAttrs (_: m: m.enable) config.provision.fs.nfs.client.mounts);
 
+        boot.kernelPackages = pkgs.linuxKernel.packages.linux_6_19;
         users.users = {
           mylocaluser = {
             uid = 6000;
@@ -74,10 +75,17 @@ let
           self.nixosModules.fs-nfs-server
         ];
 
-        boot.initrd.postMountCommands = ''
-          mkdir -p /pool/user-example
-          mkdir -p /pool/var/public
-        '';
+        boot.initrd.systemd.services.init-share-directories = {
+          after = [ "initrd-fs.target" ];
+          requires = [ "initrd-fs.target" ];
+          before = [ "initrd.target" ];
+          wantedBy = [ "initrd.target" ];
+          serviceConfig.Type = "oneshot";
+          script = ''
+            mkdir -p /sys-root/pool/user-example
+            mkdir -p /sys-root/pool/var/public
+          '';
+        };
 
         ## issue with NixOS VM not setting `fileSystems` correctly for these mounts requires defining them here...
         virtualisation.fileSystems = lib.pipe config.provision.fs.nfs.server.exports [
@@ -85,6 +93,7 @@ let
           (lib.mapAttrs' (
             _: e:
             lib.nameValuePair e.exportPath {
+              fsType = "auto";
               device = e.hostPath;
               options = e.mount.options;
               neededForBoot = false;
@@ -116,7 +125,6 @@ let
           };
           exports = {
             root.subnets."*" = { };
-            "/pool".subnets."*" = { };
             public = {
               hostPath = "/pool/var/public";
               subnets."*" = { };
@@ -132,7 +140,7 @@ let
 
   nixos-lib = import (self.inputs.nixpkgs + "/nixos/lib") { };
   test = {
-    name = "nfs-basic";
+    name = "nfs-ext4";
     hostPkgs = pkgs;
     inherit nodes;
     testScript = ''

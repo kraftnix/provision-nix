@@ -72,29 +72,21 @@ let
         imports = modules ++ [
           self.nixosModules.networking-firewall
           self.nixosModules.fs-nfs-server
+          (import ./init-zfs.nix { })
         ];
 
         # Create ZFS pool for nfs use
         virtualisation.emptyDiskImages = [ 100 ];
         networking.hostId = "deadbeef";
         boot.kernelPackages = pkgs.linuxKernel.packages.linux_6_19;
-        boot.supportedFilesystems = [ "zfs" ];
-        boot.initrd.kernelModules = [ "zfs" ];
-        boot.initrd.postDeviceCommands = ''
-          ${pkgs.zfs}/bin/zpool create -O acltype=posixacl -O xattr=sa -O compression=lz4 pool /dev/vdb
-          ${pkgs.zfs}/bin/zfs set mountpoint=/pool pool
-          ${pkgs.zfs}/bin/zfs create pool/var
-          ${pkgs.zfs}/bin/zfs create pool/var/public
-          ${pkgs.zfs}/bin/zfs create pool/user-example
-          ${pkgs.zfs}/bin/zfs mount -r pool
-        '';
 
-        ## issue with NixOS VM not setting `fileSystems` correctly for these mounts requires defining them here...
+        # ## issue with NixOS VM not setting `fileSystems` correctly for these mounts requires defining them here...
         virtualisation.fileSystems = lib.pipe config.provision.fs.nfs.server.exports [
           (lib.filterAttrs (_: e: e.enable && e.addToFilesystem))
           (lib.mapAttrs' (
             _: e:
             lib.nameValuePair e.exportPath {
+              fsType = "auto";
               device = e.hostPath;
               options = e.mount.options;
               neededForBoot = false;
@@ -126,7 +118,6 @@ let
           };
           exports = {
             root.subnets."*" = { };
-            "/pool".subnets."*" = { };
             public = {
               hostPath = "/pool/var/public";
               subnets."*" = { };

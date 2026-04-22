@@ -311,6 +311,7 @@ in
       (lib.mapAttrs' (
         _: e:
         lib.nameValuePair e.exportPath {
+          fsType = "auto";
           device = e.hostPath;
           options = e.mount.options;
           neededForBoot = false;

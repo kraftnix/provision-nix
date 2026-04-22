@@ -67,26 +67,23 @@ let
         };
       };
     server =
-      { pkgs, ... }:
+      { config, lib, ... }:
       {
         imports = modules ++ [
           self.nixosModules.networking-firewall
           self.nixosModules.fs-samba-server
+          (import ../nfs/init-zfs.nix {
+            datasets = [
+              "pool/public"
+              "pool/private"
+              "pool/user-example"
+            ];
+          })
         ];
 
         # Create ZFS pool for samba use
         virtualisation.emptyDiskImages = [ 100 ];
         networking.hostId = "deadbeef";
-        boot.supportedFilesystems = [ "zfs" ];
-        boot.initrd.kernelModules = [ "zfs" ];
-        boot.initrd.postDeviceCommands = ''
-          ${pkgs.zfs}/bin/zpool create -O acltype=posixacl -O xattr=sa -O compression=lz4 pool /dev/vdb
-          ${pkgs.zfs}/bin/zfs set mountpoint=/pool pool
-          ${pkgs.zfs}/bin/zfs create pool/public
-          ${pkgs.zfs}/bin/zfs create pool/private
-          ${pkgs.zfs}/bin/zfs create pool/user-example
-          ${pkgs.zfs}/bin/zfs mount -r pool
-        '';
 
         users.users.server-unix-user = {
           uid = 5454;

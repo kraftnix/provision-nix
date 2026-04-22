@@ -90,8 +90,8 @@ in
       samba-basic = import ./tests/samba/basic.nix self;
       nfs-basic = import ./tests/nfs/basic.nix self;
       # WIP: expanded tests for NFS
-      # nfs-ext4 = import ./tests/nfs/zfs.nix self;
-      # nfs-zfs = import ./tests/nfs/zfs.nix self;
+      nfs-ext4 = import ./tests/nfs/ext4.nix self;
+      nfs-zfs = import ./tests/nfs/zfs.nix self;
     }
     // self.packages.x86_64-linux;
 

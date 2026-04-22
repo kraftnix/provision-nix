@@ -89,7 +89,6 @@ in
     boot.kernelPackages = mkIf cfg.kernel.enable (
       if cfg.kernel.version == "stable" then cfg.kernel.stable else cfg.kernel.latest
     );
-    provision.fs.zfs.package = pkgs.zfs_2_4; # is released but not currently default, required for 6.18 support
 
     boot.zfs.requestEncryptionCredentials = mkDefault cfg.nativeEncryption;
     provision.fs.boot.initrd.postCommands = mkIf cfg.nativeEncryption {
