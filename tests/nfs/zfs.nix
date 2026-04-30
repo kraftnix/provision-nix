@@ -184,38 +184,38 @@ let
         server_latest.wait_for_unit("network.target")
         server_latest.wait_for_unit("default.target")
 
-      # with subtest("Setup permissions (stable)"):
-      #   server_stable.succeed("chown -R shared-user:users /pool/var/public")
-      #   server_stable.succeed("chown -R shared-user:users /pool/user-example")
-      #
-      # with subtest("testing public read access on existing file (stable)"):
-      #   server_stable.succeed("sudo -u shared-user sh -c 'echo __EXISTING_FILE__ > /pool/var/public/existing'")
-      #   server_stable.succeed("sudo -u shared-user sh -c 'cat /pool/var/public/existing | grep -e __EXISTING_FILE__'")
-      #   client.succeed("sudo -u shared-user sh -c 'cat /public/existing | grep -e __EXISTING_FILE__'")
-      #
-      # with subtest("testing public create/write/read/delete access for new file from client (stable)"):
-      #   client.succeed("sudo -u shared-user sh -c 'echo __SUCCESS_STRING__ > /public/newfile'")
-      #   server_stable.succeed("cat /pool/var/public/newfile | grep -e __SUCCESS_STRING__")
-      #   server_stable.succeed("cat /export/public/newfile | grep -e __SUCCESS_STRING__")
-      #   client.succeed("sudo -u shared-user sh -c 'echo 'EDIT_SUCCESS' >> /public/newfile'")
-      #   server_stable.succeed("cat /pool/var/public/newfile | grep -e EDIT_SUCCESS")
-      #   server_stable.succeed("cat /export/public/newfile | grep -e EDIT_SUCCESS")
-      #   client.succeed("sudo -u shared-user sh -c 'cat /public/newfile | grep -e EDIT_SUCCESS'")
-      #   client.succeed("sudo -u shared-user sh -c 'rm /public/newfile'")
-      #   client.fail("sudo -u shared-user sh -c 'test -f /public/newfile'")
-      #
-      # with subtest("testing user-example read access on existing file (stable)"):
-      #   server_stable.succeed("sudo -u shared-user sh -c 'echo __EXISTING_FILE__ > /pool/user-example/existing'")
-      #   client.succeed("sudo -u shared-user sh -c 'cat /user-example/existing | grep -e __EXISTING_FILE__'")
-      #
-      # with subtest("testing user-example create/write/read/delete access for new file from client (stable)"):
-      #   client.succeed("sudo -u shared-user sh -c 'echo __SUCCESS_STRING__ > /user-example/newfile'")
-      #   server_stable.succeed("cat /pool/user-example/newfile | grep -e __SUCCESS_STRING__")
-      #   client.succeed("sudo -u shared-user sh -c 'echo 'EDIT_SUCCESS' >> /user-example/newfile'")
-      #   server_stable.succeed("cat /pool/user-example/newfile | grep -e EDIT_SUCCESS")
-      #   client.succeed("sudo -u shared-user sh -c 'cat /user-example/newfile | grep -e EDIT_SUCCESS'")
-      #   client.succeed("sudo -u shared-user sh -c 'rm /user-example/newfile'")
-      #   client.fail("sudo -u shared-user sh -c 'test -f /user-example/newfile'")
+      with subtest("Setup permissions (stable)"):
+        server_stable.succeed("chown -R shared-user:users /pool/var/public")
+        server_stable.succeed("chown -R shared-user:users /pool/user-example")
+
+      with subtest("testing public read access on existing file (stable)"):
+        server_stable.succeed("sudo -u shared-user sh -c 'echo __EXISTING_FILE__ > /pool/var/public/existing'")
+        server_stable.succeed("sudo -u shared-user sh -c 'cat /pool/var/public/existing | grep -e __EXISTING_FILE__'")
+        client.succeed("sudo -u shared-user sh -c 'cat /public/existing | grep -e __EXISTING_FILE__'")
+
+      with subtest("testing public create/write/read/delete access for new file from client (stable)"):
+        client.succeed("sudo -u shared-user sh -c 'echo __SUCCESS_STRING__ > /public/newfile'")
+        server_stable.succeed("cat /pool/var/public/newfile | grep -e __SUCCESS_STRING__")
+        server_stable.succeed("cat /export/public/newfile | grep -e __SUCCESS_STRING__")
+        client.succeed("sudo -u shared-user sh -c 'echo 'EDIT_SUCCESS' >> /public/newfile'")
+        server_stable.succeed("cat /pool/var/public/newfile | grep -e EDIT_SUCCESS")
+        server_stable.succeed("cat /export/public/newfile | grep -e EDIT_SUCCESS")
+        client.succeed("sudo -u shared-user sh -c 'cat /public/newfile | grep -e EDIT_SUCCESS'")
+        client.succeed("sudo -u shared-user sh -c 'rm /public/newfile'")
+        client.fail("sudo -u shared-user sh -c 'test -f /public/newfile'")
+
+      with subtest("testing user-example read access on existing file (stable)"):
+        server_stable.succeed("sudo -u shared-user sh -c 'echo __EXISTING_FILE__ > /pool/user-example/existing'")
+        client.succeed("sudo -u shared-user sh -c 'cat /user-example/existing | grep -e __EXISTING_FILE__'")
+
+      with subtest("testing user-example create/write/read/delete access for new file from client (stable)"):
+        client.succeed("sudo -u shared-user sh -c 'echo __SUCCESS_STRING__ > /user-example/newfile'")
+        server_stable.succeed("cat /pool/user-example/newfile | grep -e __SUCCESS_STRING__")
+        client.succeed("sudo -u shared-user sh -c 'echo 'EDIT_SUCCESS' >> /user-example/newfile'")
+        server_stable.succeed("cat /pool/user-example/newfile | grep -e EDIT_SUCCESS")
+        client.succeed("sudo -u shared-user sh -c 'cat /user-example/newfile | grep -e EDIT_SUCCESS'")
+        client.succeed("sudo -u shared-user sh -c 'rm /user-example/newfile'")
+        client.fail("sudo -u shared-user sh -c 'test -f /user-example/newfile'")
 
       with subtest("Setup permissions (latest)"):
         server_latest.succeed("chown -R shared-user:users /pool/var/public")

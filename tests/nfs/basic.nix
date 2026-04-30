@@ -78,7 +78,7 @@ let
         # Create ZFS pool for nfs use
         virtualisation.emptyDiskImages = [ 100 ];
         networking.hostId = "deadbeef";
-        boot.kernelPackages = pkgs.linuxKernel.packages.linux_6_19;
+        boot.kernelPackages = pkgs.linuxKernel.packages.linux_6_18;
 
         # ## issue with NixOS VM not setting `fileSystems` correctly for these mounts requires defining them here...
         virtualisation.fileSystems = lib.pipe config.provision.fs.nfs.server.exports [

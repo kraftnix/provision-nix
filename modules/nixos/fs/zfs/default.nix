@@ -48,8 +48,10 @@ in
       latest = mkOption {
         description = "latest linux kernel version that works with zfs";
         type = types.raw;
-        default = pkgs.linuxKernel.packages.linux_6_19;
-        defaultText = literalExpression "pkgs.linuxKernel.packages.linux_6_19";
+        # default = pkgs.linuxKernel.packages.linux_7_0;
+        default =
+          localFlake.inputs.nixpkgs-zfs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.linuxKernel.packages.linux_6_19;
+        defaultText = literalExpression "pkgs.linuxKernel.packages.linux_7_0";
         example = literalExpression "pkgs.linuxKernel.packages.linux_6_19";
       };
       stable = mkOption {

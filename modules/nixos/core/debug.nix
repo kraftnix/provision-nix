@@ -35,7 +35,7 @@ in
       iproute2 # ip route checking tool
       jc # json output for all things
       lm_sensors # list temperature sensors
-      litecli # better sqlite viewer
+      # litecli # better sqlite viewer
       linux-router # swiss army knife networking scripts
       lnav # good log viewer
       lshw # list hardware
