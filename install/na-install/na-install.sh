@@ -45,6 +45,7 @@ if [[ -n "${NA_INITRD_PROVISION}" ]]; then
   install -d -m755 "$temp/etc/initrd"
 
   ssh-keygen -t ed25519 -N "" -C "initrd-root-ssh" -f "$temp/etc/initrd/ssh_host_ed25519_key"
+  echo "Pubkey: $(cat "$temp/etc/initrd/ssh_host_ed25519_key")"
   args+=( '--extra-files' "$temp" )
 fi
 
