@@ -110,6 +110,11 @@ in
                     }
                   );
                 };
+                buildInputs = mkOption {
+                  description = "Additional buildInputs to provide to the mdbook derivation";
+                  default = [ ];
+                  type = types.listOf types.package;
+                };
                 mdbook-pre = mkOption {
                   description = "mdbook with some preprocessing applied + docgen options copied in";
                   type = types.pathInStore;
@@ -166,19 +171,21 @@ in
                     '';
                   };
 
+                  buildInputs = [
+                    pkgs.mdbook
+                    pkgs.mdbook-variables
+                    pkgs.ripgrep
+                    # pkgs.mdbook-linkcheck
+                    localFlake.self.packages.${pkgs.stdenv.hostPlatform.system}.mdbook-linkcheck
+                    # pkgs.mdbook-cmdrun
+                    pkgs.nushell
+                    localFlake.self.packages.${pkgs.stdenv.hostPlatform.system}.yapp
+                    localFlake.self.packages.${pkgs.stdenv.hostPlatform.system}.simple-replace
+                  ];
+
                   mdbook = pkgs.stdenvNoCC.mkDerivation {
                     name = "docs-mdbook-${site.name}";
-                    buildInputs = [
-                      pkgs.ripgrep
-                      pkgs.mdbook
-                      # pkgs.mdbook-linkcheck
-                      localFlake.self.packages.${pkgs.stdenv.hostPlatform.system}.mdbook-linkcheck
-                      pkgs.mdbook-variables
-                      # pkgs.mdbook-cmdrun
-                      pkgs.nushell
-                      localFlake.self.packages.${pkgs.stdenv.hostPlatform.system}.yapp
-                      localFlake.self.packages.${pkgs.stdenv.hostPlatform.system}.simple-replace
-                    ];
+                    buildInputs = config.buildInputs;
                     # have to set as string or can't evaluate in nix repl
                     src = "${config.mdbook-pre}";
                     HOMEPAGE_URL = site.homepage.url;
