@@ -56,7 +56,7 @@ in
                   default = null;
                   type = with types; nullOr path;
                   example = literalExpression ''
-                    pkgs.writeText "styles.scss" ''''''
+                    pkgs.writeText "styles.scss" ''''
                       @import "theme";
                       @include theme();
                       @import "scss/kanagawa";
@@ -73,7 +73,7 @@ in
                       pre {
                         white-space: pre-wrap;
                       }
-                    ''''''
+                    ''''
                   '';
                 };
                 baseHref = mkOption {
