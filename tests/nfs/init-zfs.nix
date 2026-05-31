@@ -19,7 +19,7 @@
     wantedBy = [ "initrd.target" ];
     serviceConfig.Type = "oneshot";
     script = ''
-      set -uo pipefail
+      set -euo pipefail
       zpool create -O acltype=posixacl -O xattr=sa -O compression=lz4 pool /dev/vdb
       zfs set mountpoint=/pool pool
       ${lib.concatStringsSep "\n" (lib.map (d: "zfs create ${d}") datasets)}
