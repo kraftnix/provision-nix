@@ -1,6 +1,6 @@
 {
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-  inputs.nixpkgs-stable.url = "github:nixos/nixpkgs/release-25.11";
+  inputs.nixpkgs-stable.url = "github:nixos/nixpkgs/release-26.05";
   # inputs.nixpkgs-zfs.url = "github:nixos/nixpkgs/162f04bf3dd222187388bc990a8678170d594419";
   inputs.nixlib.url = "github:nix-community/nixpkgs.lib";
 
