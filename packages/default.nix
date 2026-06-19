@@ -17,11 +17,11 @@
         dnsleaktest = pkgs.callPackage (import ./dnsleaktest.nix) { };
         mdbook-linkcheck = pkgs.callPackage (import ./mdbook-linkcheck.nix) { };
         yapp = pkgs.callPackage (import ./yapp.nix) { };
-        linux_6_12_hardened = pkgs.callPackage (import ./hardened_kernel.nix {
-          version = "6.12.79-hardened1";
-          hash = "sha256-TKrLHk4aB47vqehEdp5ks4WtMCq/XCDr9ro3eQOoPvE=";
-          branch = "6.12";
-        }) { };
+        # linux_6_12_hardened = pkgs.callPackage (import ./hardened_kernel.nix {
+        #   version = "6.12.79-hardened1";
+        #   hash = "sha256-TKrLHk4aB47vqehEdp5ks4WtMCq/XCDr9ro3eQOoPvE=";
+        #   branch = "6.12";
+        # }) { };
         # # 6_18 broken due to PREEMPT_VOLUNTARY not being set somehow...
         # linux_6_18_hardened = pkgs.callPackage (import ./hardened_kernel.nix {
         #   version = "6.18.20-hardened1";

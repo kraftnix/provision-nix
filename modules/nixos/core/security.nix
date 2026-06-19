@@ -28,10 +28,11 @@ in
     hardened_kernel = {
       enable = opts.enable "enable latest hardened kernel";
       package = lib.mkOption {
-        description = "hardened kernel package";
-        default = lib.recurseIntoAttrs (
-          pkgs.linuxPackagesFor self.packages.${pkgs.stdenv.hostPlatform.system}.linux_6_12_hardened
-        );
+        description = "hardened kernel package NOTE: currently not working";
+        default = lib.recurseIntoAttrs (pkgs.linuxPackagesFor pkgs.linux_7_0);
+        # default = lib.recurseIntoAttrs (
+        #   pkgs.linuxPackagesFor self.packages.${pkgs.stdenv.hostPlatform.system}.linux_6_12_hardened
+        # );
         defaultText = lib.literalExpression "lib.recurseIntoAttrs (pkgs.linuxPackagesFor self.packages.\${pkgs.stdenv.hostPlatform.system}.linux_6_12_hardened)";
         example = lib.literalExpression "lib.recurseIntoAttrs (pkgs.linuxPackagesFor self.packages.\${pkgs.stdenv.hostPlatform.system}.linux_6_19_hardened)";
         type = types.raw;
