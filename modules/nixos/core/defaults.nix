@@ -90,10 +90,10 @@ in
           DefaultTimeoutStartSec = timeout;
           DefaultTimeoutStopSec = timeout;
         };
-        systemd.user.extraConfig = ''
-          DefaultTimeoutStartSec=${timeout}
-          DefaultTimeoutStopSec=${timeout}
-        '';
+        systemd.user.settings.Manager = {
+          DefaultTimeoutStartSec = timeout;
+          DefaultTimeoutStopSec = timeout;
+        };
       }
     ))
   ];
