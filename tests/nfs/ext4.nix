@@ -37,7 +37,9 @@ let
           }
         ) (lib.filterAttrs (_: m: m.enable) config.provision.fs.nfs.client.mounts);
 
-        boot.kernelPackages = pkgs.linuxKernel.packages.linux_7_0;
+        # boot.kernelPackages = pkgs.linuxKernel.packages.linux_7_0;
+        boot.kernelPackages =
+          self.inputs.nixpkgs-zfs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.linuxKernel.packages.linux_7_0;
         users.users = {
           mylocaluser = {
             uid = 6000;
