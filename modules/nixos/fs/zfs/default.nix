@@ -46,12 +46,13 @@ in
         ];
       };
       latest = mkOption {
-        description = "latest linux kernel version that works with zfs";
+        description = ''
+          latest linux kernel version that works with zfs
+          > this is currently the same as stable as 7.x series has major issues for me with ZFS across many systems
+        '';
         type = types.raw;
-        # default = pkgs.linuxKernel.packages.linux_7_1;
-        default =
-          localFlake.inputs.nixpkgs-zfs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.linuxKernel.packages.linux_7_0;
-        defaultText = literalExpression "pkgs.linuxKernel.packages.linux_7_0";
+        default = pkgs.linuxKernel.packages.linux_6_18;
+        defaultText = literalExpression "pkgs.linuxKernel.packages.linux_6_18";
         example = literalExpression "pkgs.linuxKernel.packages.linux_6_19";
       };
       stable = mkOption {
