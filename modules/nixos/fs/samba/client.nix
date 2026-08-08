@@ -32,6 +32,7 @@ let
           int
         ]);
     };
+  toplevel = config;
   cfg = config.provision.fs.samba.client;
   mkServiceList =
     default: description:
@@ -107,8 +108,12 @@ let
             "systemd services to add to requiredBy + before with `x-systemd.requiredBy` and `x-systemd.before`";
         before = mkServiceList [ ] "systemd services to add to before with `x-systemd.before`";
         networkOnlineService = mkOption {
-          description = "unit to automatically add an after+requires, set to null to disable";
-          default = "systemd-networkd-wait-online.service";
+          description = ''
+            unit to automatically add an after+requires, set to null to disable
+
+            defaults based on whether systemd-networkd-wait-online, systemd-networkd is enabled, null if both are disabled.
+          '';
+          default = null;
           type = with types; nullOr str;
         };
         extraOptions = mkOption {
@@ -138,6 +143,14 @@ let
         };
       };
       config = default // {
+        networkOnlineService = lib.mkDefault (
+          if toplevel.systemd.services.systemd-networkd-wait-online.enable then
+            "systemd-networkd-wait-online.service"
+          else if toplevel.systemd.network.enable then
+            "systemd-networkd.service"
+          else
+            null
+        );
         options = unique (
           flatten (
             [
