@@ -30,6 +30,14 @@ in
         "package"
       ]
     )
+    (mkAliasOptionModule
+      [ "provision" "fs" "zfs" "forceImportRoot" ]
+      [
+        "boot"
+        "zfs"
+        "forceImportRoot"
+      ]
+    )
   ];
 
   options.provision.fs.zfs = {
@@ -88,6 +96,7 @@ in
   config = mkIf cfg.enable {
     networking.hostId = mkIf (cfg.hostId != null) cfg.hostId;
 
+    boot.zfs.forceImportRoot = mkDefault false;
     boot.supportedFilesystems = [ "zfs" ];
     boot.kernelPackages = mkIf cfg.kernel.enable (
       if cfg.kernel.version == "stable" then cfg.kernel.stable else cfg.kernel.latest

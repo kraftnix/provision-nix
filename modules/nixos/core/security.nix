@@ -38,7 +38,12 @@ in
         type = types.raw;
       };
     };
-    namespacing.enable = opts.enable "enable unprivilegedUsernsClone";
+    namespacing.enable = opts.enable "enable user namspaces";
+    namespacing.max = lib.mkOption {
+      description = "Sets `user.max_user_namespaces`, defaults to max allowed.";
+      default = 49152;
+      type = types.ints.between 0 49152;
+    };
   };
   config = lib.mkMerge [
 
@@ -67,7 +72,7 @@ in
     })
     (mkIf (cfg.namespacing.enable) {
       security.allowUserNamespaces = mkDefault true;
-      security.unprivilegedUsernsClone = mkDefault true;
+      boot.kernel.sysctl."user.max_user_namespaces" = cfg.namespacing.max;
     })
   ];
 }

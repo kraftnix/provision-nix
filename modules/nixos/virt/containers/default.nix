@@ -11,10 +11,16 @@
 }:
 let
   inherit (flake-parts-lib) importApply;
-  inherit (lib) mkIf mkDefault optional;
+  inherit (lib)
+    mkIf
+    mkDefault
+    optional
+    types
+    ;
   opts = self.lib.options;
   cfg = config.provision.virt.containers;
   network = cfg.podman.network;
+  settingsType = pkgs.formats.toml { };
 in
 {
   imports = [
@@ -40,7 +46,7 @@ in
         add options to make running rootless containers possible and set some extra defaults
         like enabling pasta and other defaults
 
-        sets `security.unprivilegedUsernsClone`
+        sets {option}`provision.core.security.namespacing.enable`
       '';
       network = {
         enable = opts.enableTrue "set up a netavark, aardvark + slipnetns podman networking setup";
@@ -88,14 +94,34 @@ in
     storageContainerOverlay = opts.enable "fuse mount /run/containers to /var/lib/containers";
 
     registries = {
-      search = opts.stringList [
-        "localhost"
-        "docker.io"
-        "quay.io"
-        "ghcr.io"
-        "nixery.dev"
-      ] "registries to search";
-      block = opts.stringList [ ] "registries to block";
+      enable = opts.enableTrue "enable configuration of registries";
+      extra = lib.mkOption {
+        description = "extra settings to add to {option}`virtualisation.containers.registries.settings`";
+        default = { };
+        type = settingsType.type;
+      };
+      config = lib.mkOption {
+        description = "a set of registries which is transformed into a list and provided to {option}`virtualisation.containers.registries.settings.registry`";
+        default = { };
+        type = types.attrsOf (
+          types.submodule (
+            { name, ... }: {
+              freeformType = settingsType.type;
+              options = {
+                enable = opts.enableTrue "enable registry configuration";
+                location = opts.string name "location of registry";
+              };
+            }
+          )
+        );
+        example = {
+          "docker.io".enable = true;
+          github = {
+            enable = true;
+            location = "ghcr.io";
+          };
+        };
+      };
     };
 
     legacy = {
@@ -108,7 +134,9 @@ in
       pkgs.docker-client
     ]
     ++ (optional cfg.podman.enable pkgs.podman-compose);
-    security.unprivilegedUsernsClone = mkIf cfg.podman.rootless true;
+    provision.core.security.namespacing = mkIf cfg.podman.rootless {
+      enable = true;
+    };
 
     provision.virt.containers = {
       podman.network = {
@@ -144,10 +172,18 @@ in
 
       containers = {
         enable = true;
-        registries = {
-          inherit (cfg.registries) search block;
-        };
         containersConf.settings = cfg.conf;
+        registries.settings = mkIf cfg.registries.enable (
+          lib.mkMerge [
+            cfg.registries.extra
+            {
+              registry = lib.pipe cfg.registries.config [
+                (lib.filterAttrs (_: c: c.enable))
+                (lib.mapAttrsToList (_: c: lib.removeAttrs c [ "enable" ]))
+              ];
+            }
+          ]
+        );
         storage = mkIf cfg.storageContainerOverlay {
           settings.storage = {
             driver = "overlay";
