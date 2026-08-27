@@ -394,7 +394,7 @@
         "ixx": "ixx",
         "nix-index-database": "nix-index-database",
         "nixpkgs": [
-          "nixpkgs-stable"
+          "nixpkgs"
         ]
       },
       "locked": {

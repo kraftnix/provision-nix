@@ -46,7 +46,7 @@
     devshell.inputs.nixpkgs.follows = "nixpkgs";
 
     nuschtos-search.url = "github:NuschtOS/search";
-    nuschtos-search.inputs.nixpkgs.follows = "nixpkgs-stable";
+    nuschtos-search.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   # deploy
