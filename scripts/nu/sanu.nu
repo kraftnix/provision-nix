@@ -35,10 +35,10 @@ export module sanu {
   # update `~/.ssh/auth_sock` symlink
   export def "update authsock symlink" [
     symlink : path = "~/.ssh/auth_sock"   # path to change symlink of
-  ]: path -> nothing {
+  ]: path -> string {
     let sock = $in
     ln -sf ($sock | path expand) ($symlink | path expand)
-    $sock
+    readlink ($sock | path expand)
   }
 
   # get a posix runable command to set `SSH_AUTH_SOCK`
