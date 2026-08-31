@@ -37,7 +37,7 @@ module dest {
     print $"(ansi yellow)Default IP: (ansi red)($defaultIP)(ansi reset)"
     print $"(ansi yellow)Outbound Interface: (ansi red)($outboundStr)(ansi reset)"
     print $"(ansi yellow)Country: (ansi red)($country)(ansi reset)"
-    $res
+    $res | sort-by name
   }
 }
 
