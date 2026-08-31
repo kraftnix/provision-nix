@@ -78,12 +78,11 @@ export module zft {
     }
     mut snapshots = ($out.stdout | from json | get datasets | transpose dataset info | get info | flatten | reject -o dataset snapshot_name)
     if not $noflat {
-      $snapshots = $snapshots | flattenList
+      return ($snapshots | flattenList)
     }
     if $json {
-      $snapshots = $snapshots | to json
+      return ($snapshots | to json)
     }
-    $snapshots
   }
 
   # A ZFS wrapper tool for certain ZFS operations
