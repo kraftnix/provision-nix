@@ -1,0 +1,103 @@
+diff --git a/Cargo.lock b/Cargo.lock
+index aa8be58..19ab4c3 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -915,7 +915,7 @@ dependencies = [
+ [[package]]
+ name = "hickory-net"
+ version = "0.26.0-alpha.1"
+-source = "git+https://github.com/hickory-dns/hickory-dns#47e67972514e2c3d1657338ce592cb3692607e90"
++source = "git+https://github.com/hickory-dns/hickory-dns?rev=47e67972514e2c3d1657338ce592cb3692607e90#47e67972514e2c3d1657338ce592cb3692607e90"
+ dependencies = [
+  "async-trait",
+  "bytes",
+@@ -948,7 +948,7 @@ dependencies = [
+ [[package]]
+ name = "hickory-proto"
+ version = "0.26.0-alpha.1"
+-source = "git+https://github.com/hickory-dns/hickory-dns#47e67972514e2c3d1657338ce592cb3692607e90"
++source = "git+https://github.com/hickory-dns/hickory-dns?rev=47e67972514e2c3d1657338ce592cb3692607e90#47e67972514e2c3d1657338ce592cb3692607e90"
+ dependencies = [
+  "data-encoding",
+  "idna",
+@@ -967,7 +967,7 @@ dependencies = [
+ [[package]]
+ name = "hickory-resolver"
+ version = "0.26.0-alpha.1"
+-source = "git+https://github.com/hickory-dns/hickory-dns#47e67972514e2c3d1657338ce592cb3692607e90"
++source = "git+https://github.com/hickory-dns/hickory-dns?rev=47e67972514e2c3d1657338ce592cb3692607e90#47e67972514e2c3d1657338ce592cb3692607e90"
+ dependencies = [
+  "cfg-if",
+  "futures-util",
+@@ -2223,7 +2223,6 @@ dependencies = [
+  "socket2",
+  "subtle",
+  "tempfile",
+- "tikv-jemallocator",
+  "tokio",
+  "tokio-rustls",
+  "tokio-util",
+@@ -2364,26 +2363,6 @@ dependencies = [
+  "syn",
+ ]
+ 
+-[[package]]
+-name = "tikv-jemalloc-sys"
+-version = "0.6.1+5.3.0-1-ge13ca993e8ccb9ba9847cc330696e02839f328f7"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "cd8aa5b2ab86a2cefa406d889139c162cbb230092f7d1d7cbc1716405d852a3b"
+-dependencies = [
+- "cc",
+- "libc",
+-]
+-
+-[[package]]
+-name = "tikv-jemallocator"
+-version = "0.6.1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "0359b4327f954e0567e69fb191cf1436617748813819c94b8cd4a431422d053a"
+-dependencies = [
+- "libc",
+- "tikv-jemalloc-sys",
+-]
+-
+ [[package]]
+ name = "time"
+ version = "0.3.45"
+diff --git a/Cargo.toml b/Cargo.toml
+index abee696..a108a5e 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -92,8 +92,8 @@ tempfile = "3.24.0"
+ tokio-rustls = "0.26.4"
+ 
+ # jemalloc for better memory performance (not supported on Windows MSVC or iOS)
+-[target.'cfg(not(any(target_env = "msvc", target_os = "ios")))'.dependencies]
+-tikv-jemallocator = "0.6.1"
++# [target.'cfg(not(any(target_env = "msvc", target_os = "ios")))'.dependencies]
++# tikv-jemallocator = "0.6.1"
+ 
+ [target.'cfg(target_os = "android")'.dependencies]
+ android_logger = "0.14.1"
+diff --git a/src/main.rs b/src/main.rs
+index 15f40a2..48f3423 100644
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -49,12 +49,12 @@ mod vmess;
+ mod websocket;
+ mod xudp;
+ 
+-#[cfg(not(any(target_env = "msvc", target_os = "ios")))]
+-use tikv_jemallocator::Jemalloc;
++// #[cfg(not(any(target_env = "msvc", target_os = "ios")))]
++// use tikv_jemallocator::Jemalloc;
+ 
+-#[cfg(not(any(target_env = "msvc", target_os = "ios")))]
+-#[global_allocator]
+-static GLOBAL: Jemalloc = Jemalloc;
++// #[cfg(not(any(target_env = "msvc", target_os = "ios")))]
++// #[global_allocator]
++// static GLOBAL: Jemalloc = Jemalloc;
+ 
+ use std::io::Write;
+ use std::path::Path;
