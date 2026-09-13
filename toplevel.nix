@@ -124,6 +124,25 @@ in
       #   buildInputs = self.buildInputs ++ [prev.tzdata];
       # });
     };
+    scripts = final: prev: {
+      inherit (self.packages.${final.stdenv.hostPlatform.system})
+        dest
+        dnsleaktest
+        ffmpeg-compress
+        ffmpeg-wrap
+        iplink
+        iptools
+        logt
+        mynft
+        mynix-diff
+        remote-test
+        sanu
+        simple-replace
+        ssh-fpscan
+        symlnink-farm
+        zft
+        ;
+    };
   };
 
   perSystem =
