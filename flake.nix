@@ -21,7 +21,7 @@
     flake-utils.url = "github:numtide/flake-utils";
     flake-utils.inputs.systems.follows = "systems";
     flake-compat = {
-      url = "github:inclyc/flake-compat";
+      url = "github:NixOS/flake-compat";
       flake = false;
     };
     nixos-generators.url = "github:nix-community/nixos-generators";
