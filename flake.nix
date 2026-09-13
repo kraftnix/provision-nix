@@ -47,6 +47,7 @@
 
     nuschtos-search.url = "github:NuschtOS/search";
     nuschtos-search.inputs.nixpkgs.follows = "nixpkgs";
+    nuschtos-search.inputs.flake-utils.follows = "flake-utils";
   };
 
   # deploy

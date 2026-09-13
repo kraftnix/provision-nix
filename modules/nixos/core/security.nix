@@ -29,7 +29,7 @@ in
       enable = opts.enable "enable latest hardened kernel";
       package = lib.mkOption {
         description = "hardened kernel package NOTE: currently not working";
-        default = lib.recurseIntoAttrs (pkgs.linuxPackagesFor pkgs.linux_7_1);
+        default = lib.recurseIntoAttrs (pkgs.linuxPackagesFor pkgs.linux_7_2);
         # default = lib.recurseIntoAttrs (
         #   pkgs.linuxPackagesFor self.packages.${pkgs.stdenv.hostPlatform.system}.linux_6_12_hardened
         # );
