@@ -192,9 +192,6 @@ in
 
     ## Flakes
     (mkIf cfg.flakes.enable {
-      nix.nixPath = [
-        "nixpkgs=flake:nixos"
-      ]; # https://github.com/NixOS/nixpkgs/issues/241356
       nix.settings.extra-experimental-features = [
         "flakes"
         "nix-command"

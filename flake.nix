@@ -56,8 +56,7 @@
     colmena.inputs = {
       nixpkgs.follows = "nixpkgs";
       stable.follows = "nixpkgs-stable";
-      flake-utils.follows = "flake-utils";
-      flake-compat.follows = "flake-compat";
+      systems.follows = "systems";
     };
 
     deploy-rs.url = "github:serokell/deploy-rs";
