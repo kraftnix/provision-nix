@@ -37,9 +37,9 @@ in
     name = opts.string config._module.args.name "script name, also used as name of binary";
     file = mkOption {
       description = "optionally set script file path, recommended for script files which only contain a single main";
-      type = types.path;
-      default = pkgs.writeText "${config.name}.nu" config.text;
-      defaultText = literalExpression ''builtins.toFile "${config.name}.nu" config.text'';
+      type = types.nullOr types.path;
+      default = null;
+      defaultText = literalExpression ''builtins.toFile "${config.name}.nu" "ls -la"'';
       example = literalExpression "./fill.nu";
     };
     nuLibDirs = mkOption {
@@ -169,29 +169,48 @@ in
               // config.extraConfig
             )
           else
-            pkgs.writeTextFile (
+            pkgs.stdenvNoCC.mkDerivation (
               {
-                inherit (config) name;
-                executable = true;
-                destination = "/bin/${config.name}";
+                name = config.name;
+                unpackPhase = "true";
+
                 #!${config.runtimeShell}/bin/${config.shell} --env-config ${makeEnv config.name config.nuLibDirs}
                 # source ${makeEnv config.name config.nuLibDirs}
-                text = ''
+                buildPhase = ''
+                  runHook preBuild
+
+                  cat > ${config.name} <<'EOF'
                   #!${config.runtimeShell}/bin/${config.shell}
                   ${optionalString (config.env != null) ''
                     load-env (open ${pkgs.writeText "${config.name}-env.json" (builtins.toJSON config.env)})
                   ''}
                   ${optionalString (config.inputs != [ ]) ''
-                    $env.path ++= "${lib.makeBinPath config.inputs}" | split row :
+                    $env.PATH ++= "${lib.makeBinPath config.inputs}" | split row :
                   ''}
                   ${optionalString (config.nuLibDirs != null) ''
                     $env.NU_LIB_DIRS = ($env.NU_LIB_DIRS | append ${config.nuLibDirs})
                   ''}
 
-                  ## imported from ${config.file}
+                  ${config.text}
+                  EOF
+                  ${optionalString (config.file != null) ''
+                    echo "## imported from file: ${config.file}" >> ${config.name}
+                    cat ${config.file} >> ${config.name}
+                  ''}
 
-                  ${builtins.readFile config.file}
+                  runHook postBuild
                 '';
+
+                installPhase = ''
+                  runHook preInstall
+
+                  chmod +x ${config.name}
+                  mkdir -p $out/bin
+                  cp ${config.name} $out/bin
+
+                  runHook postInstall
+                '';
+
                 meta.mainProgram = config.name;
               }
               // config.extraConfig
